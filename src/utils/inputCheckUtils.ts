@@ -1,0 +1,1 @@
+// const CheckName = (name: string) => {};
