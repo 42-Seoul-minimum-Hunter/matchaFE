@@ -13,8 +13,9 @@ import LocationDropdown from "../components/LocationDropdown";
 import ImageUpload from "@/components/ImageUpload";
 import CheckBox from "@/components/CheckBox";
 import { useGeoLocation } from "@/hooks/useGeoLocation";
-import { axiosUserCreate } from "@/api/axios.custom";
+import { axiosEmailVerify, axiosUserCreate } from "@/api/axios.custom";
 import { RegisterDto } from "@/types/tag.dto";
+import { getCookie } from "@/api/cookie";
 
 // const GenderTag: ITagProps[] = [{ title: "male" }];
 //  나중에 꼭 수정 필요 -> useMemo, useCallback 렌더링 최적화 해야함
@@ -65,10 +66,13 @@ const SignUpPage = () => {
   // console.log("error", error);
   const { location, error, asking, getLocation } = useGeoLocation();
   const [showInstructions, setShowInstructions] = useState(false);
+  const [isEmail, setIsEmail] = useState(false);
 
   const handleClick = () => {
     getLocation();
   };
+
+  const token = getCookie("jwt");
 
   const handleRefresh = () => {
     window.location.reload();
@@ -76,6 +80,7 @@ const SignUpPage = () => {
 
   const trySignUp = async () => {
     try {
+      console.log("test");
       const res = await axiosUserCreate({
         email: userEmail,
         username: userName,
@@ -86,25 +91,48 @@ const SignUpPage = () => {
         preference: preferenceType as PreferenceType,
         age: age as number,
         biography: bio,
-        gpsAllowedAt: true,
-        region: "none",
+        isGpsAllowed: true,
+        si: selectedArea,
+        gu: selectedSubArea,
         hashtags: interestType as InterestType[],
         profileImages: showImages,
       });
+      console.log("res", res);
     } catch (error: any) {
       console.log("error", error);
       throw error;
     }
   };
 
-  const onClickLogin = () => {
+  const onClickLogin = async () => {
     try {
-      trySignUp();
+      // 회원가입성공하면 바로 이메일 인증으로 감
+      try {
+        // 회원가입 실패시 오류 찾아서 프론트에 알려줌
+        const res = await trySignUp();
+        // res데이터 확인후 중복 검사 -> 이메일, username이 중복되면 오류 던짐
+        console.log("res", res);
+      } catch (error) {
+        console.log("error", error);
+      }
+      setIsEmail(true);
+      console.log("userEmail", userEmail);
+      try {
+        // 이메일 인증 절차 -> 통과하면 바로 search로 이동
+        const res = await axiosEmailVerify(userEmail);
+        console.log("res", res);
+        navigate("/search");
+      } catch (error) {
+        console.log("error", error);
+      }
     } catch (error) {
+      // setIsEmail(false);
       console.log("error", error);
-      navigate("/search");
     }
+    // navigate("/twoFactor");
   };
+
+  // useEffect(() => {}, []);
 
   const saveFirstName = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFirstName(e.target.value);
@@ -146,135 +174,144 @@ const SignUpPage = () => {
 
   return (
     <>
-      <WrapperStyled>
-        <TitleStyled>Matcha</TitleStyled>
-        <ContentStyled>
-          <PhotoWrapper>
-            <PhotoTitleStyled>Choose user profile</PhotoTitleStyled>
-            <ImageUpload
-              showImages={showImages}
-              setShowImages={setShowImages}
-            />
-          </PhotoWrapper>
-          {/* <FirstInfoWrapper> */}
-          <InputTextWrapper>
-            <NameWrapper>
+      {isEmail ? (
+        <WrapperStyled>
+          <div>이메일 함을 확인해주세요</div>
+        </WrapperStyled>
+      ) : (
+        <WrapperStyled>
+          <TitleStyled>Matcha</TitleStyled>
+          <ContentStyled>
+            <PhotoWrapper>
+              <PhotoTitleStyled>Choose user profile</PhotoTitleStyled>
+              <ImageUpload
+                showImages={showImages}
+                setShowImages={setShowImages}
+              />
+            </PhotoWrapper>
+            {/* <FirstInfoWrapper> */}
+            <InputTextWrapper>
+              <NameWrapper>
+                <InputTemplate
+                  title="First Name"
+                  placeholder="Add a your fisrt"
+                  value={firstName}
+                  onChange={saveFirstName}
+                />
+                <InputTemplate
+                  title="Last Name"
+                  placeholder="Add a your last"
+                  value={lastName}
+                  onChange={saveLastName}
+                />
+              </NameWrapper>
               <InputTemplate
-                title="First Name"
-                placeholder="Add a your fisrt"
-                value={firstName}
-                onChange={saveFirstName}
+                title="Password"
+                placeholder="Add a your Password"
+                value={password}
+                onChange={savePassword}
+                type="password"
               />
               <InputTemplate
-                title="Last Name"
-                placeholder="Add a your last"
-                value={lastName}
-                onChange={saveLastName}
+                title="Email"
+                // input type="email",
+                placeholder="Add a your email"
+                value={userEmail}
+                onChange={saveEmail}
+                type="email"
+                // required
+              />
+              <InputTemplate
+                title="Username"
+                placeholder="Add a your userName"
+                value={userName}
+                onChange={saveUserName}
+              />
+            </InputTextWrapper>
+            {/* </FirstInfoWrapper> */}
+            <InputTemplate
+              title="Bio"
+              placeholder="Add a your bio"
+              value={bio}
+              onChange={saveBio}
+            />
+            <NameWrapper>
+              <LocationWrapper>
+                <h2>Location</h2>
+                <LocationDropdown
+                  selectedArea={selectedArea}
+                  selectedSubArea={selectedSubArea}
+                  handleAreaChange={handleAreaChange}
+                  handleSubAreaChange={handleSubAreaChange}
+                />
+                {/* <Dropdown /> */}
+              </LocationWrapper>
+              <InputTemplate
+                title="Age"
+                placeholder="Add a your age"
+                type="number"
+                onChange={saveAge}
               />
             </NameWrapper>
-            <InputTemplate
-              title="Password"
-              placeholder="Add a your Password"
-              value={password}
-              onChange={savePassword}
-              type="password"
+            <TagTemplate
+              title="Gender"
+              tagList={genderTagList}
+              initialState={genderType}
+              setState={setGenderType}
             />
-            <InputTemplate
-              title="Email"
-              // input type="email",
-              placeholder="Add a your email"
-              value={userEmail}
-              onChange={saveEmail}
-              type="email"
-              // required
+            <TagTemplate
+              title="Preference"
+              tagList={preferenceTagList}
+              initialState={preferenceType}
+              setState={setPreferenceType}
             />
-            <InputTemplate
-              title="Username"
-              placeholder="Add a your userName"
-              value={userName}
-              onChange={saveUserName}
+            <TagTemplate
+              title="Interest"
+              tagList={interestTagList}
+              initialState={interestType}
+              setState={setInterestType}
             />
-          </InputTextWrapper>
-          {/* </FirstInfoWrapper> */}
-          <InputTemplate
-            title="Bio"
-            placeholder="Add a your bio"
-            value={bio}
-            onChange={saveBio}
-          />
-          <NameWrapper>
-            <LocationWrapper>
-              <h2>Location</h2>
-              <LocationDropdown
-                selectedArea={selectedArea}
-                selectedSubArea={selectedSubArea}
-                handleAreaChange={handleAreaChange}
-                handleSubAreaChange={handleSubAreaChange}
-              />
-              {/* <Dropdown /> */}
-            </LocationWrapper>
-            <InputTemplate
-              title="Age"
-              placeholder="Add a your age"
-              type="number"
-              onChange={saveAge}
+            <div>
+              <button onClick={handleClick} disabled={asking}>
+                {asking ? "위치 정보 요청 중..." : "위치 정보 가져오기"}
+              </button>
+              {location && (
+                <p>
+                  위치: 위도 {location.latitude}, 경도 {location.longitude}
+                </p>
+              )}
+              {error && <p>에러: {error}</p>}
+              {error && error.includes("권한이 거부되었습니다") && (
+                <>
+                  <p>위치 정보 접근 권한을 허용해주세요.</p>
+                  <button
+                    onClick={() => setShowInstructions(!showInstructions)}
+                  >
+                    {showInstructions ? "안내 숨기기" : "권한 허용 방법 보기"}
+                  </button>
+                  {showInstructions && (
+                    <ol>
+                      <li>브라우저 설정을 엽니다.</li>
+                      <li>사이트 설정 또는 개인정보 설정을 찾습니다.</li>
+                      <li>위치 정보 설정을 찾습니다.</li>
+                      <li>이 사이트의 위치 정보 접근을 허용으로 변경합니다.</li>
+                      <li>페이지를 새로고침합니다.</li>
+                    </ol>
+                  )}
+                  <button onClick={handleRefresh}>페이지 새로고침</button>
+                </>
+              )}
+            </div>
+            <CheckBox
+              title="GPS 위치 정보를 제공하시겠습니까?"
+              checked={isLocation}
+              onChange={saveLocation}
             />
-          </NameWrapper>
-          <TagTemplate
-            title="Gender"
-            tagList={genderTagList}
-            initialState={genderType}
-            setState={setGenderType}
-          />
-          <TagTemplate
-            title="Preference"
-            tagList={preferenceTagList}
-            initialState={preferenceType}
-            setState={setPreferenceType}
-          />
-          <TagTemplate
-            title="Interest"
-            tagList={interestTagList}
-            initialState={interestType}
-            setState={setInterestType}
-          />
-          <div>
-            <button onClick={handleClick} disabled={asking}>
-              {asking ? "위치 정보 요청 중..." : "위치 정보 가져오기"}
-            </button>
-            {location && (
-              <p>
-                위치: 위도 {location.latitude}, 경도 {location.longitude}
-              </p>
-            )}
-            {error && <p>에러: {error}</p>}
-            {error && error.includes("권한이 거부되었습니다") && (
-              <>
-                <p>위치 정보 접근 권한을 허용해주세요.</p>
-                <button onClick={() => setShowInstructions(!showInstructions)}>
-                  {showInstructions ? "안내 숨기기" : "권한 허용 방법 보기"}
-                </button>
-                {showInstructions && (
-                  <ol>
-                    <li>브라우저 설정을 엽니다.</li>
-                    <li>사이트 설정 또는 개인정보 설정을 찾습니다.</li>
-                    <li>위치 정보 설정을 찾습니다.</li>
-                    <li>이 사이트의 위치 정보 접근을 허용으로 변경합니다.</li>
-                    <li>페이지를 새로고침합니다.</li>
-                  </ol>
-                )}
-                <button onClick={handleRefresh}>페이지 새로고침</button>
-              </>
-            )}
-          </div>
-          <CheckBox
-            title="GPS 위치 정보를 제공하시겠습니까?"
-            checked={isLocation}
-            onChange={saveLocation}
-          />
-        </ContentStyled>
-        <SubmitButtonStyled onClick={onClickLogin}>Submit</SubmitButtonStyled>
-      </WrapperStyled>
+          </ContentStyled>
+          <SubmitButtonStyled onClick={onClickLogin}>Submit</SubmitButtonStyled>
+        </WrapperStyled>
+      )}
+
       {/* height가 auto일때는 margin-bottom이 적용이 안됨, 이유를 모르겠음 */}
       {/* <div style={{ width: "30px", height: "30px" }}></div> */}
     </>

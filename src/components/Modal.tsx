@@ -24,10 +24,7 @@ interface IModalProps {
 const Modal = ({
   options,
   title,
-  // modalOpen,
   closeModal,
-  onClickTag,
-  modalTitle,
   filterList,
   onSubmint,
 }: // ModalLable,
@@ -56,7 +53,7 @@ IModalProps) => {
               key={option.key}
               // onClick={() => onClickTag(option)}
               onClick={() => onClickTagTest(option)}
-              isSelected={selectedOption.some(
+              $isSelected={selectedOption.some(
                 (item) => item.name === option.name
               )}
             >
@@ -76,12 +73,12 @@ export default Modal;
 
 // const ModalContainer = styled.div``;
 
-const ModalSelectionOption = styled.div<{ isSelected: boolean }>`
+const ModalSelectionOption = styled.div<{ $isSelected: boolean }>`
   background-color: ${(props) =>
-    props.isSelected ? "var(--vermilion)" : "var(--white)"};
-  color: ${(props) => (props.isSelected ? "var(--white)" : "var(--black)")};
+    props.$isSelected ? "var(--vermilion)" : "var(--white)"};
+  color: ${(props) => (props.$isSelected ? "var(--white)" : "var(--black)")};
   border: ${(props) =>
-    props.isSelected ? "none" : "1px solid var(--light-gray)"};
+    props.$isSelected ? "none" : "1px solid var(--light-gray)"};
 
   width: 100px;
   padding: 5px 15px;

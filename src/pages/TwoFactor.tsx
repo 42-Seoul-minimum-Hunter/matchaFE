@@ -6,36 +6,39 @@ import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 const TwoFactor = () => {
   const [password, setPassword] = useState("");
-  const [isTimer, setIsTimer] = useState(false);
+  // const [isTimer, setIsTimer] = useState(false);
   const navigator = useNavigate();
 
   const changePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
   };
 
-  const email = "";
+  const email = "miyu@student.42seoul.kr";
   useEffect(() => {
     try {
-      // 여기서 email을 보내줘야 하나?
-      //   const res = axiosCreateTwoFactor(email);
-      setIsTimer(true);
+      // 여기서 email을 보내줘야 하나? -> 지금은 jwt가 적용 안되어있으니까 지금만 이메일 보내기
+      const res = axiosCreateTwoFactor(email);
+      console.log("res", res);
+      // setIsTimer(true);
+      navigator("/search");
     } catch (error: any) {
       console.log("error", error);
       throw error;
     }
   }, []);
 
-  const onClickSubmit = async () => {
-    try {
-      const res = await axiosVerifyTwoFactor(password);
-      console.log("res", res);
-    } catch (error: any) {
-      console.log("error", error);
-      alert("인증번호가 일치하지 않습니다.");
-      throw error;
-    }
-    navigator("/search");
-  };
+  // const onClickSubmit = async () => {
+  //   try {
+  //     console.log("password", password);
+  //     const res = await axiosVerifyTwoFactor(password);
+  //     console.log("res", res);
+  //   } catch (error: any) {
+  //     console.log("error", error);
+  //     alert("인증번호가 일치하지 않습니다.");
+  //     throw error;
+  //   }
+  //   // navigator("/search");
+  // };
 
   return (
     <Wrapper>
@@ -55,10 +58,10 @@ const TwoFactor = () => {
             onChange={changePassword}
             type="password"
           />
-          {isTimer ? <UseCounter /> : null}
-          <SubmitButtonStyled onClick={onClickSubmit}>
+          {/* {isTimer ? <UseCounter /> : null} */}
+          {/* <SubmitButtonStyled onClick={onClickSubmit}>
             submit
-          </SubmitButtonStyled>
+          </SubmitButtonStyled> */}
         </InputContainer>
       </CardStyled>
     </Wrapper>

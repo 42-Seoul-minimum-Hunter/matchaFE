@@ -18,6 +18,8 @@ const COLORS = [
   "#00FFE0",
 ];
 
+// const token = getCookie("jwt");
+
 const Layout = () => {
   const navigate = useNavigate();
   const location = useLocation();

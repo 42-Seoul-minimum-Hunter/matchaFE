@@ -9,7 +9,7 @@ const FindPwPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [checkPassword, setCheckPassword] = useState("");
-  const [checkedEmail, setCheckedEmail] = useState<boolean>(true);
+  const [checkedEmail, setCheckedEmail] = useState<boolean>(false);
   // const isEmail = useState<boolean>(true);
 
   const checkEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,6 +28,7 @@ const FindPwPage = () => {
       try {
         // 데이터 에러 나면 서버오류 띄우고 로그인 페이지 ?
         const res = axiosChangePassword(password);
+        console.log("res", res);
       } catch (error: any) {
         console.log("error", error);
         throw error;
@@ -42,6 +43,7 @@ const FindPwPage = () => {
     try {
       const res = await axiosFindPW(email);
       setCheckedEmail(true);
+      console.log("res", res);
     } catch (error: any) {
       console.log("error", error);
       setCheckedEmail(false);

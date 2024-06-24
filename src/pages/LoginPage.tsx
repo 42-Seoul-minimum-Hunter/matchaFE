@@ -36,6 +36,18 @@ const LoginPage = () => {
     navigate("/findPW");
   };
 
+  const OAUTH_CALLBACK_URI = "http://localhost:3000/auth/callback";
+  const OAUTH_CLIENT_ID =
+    "u-s4t2ud-4c71b29a46d703713b962ab0e0a2161547a772c450716accbb61c07546814f38";
+
+  const Redirect = "https://api.intra.42.fr/oauth/authorize?";
+
+  const onClickOauthButton = () => {
+    const url = `${Redirect}client_id=${OAUTH_CLIENT_ID}&redirect_uri=${OAUTH_CALLBACK_URI}&response_type=code`;
+    // navigate(url);
+    window.location.href = url;
+  };
+
   console.log("isMobile", isMobile);
 
   return (
@@ -71,7 +83,9 @@ const LoginPage = () => {
             </SubmitButtonStyled>
           </LoginFormStyled>
           <InfoTextStyled>간편 로그인</InfoTextStyled>
-          <OauthButtonStyled>sign in with 42</OauthButtonStyled>
+          <OauthButtonStyled onClick={onClickOauthButton}>
+            sign in with 42
+          </OauthButtonStyled>
           <UtilsContainer>
             <p onClick={onClickSignUpButton}>회원이 아니신가요?</p>
             <p onClick={onClickFindPasswordButton}>비밀번호를 잊으셨나요?</p>

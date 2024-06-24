@@ -1,3 +1,4 @@
+import { axiosFindUser } from "@/api/axios.custom";
 import LocationDropdown from "@/components/LocationDropdown";
 import Modal, { IModalOptions } from "@/components/Modal";
 import SearchCard from "@/components/SearchCard";
@@ -36,6 +37,14 @@ const SearchPage = () => {
   const [modalTitle, setModalTitle] = useState<string>("");
   // const [ageType, setAgeType] = useState<ageType | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [selectedArea, setSelectedArea] = useState<string>("");
+  const [selectedSubArea, setSelectedSubArea] = useState<string>("");
+  const handleAreaChange = (e: any) => {
+    setSelectedArea(e.target.value);
+  };
+  const handleSubAreaChange = (e: any) => {
+    setSelectedSubArea(e.target.value);
+  };
   const openModal = (title: string) => {
     setModalOpen(true);
     setModalTitle(title);
@@ -44,10 +53,61 @@ const SearchPage = () => {
     setModalOpen(false);
   };
 
+  // 모달 태그 선택 창
   const onSubmint = (selectedOption: IModalOptions[]) => {
     setFilterList([...selectedOption]);
+    console.log("filterList", filterList);
     closeModal();
+    // try {
+    //   const res = axiosFindUser();
+    //   console.log(res);
+    // } catch (e) {
+    //   console.log(e);
+    // }
   };
+
+  useEffect(() => {
+    let si = selectedArea;
+    let gu = selectedSubArea;
+    let minAge = 0;
+    let maxAge = 0;
+    let username = "";
+    let minRate = 0;
+    let maxRate = 0;
+    let hashtags: string[] = [];
+    filterList.forEach((option) => {
+      if (ageFilterList.some((item) => item.name === option.name)) {
+        // 나이 필터 처리
+        const [min, max] = option.name.split("~");
+        minAge = parseInt(min);
+        maxAge = parseInt(max);
+      }
+      //   else if (rateFilterList.some((item) => item.name === option.name)) {
+      //     // 평점 필터 처리
+      //     const [min, max] = option.name.split("~");
+      //     minRate = parseInt(min);
+      //     maxRate = parseInt(max);
+      //   } else if (interestTagList.some((item) => item.name === option.name)) {
+      //     // 관심사 태그 처리
+      //     hashtags.push(option.name);
+      //   }
+    });
+    try {
+      const res = axiosFindUser({
+        minAge,
+        maxAge,
+        username,
+        minRate,
+        maxRate,
+        si,
+        gu,
+        hashtags,
+      });
+      console.log(res);
+    } catch (e) {
+      console.log(e);
+    }
+  }, [filterList]);
 
   const selectModalOptions = (title: string) => {
     if (title === "Age") {
@@ -82,14 +142,6 @@ const SearchPage = () => {
       // console.log(`Handler for User${index + 1}`);
     },
   }));
-  const [selectedArea, setSelectedArea] = useState<string>("");
-  const [selectedSubArea, setSelectedSubArea] = useState<string>("");
-  const handleAreaChange = (e: any) => {
-    setSelectedArea(e.target.value);
-  };
-  const handleSubAreaChange = (e: any) => {
-    setSelectedSubArea(e.target.value);
-  };
 
   return (
     <Wrapper>
