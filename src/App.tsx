@@ -7,10 +7,6 @@ import MessagePage from "@/pages/MessagePage";
 import SearchPage from "@/pages/SearchPage";
 import SignUpPage from "@/pages/SignUpPage";
 import ProfilePage from "@/pages/ProfilePage";
-// import Layout from "@/pages/Layout";
-// import Home from "@/pages/Home";
-// import GamePreview from "@/pages/GamePreview";
-// import Login from "./pages/Login";
 
 function App() {
   return (
@@ -24,9 +20,6 @@ function App() {
           <Route path="message" element={<MessagePage />} />
           <Route path="alarm" element={<AlarmPage />} />
           <Route path="profile" element={<ProfilePage />} />
-          {/* <Route path="home" element={<Home />}></Route>
-          <Route path="login" element={<Login />}></Route>
-          <Route path="game" element={<GamePreview />}></Route> */}
         </Route>
       </Routes>
     </BrowserRouter>

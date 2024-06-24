@@ -11,6 +11,17 @@ export interface RegisterDto {
   isGps: boolean;
 }
 
+// chatroom dto
+// content :"hello"
+// createdAt : "2019-12-31T15:00:00.000Z"
+// profileImage : "https://naver.com"
+// username :"" "User2"
+
+// chatcontent dto
+// message : "world"
+// time :  "2019-12-31T15:00:00.000Z"
+// username :  "User3"
+
 // export interface OverdueUserDto {
 //   building: string;
 //   floor: number;

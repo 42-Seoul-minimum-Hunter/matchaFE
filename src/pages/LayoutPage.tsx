@@ -1,11 +1,26 @@
 import styled from "styled-components";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { createContext, useEffect, useState } from "react";
 import CircleContainer from "@/components/BackgroundColor";
 import Header from "@/components/Header";
+import { io, Socket } from "socket.io-client";
 
 const loginToken = false;
 const registerToken = false;
+
+const header = {
+  userID: 1,
+};
+
+const socket = io("http://localhost:3001", {
+  auth: {
+    //  jwt넣기
+    userId: 1,
+    // token: "abc123",
+  },
+});
+
+export const SocketContext = createContext(null);
 
 const COLORS = [
   "#27F122",
@@ -19,6 +34,8 @@ const COLORS = [
 const Layout = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [state, setState] = useState({ message: "", name: "" });
+  const [chat, setChat] = useState([]);
 
   const isRootPath: boolean = location.pathname === "/";
   const isLoginPage: boolean = location.pathname === "/login";
@@ -41,13 +58,15 @@ const Layout = () => {
       <Outlet />
     </LoginWrapper>
   ) : (
-    <Wrapper>
-      {/* <CircleContainer circleCount={12} circleColors={COLORS} /> */}
-      <Header />
-      <MainStyled>
-        <Outlet />
-      </MainStyled>
-    </Wrapper>
+    <SocketContext.Provider value={socket}>
+      <Wrapper>
+        {/* <CircleContainer circleCount={12} circleColors={COLORS} /> */}
+        <Header />
+        <MainStyled>
+          <Outlet />
+        </MainStyled>
+      </Wrapper>
+    </SocketContext.Provider>
   );
 };
 

@@ -8,45 +8,47 @@ const Image: React.FC<Props> = ({ imageSource }) => {
   return <img src={imageSource} />;
 };
 
-export interface IChatListProps {
-  nickname: string;
-  img: string;
-  lastTime: string;
-  lastChat: string;
-  Unread: number;
+export interface IChatRoomProps {
+  username: string;
+  profileImage: string;
+  createdAt: string; // date형식
+  // lastTime: string;
+  content: string;
+  // Unread: number;
+  // handler?: (index: number) => void;
+}
+
+interface ChatListProps extends IChatRoomProps {
+  isSelected: boolean;
+  index: number;
   handler: (index: number) => void;
 }
 
-interface ChatListProps extends IChatListProps {
-  isSelected: boolean;
-  index: number;
-}
-
 const ChatList = ({
-  nickname,
-  img,
-  lastTime,
-  lastChat,
-  Unread,
+  username,
+  profileImage,
+  createdAt,
+  content,
+  // Unread,
   isSelected,
-  handler,
   index,
+  handler,
 }: // handler,
 ChatListProps) => {
   return (
-    <Wrapper isSelected={isSelected} onClick={() => handler(index)}>
+    <Wrapper $isSelected={isSelected} onClick={() => handler(index)}>
       <ImageWrapper>
         {/* <Image imageSource={img} /> */}
-        <img src={img} />
+        <img src={profileImage} />
       </ImageWrapper>
       <ColumnWrapper>
         <RowWrapper>
-          <NicknameStyled>{nickname}</NicknameStyled>
-          <LastTimeStyled>{lastTime}</LastTimeStyled>
+          <NicknameStyled>{username}</NicknameStyled>
+          <LastTimeStyled>{createdAt}</LastTimeStyled>
         </RowWrapper>
         <RowWrapper>
-          <LastChatStyled>{lastChat}</LastChatStyled>
-          <UnreadStyled>{Unread}</UnreadStyled>
+          <LastChatStyled>{content}</LastChatStyled>
+          {/* <UnreadStyled>{Unread}</UnreadStyled> */}
         </RowWrapper>
       </ColumnWrapper>
     </Wrapper>
@@ -55,7 +57,7 @@ ChatListProps) => {
 
 export default ChatList;
 
-const Wrapper = styled.div<{ isSelected: boolean }>`
+const Wrapper = styled.div<{ $isSelected: boolean }>`
   padding: 10px 10px;
   display: flex;
   align-items: center;

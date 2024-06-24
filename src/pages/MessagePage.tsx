@@ -2,46 +2,99 @@ import styled from "styled-components";
 import TestImage1 from "@/assets/mock/test1.png";
 import TestImage2 from "@/assets/mock/test2.png";
 import TestImage3 from "@/assets/mock/test3.png";
-import ChatList, { IChatListProps } from "@/components/ChatList";
+import ChatList, { IChatRoomProps } from "@/components/ChatList";
 import ChatRoom, { CharMessageDto } from "@/components/ChatRoom";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { SocketContext } from "./LayoutPage";
+import { axiosChatroom } from "@/api/axios.custom";
 
 // 이미지 경로 어떻게 받을지 생각해두기
 
 const MessagePage = () => {
   const [selectUser, setSelectUser] = useState<string>("");
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+  const [chatRoom, setChatRoom] = useState<IChatRoomProps[]>([]);
+
+  const CheckChatList = async () => {
+    try {
+      // jwt있으면 userID 없어도 됨
+      const res = await axiosChatroom(1);
+      // console.log("chat list :", res);
+      setChatRoom(res.data);
+      console.log("chat list data:", res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    CheckChatList();
+  }, []);
+
+  const socket = useContext(SocketContext);
+  useEffect(() => {
+    clickChatRoom();
+  }, [selectUser]);
+
+  const clickChatRoom = () => {
+    socket.emit("joinChatRoom", {
+      username: selectUser,
+    });
+  };
+
+  // useEffect(() => {
+  //   const handleSendHistories = (data) => {
+  //     console.log("onlineStatus On", data);
+  //   };
+
+  //   socket.on("sendHistories", handleSendHistories);
+
+  //   return () => {
+  //     socket.off("sendHistories", handleSendHistories);
+  //   };
+  // }, []);
+
+  useEffect(() => {
+    socket.on("sendHistories", (data) => {
+      console.log("onlineStatus On", data);
+    });
+    // clickChatRoom();
+    // socket.emit("joinChatRoom", {
+    //   username: selectUser,
+    // });
+  }, []);
 
   const onClickChatRoom = (index: number) => {
     setSelectedIndex(index);
-    setSelectUser(mockChatListData[index].nickname);
+    setSelectUser(chatRoom[index].username);
+    clickChatRoom();
   };
-  const mockChatListData: IChatListProps[] = [
+  const mockChatListData: IChatRoomProps[] = [
     {
-      nickname: "JohnDoe",
+      username: "JohnDoe",
       // img: "@/assets/mock/test1.png",
-      img: TestImage1,
-      lastTime: "3day",
-      lastChat: "Hey, are we still on for tonight?",
-      Unread: 2,
+      profileImage: TestImage1,
+      createdAt: "3day",
+      content: "Hey, are we still on for tonight?",
+      // Unread: 2,
       handler: onClickChatRoom,
     },
     {
-      nickname: "JaneSmith",
-      // img: "../assets/mock/test2.png",
-      img: TestImage2,
-      lastTime: "1day",
-      lastChat: " Sure, I can send you the documents by tomorrow.",
-      Unread: 0,
+      username: "JaneSmith",
+      // profileImage: "../assets/mock/test2.png",
+      profileImage: TestImage2,
+      createdAt: "1day",
+      content: " Sure, I can send you the documents by tomorrow.",
+      // Unread: 0,
       handler: onClickChatRoom,
     },
     {
-      nickname: "MichaelBrown",
-      // img: "@/assets/mock/test3.png",
-      img: TestImage3,
-      lastTime: "30 min",
-      lastChat: "Don't forget the meeting at 3 PM.",
-      Unread: 1,
+      username: "MichaelBrown",
+      // profileImage: "@/assets/mock/test3.png",
+      profileImage: TestImage3,
+      createdAt: "30 min",
+      content: "Don't forget the meeting at 3 PM.",
+      // Unread: 1,
       handler: onClickChatRoom,
     },
   ];
@@ -73,20 +126,30 @@ const MessagePage = () => {
     },
   ];
 
+  // const selectUserImg = mockChatListData[selectedIndex]?.profileImage;
+  const selectUserImg =
+    selectedIndex !== null ? chatRoom[selectedIndex]?.profileImage : null;
+
   return (
     <Wrapper>
       <ChatLobbyWrapper>
-        {mockChatListData.map((chatList, index) => (
-          <ChatList
-            key={index}
-            {...chatList}
-            isSelected={selectedIndex === index}
-            index={index}
-          />
-        ))}
+        {chatRoom &&
+          chatRoom.map((chatList, index) => (
+            <ChatList
+              key={index}
+              {...chatList}
+              isSelected={selectedIndex === index}
+              index={index}
+              handler={onClickChatRoom}
+            />
+          ))}
       </ChatLobbyWrapper>
       <ChatRoomWrapper>
-        <ChatRoom mockMessageData={mockMessageData} selectUser={TestImage1} />
+        <ChatRoom
+          mockMessageData={mockMessageData}
+          selectUser={selectUser}
+          selectUserImg={selectUserImg}
+        />
       </ChatRoomWrapper>
     </Wrapper>
   );
