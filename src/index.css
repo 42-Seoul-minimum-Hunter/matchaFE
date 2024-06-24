@@ -22,6 +22,8 @@ body,
   --tag-stroke: #e8e6ea;
   --blue: #3369ff;
   --light-blue: #d1eaff;
+  --online: #2aac7a;
+  --offline: #d22727;
 
   font-size: 16px;
   line-height: 24px;

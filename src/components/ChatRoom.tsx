@@ -1,5 +1,7 @@
 import styled from "styled-components";
 import { ReactComponent as SendIcon } from "@/assets/icons/send-icon.svg";
+import { useContext, useEffect } from "react";
+import { SocketContext } from "@/pages/LayoutPage";
 
 export interface CharMessageDto {
   content: string;
@@ -14,11 +16,13 @@ export interface CharMessageDto {
 const ChatRoom = ({
   mockMessageData,
   selectUser,
+  selectUserImg,
 }: {
   mockMessageData: CharMessageDto[];
-  selectUser: string;
+  selectUser: string | null;
+  selectUserImg: string | null;
 }) => {
-  // console.log("selectChat", selectChat);
+  console.log("selectUser", selectUser);
   return (
     <Wrapper>
       {mockMessageData.map((message, index) => (

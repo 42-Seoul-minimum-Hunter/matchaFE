@@ -12,7 +12,7 @@ import {
   InterestLableMap,
   PreferenceLableMap,
 } from "@/types/maps";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { GenderType, InterestType, PreferenceType } from "@/types/tag.enum";
 import { ReactComponent as BanIcon } from "@/assets/icons/ban-icon.svg";
 import { ReactComponent as HeartIcon } from "@/assets/icons/heart-icon.svg";
@@ -20,6 +20,9 @@ import { ReactComponent as MessageIcon } from "@/assets/icons/sendMessage-icon.s
 import LocationDropdown from "@/components/LocationDropdown";
 import Stars from "@/components/Stars";
 // import Stars from "@/components/Stars";
+import { axiosProfile } from "@/api/axios.custom";
+import { useParams, useSearchParams } from "react-router-dom";
+import { SocketContext } from "./LayoutPage";
 
 const mockData: RegisterDto = {
   firstName: "John",
@@ -32,7 +35,7 @@ const mockData: RegisterDto = {
   gender: "FEMALE",
   preference: "BISEXUAL",
   rate: 4.5,
-  tag: "BOOKS MUSIC MOVIES SPORTS TRAVEL",
+  hashtags: ["BOOKS", "MUSIC", "MOVIES", "SPORTS", "TRAVEL"],
 
   isGps: true,
 };
@@ -60,7 +63,7 @@ const ProfilePage = () => {
   );
   const [interestType, setInterestType] = useState<InterestType[] | null>(null);
   const [selectImg, setSelectImg] = useState<string>(images[0]);
-  let mockDataTag = mockData.tag.split(" ");
+  let mockDataTag = mockData.hashtags.split(" ");
   console.log("mockDataTag", mockDataTag);
 
   const interestTagList: tagItem[] = Object.entries(InterestLableMap)
@@ -73,9 +76,47 @@ const ProfilePage = () => {
     setSelectImg(images[index]);
   };
 
+  const params = useParams();
+  // const productId = params.username;
+
+  // userID는 나중에 jwt로 대체
+  // me에 해당하는 axios 하나 더 만들기 -> 요청
+  const tryToGetProfile = async (username: any, userID: number) => {
+    try {
+      const res = await axiosProfile(username, userID);
+      console.log("profile", res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    tryToGetProfile(username, 2);
+  }, []);
+
+  const socket = useContext(SocketContext);
+  const [searchParams, setSeratchParams] = useSearchParams();
+  const username = searchParams.get("username");
+  // 유저네임이 없으면 me로 정보 전달
+  if (!username) {
+    console.log("test");
+  }
+  console.log("username", username);
+
+  // socket.on("connect", () => {});
+  // useEffect(() => {
+  //   socket.on("connect", () => {
+  //     console.log("message");
+  //   });
+  // }, []);
+
   // 백에서 받아온 정보 넘기기
   const [selectedArea, setSelectedArea] = useState<string>("서울");
   const [selectedSubArea, setSelectedSubArea] = useState<string>("강남구");
+  const [userStatus, setUserStatus] = useState<boolean>(false);
+
+  // const socket = useContext(SocketContext);
+
   // const handleAreaChange = (e: any) => {
   //   setSelectedArea(e.target.value);
   // };
@@ -122,16 +163,24 @@ const ProfilePage = () => {
         </PohtoWrapper>
       </LeftWrapper>
       <RightWrapper>
-        <UserInfoStyled>
+        {/* <UserInfoStyled>
           <h1>{mockData.firstName}</h1>
-        </UserInfoStyled>
+        </UserInfoStyled> */}
+
+        <UserInfoWrapper>
+          <h1>{mockData.firstName}</h1>
+          <OnlineStatusWrapper>
+            <OnlineStatusStyled $userStatus={userStatus}></OnlineStatusStyled>
+          </OnlineStatusWrapper>
+        </UserInfoWrapper>
+
         <TagTemplate
           title="Interest"
           tagList={interestTagList}
           initialState={interestType}
           setState={setInterestType}
           isModify={true}
-          selectedTag={mockData.tag.split(" ")}
+          selectedTag={mockData.preference.split(" ")}
         />
         <TagTemplate
           title="Gender"
@@ -205,6 +254,15 @@ const StarSubmitStyled = styled.div`
 
 const StarSubmitButtonStyled = styled.div`
   display: flex;
+`;
+
+const OnlineStatusWrapper = styled.div``;
+
+const OnlineStatusStyled = styled.div<{ $userStatus: boolean }>`
+  background-color: var(--online);
+  width: 28px;
+  height: 28px;
+  border-radius: 20px;
 `;
 
 const Wrapper = styled.div`
@@ -330,5 +388,13 @@ const LocationWrapper = styled.div`
   align-items: flex-start;
   & > h2 {
     margin-bottom: 25px;
+  }
+`;
+
+const UserInfoWrapper = styled.div`
+  dispaly: flex;
+  & > h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
   }
 `;

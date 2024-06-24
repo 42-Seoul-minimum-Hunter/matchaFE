@@ -34,13 +34,22 @@ instance.interceptors.request.use(async (config: any) => {
   // config.headers = {
   // Authorization : {token ? `Bearer ${token}` : null}
   // Authorization: `Bearer ${token}`,
+
+  // instance.interceptors.request.use(async (config) => {
+  // const token = getCookie("admin_access_token") ?? getCookie("access_token");
+  // config.headers = {
+  // Authorization: `Bearer ${token}`,
+  // Authorization :
   // };
   return config;
 });
 
 // localhost:3000/user/profile/me
 const axiosProfileMeURL = "/user/profile/me";
-export const axiosProfileMe = async (): Promise<any> => {
+export const axiosProfileMe = async (): Promise<any> => {};
+
+const axiosResgisterURL = "";
+export const axiosRegister = async (register: RegisterDto): Promise<any> => {
   try {
     const response = await instance.get(axiosProfileMeURL);
     return response;
@@ -162,6 +171,41 @@ const axiosAuthLoginURL = "/auth/login";
 export const axiosAuthLogin = async (): Promise<any> => {
   try {
     const response = await instance.get(axiosAuthLoginURL);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// useriD 나중에 jwt 대체
+const axiosProfileURL = "/user/profile";
+export const axiosProfile = async (
+  username: string,
+  userID: number
+): Promise<any> => {
+  try {
+    console.log(
+      "back url : ",
+      `${axiosProfileURL}?username=${username}&id=${userID}`
+    );
+    const response = await instance.get(
+      `${axiosProfileURL}?username=${username}&id=${userID}`
+    );
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// chatroom id로 채팅방 정보 가져오기
+const axiosChatroomURL = "/user/chat";
+export const axiosChatroom = async (
+  // username: string,
+  userID: number
+): Promise<any> => {
+  try {
+    console.log("back url : ", `${axiosChatroomURL}?id=${userID}`);
+    const response = await instance.get(`${axiosChatroomURL}?id=${userID}`);
     return response;
   } catch (error) {
     throw error;

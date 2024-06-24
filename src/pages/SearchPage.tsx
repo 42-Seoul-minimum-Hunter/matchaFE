@@ -2,15 +2,14 @@ import { axiosFindUser } from "@/api/axios.custom";
 import LocationDropdown from "@/components/LocationDropdown";
 import Modal, { IModalOptions } from "@/components/Modal";
 import SearchCard from "@/components/SearchCard";
-import SearchHeader from "@/components/SearchHeader";
-import SearchModal from "@/components/SearchModal";
 import { ageLableMap, InterestLableMap, rateLableMap } from "@/types/maps";
-import { ageType } from "@/types/tag.enum";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { images } from "./ProfilePage";
 import { tagItem } from "./SignUpPage";
+import { SocketContext } from "./LayoutPage";
+import { axiosProfile } from "@/api/axios.custom";
 
 const ageFilterList: tagItem[] = Object.entries(ageLableMap).map(
   ([key, name]) => ({ key, name })
@@ -127,8 +126,8 @@ const SearchPage = () => {
     }
   };
 
-  const onProfileClick = () => {
-    navigator("/profile");
+  const onProfileClick = (nickname: string) => {
+    navigator(`/profile?username=${nickname}`);
   };
 
   const mockData: ISearchDateDto[] = Array.from({ length: 30 }, (_, index) => ({
@@ -138,11 +137,35 @@ const SearchPage = () => {
     rate: Math.round(Math.random() * 60) / 10,
     handler: () => {
       // userName 백으로 보내고 profile 페이지로 이동
-      onProfileClick();
+      onProfileClick(`User${index + 1}`);
       // console.log(`Handler for User${index + 1}`);
     },
   }));
 
+  const headerInfo = {
+    userId: 1,
+    // token: "abc123",
+  };
+
+  const socket = useContext(SocketContext);
+  useEffect(() => {
+    socket.on("connect", () => {
+      {
+        message: "message";
+        id: 1;
+      }
+    });
+  }, []);
+
+  // const socket = useContext(SocketContext);
+  // socket.on("connect", () => {});
+  // useEffect(() => {
+  //   socket.on("message", () => {
+  //     console.log("message");
+  //   });
+  // }, []);
+
+  // sendMessage();
   return (
     <Wrapper>
       <FilterWrapper>
