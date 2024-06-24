@@ -10,6 +10,8 @@ import { images } from "./ProfilePage";
 import { tagItem } from "./SignUpPage";
 import { ReactComponent as FilterIcon } from "@/assets/icons/filter-icon.svg";
 import ModalFin from "@/components/ModalFIn";
+import { SocketContext } from "./LayoutPage";
+import { axiosProfile } from "@/api/axios.custom";
 
 const ageFilterList: tagItem[] = Object.entries(ageLableMap).map(
   ([key, name]) => ({ key, name })
@@ -112,6 +114,55 @@ const SearchPage = () => {
     }
   };
 
+=======
+  const onProfileClick = (nickname: string) => {
+    navigator(`/profile?username=${nickname}`);
+  };
+
+  const mockData: ISearchDateDto[] = Array.from({ length: 30 }, (_, index) => ({
+    img: images[index % images.length],
+    nickname: `User${index + 1}`,
+    age: index + 23,
+    handler: () => {
+      // userName 백으로 보내고 profile 페이지로 이동
+      onProfileClick(`User${index + 1}`);
+      // console.log(`Handler for User${index + 1}`);
+    },
+  }));
+  const [selectedArea, setSelectedArea] = useState<string>("");
+  const [selectedSubArea, setSelectedSubArea] = useState<string>("");
+  const handleAreaChange = (e: any) => {
+    setSelectedArea(e.target.value);
+  };
+  const handleSubAreaChange = (e: any) => {
+    setSelectedSubArea(e.target.value);
+  };
+
+  const headerInfo = {
+    userId: 1,
+    // token: "abc123",
+  };
+
+  const socket = useContext(SocketContext);
+  useEffect(() => {
+    socket.on("connect", () => {
+      {
+        message: "message";
+        id: 1;
+      }
+    });
+  }, []);
+
+  // const socket = useContext(SocketContext);
+  // socket.on("connect", () => {});
+  // useEffect(() => {
+  //   socket.on("message", () => {
+  //     console.log("message");
+  //   });
+  // }, []);
+
+  // sendMessage();
+>>>>>>> 425dc65 ([FE] FEAT: 웹소켓 ㄷㄷ)
   return (
     <Wrapper>
       <FilterWrapper>

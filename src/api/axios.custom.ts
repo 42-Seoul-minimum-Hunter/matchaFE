@@ -211,20 +211,20 @@ export const axiosProfile = async (
   }
 };
 
-// chatroom id로 채팅방 정보 가져오기
-const axiosChatroomURL = "/user/chat";
-export const axiosChatroom = async (
-  // username: string,
-  userID: number
-): Promise<any> => {
-  try {
-    console.log("back url : ", `${axiosChatroomURL}?id=${userID}`);
-    const response = await instance.get(`${axiosChatroomURL}?id=${userID}`);
-    return response;
-  } catch (error) {
-    throw error;
-  }
-};
+// // chatroom id로 채팅방 정보 가져오기
+// const axiosChatroomURL = "/user/chat";
+// export const axiosChatroom = async (
+//   // username: string,
+//   userID: number
+// ): Promise<any> => {
+//   try {
+//     console.log("back url : ", `${axiosChatroomURL}?id=${userID}`);
+//     const response = await instance.get(`${axiosChatroomURL}?id=${userID}`);
+//     return response;
+//   } catch (error) {
+//     throw error;
+//   }
+// };
 
 const axiosLogoutURL = "/auth/logout";
 export const axiosLogout = async (): Promise<any> => {
@@ -242,6 +242,41 @@ export const axiosUserBlock = async (username: string): Promise<any> => {
     const response = await instance.post(`${axiosUserBlockURL}`, {
       blockUsername: username,
     });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+// useriD 나중에 jwt 대체
+// const axiosProfileURL = "/user/profile";
+// export const axiosProfile = async (
+//   username: string,
+//   userID: number
+// ): Promise<any> => {
+//   try {
+//     console.log(
+//       "back url : ",
+//       `${axiosProfileURL}?username=${username}&id=${userID}`
+//     );
+//     const response = await instance.get(
+//       `${axiosProfileURL}?username=${username}&id=${userID}`
+//     );
+//     return response;
+//   } catch (error) {
+//     throw error;
+//   }
+// };
+
+// chatroom id로 채팅방 정보 가져오기
+const axiosChatroomURL = "/user/chat";
+export const axiosChatroom = async (
+  // username: string,
+  userID: number
+): Promise<any> => {
+  try {
+    console.log("back url : ", `${axiosChatroomURL}?id=${userID}`);
+    const response = await instance.get(`${axiosChatroomURL}?id=${userID}`);
     return response;
   } catch (error) {
     throw error;

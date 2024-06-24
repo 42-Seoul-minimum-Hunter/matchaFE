@@ -20,6 +20,20 @@ const socket = io("http://localhost:3001", {
 
 export const SocketContext = createContext<null>(null);
 
+const header = {
+  userID: 1,
+};
+
+// const socket = io("http://localhost:3001", {
+//   auth: {
+//     //  jwt넣기
+//     userId: 1,
+//     // token: "abc123",
+//   },
+// });
+
+// export const SocketContext = createContext(null);
+
 const COLORS = [
   "#27F122",
   "#EE26FF",
@@ -31,6 +45,8 @@ const COLORS = [
 
 const Layout = () => {
   const location = useLocation();
+  const [state, setState] = useState({ message: "", name: "" });
+  const [chat, setChat] = useState([]);
 
   //  jwt 토큰이 있으면 search, 없으면 로그인 페이지로 이동
   const isRootPath: boolean = location.pathname === "/";

@@ -13,7 +13,10 @@ export interface IChatRoomProps {
   username: string;
   profileImage: string;
   createdAt: string; // date형식
+  // lastTime: string;
   content: string;
+  // Unread: number;
+  // handler?: (index: number) => void;
 }
 
 interface ChatListProps extends IChatRoomProps {
@@ -27,11 +30,12 @@ const ChatList = ({
   profileImage,
   createdAt,
   content,
+  // Unread,
   isSelected,
   index,
   handler,
-}: ChatListProps) => {
-  // console.log("created at", formatTimeRemaining(createdAt));
+}: // handler,
+ChatListProps) => {
   return (
     <Wrapper $isSelected={isSelected} onClick={() => handler(index)}>
       <ImageWrapper>
@@ -45,6 +49,13 @@ const ChatList = ({
         </RowWrapper>
         <RowWrapper>
           <LastChatStyled>{content}</LastChatStyled>
+
+        //   <LastTimeStyled>{createdAt}</LastTimeStyled>
+        // </RowWrapper>
+        // <RowWrapper>
+        //   <LastChatStyled>{content}</LastChatStyled>
+        //   {/* <UnreadStyled>{Unread}</UnreadStyled> */}
+
         </RowWrapper>
       </ColumnWrapper>
     </Wrapper>

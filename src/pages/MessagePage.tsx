@@ -1,4 +1,7 @@
 import styled from "styled-components";
+import TestImage1 from "@/assets/mock/test1.png";
+import TestImage2 from "@/assets/mock/test2.png";
+import TestImage3 from "@/assets/mock/test3.png";
 import ChatList, { IChatRoomProps } from "@/components/ChatList";
 import ChatRoom, { CharMessageDto } from "@/components/ChatRoom";
 import { useContext, useEffect, useState } from "react";
@@ -65,6 +68,10 @@ const MessagePage = () => {
     setSelectUser(chatRoom[index].username);
     clickChatRoom();
   };
+
+  // const selectUserImg = mockChatListData[selectedIndex]?.profileImage;
+  const selectUserImg =
+    selectedIndex !== null ? chatRoom[selectedIndex]?.profileImage : null;
 
   // const selectUserImg = mockChatListData[selectedIndex]?.profileImage;
   const selectUserImg =

@@ -1,5 +1,7 @@
 import styled from "styled-components";
 import { ReactComponent as SendIcon } from "@/assets/icons/send-icon.svg";
+import { useContext, useEffect } from "react";
+import { SocketContext } from "@/pages/LayoutPage";
 
 // TODO:
 // 나에 대한 정보를 불러오는 곳이 없음
