@@ -1,7 +1,4 @@
 import styled from "styled-components";
-import TestImage1 from "@/assets/mock/test1.png";
-import TestImage2 from "@/assets/mock/test2.png";
-import TestImage3 from "@/assets/mock/test3.png";
 import ChatList, { IChatRoomProps } from "@/components/ChatList";
 import ChatRoom, { CharMessageDto } from "@/components/ChatRoom";
 import { useContext, useEffect, useState } from "react";
@@ -14,6 +11,8 @@ const MessagePage = () => {
   const [selectUser, setSelectUser] = useState<string>("");
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [chatRoom, setChatRoom] = useState<IChatRoomProps[]>([]);
+  const [chatHistory, setChatHistory] = useState<CharMessageDto[]>([]);
+  const socket = useContext(SocketContext);
 
   const CheckChatList = async () => {
     try {
@@ -23,6 +22,9 @@ const MessagePage = () => {
       setChatRoom(res.data);
       console.log("chat list data:", res.data);
     } catch (error) {
+      // TODO
+      // 데이터 불러오는데 실패하거나 서버가 불안정한 경우
+      // 걍 터지면 404 페이지로 보내버리기
       console.log(error);
     }
   };
@@ -31,7 +33,6 @@ const MessagePage = () => {
     CheckChatList();
   }, []);
 
-  const socket = useContext(SocketContext);
   useEffect(() => {
     clickChatRoom();
   }, [selectUser]);
@@ -42,22 +43,16 @@ const MessagePage = () => {
     });
   };
 
-  // useEffect(() => {
-  //   const handleSendHistories = (data) => {
-  //     console.log("onlineStatus On", data);
-  //   };
-
-  //   socket.on("sendHistories", handleSendHistories);
-
-  //   return () => {
-  //     socket.off("sendHistories", handleSendHistories);
-  //   };
-  // }, []);
-
   useEffect(() => {
     socket.on("sendHistories", (data) => {
       console.log("onlineStatus On", data);
+      setChatHistory(data);
     });
+
+    // return () => {
+    //   socket.off("sendHistories");
+    // };
+
     // clickChatRoom();
     // socket.emit("joinChatRoom", {
     //   username: selectUser,
@@ -69,62 +64,6 @@ const MessagePage = () => {
     setSelectUser(chatRoom[index].username);
     clickChatRoom();
   };
-  const mockChatListData: IChatRoomProps[] = [
-    {
-      username: "JohnDoe",
-      // img: "@/assets/mock/test1.png",
-      profileImage: TestImage1,
-      createdAt: "3day",
-      content: "Hey, are we still on for tonight?",
-      // Unread: 2,
-      handler: onClickChatRoom,
-    },
-    {
-      username: "JaneSmith",
-      // profileImage: "../assets/mock/test2.png",
-      profileImage: TestImage2,
-      createdAt: "1day",
-      content: " Sure, I can send you the documents by tomorrow.",
-      // Unread: 0,
-      handler: onClickChatRoom,
-    },
-    {
-      username: "MichaelBrown",
-      // profileImage: "@/assets/mock/test3.png",
-      profileImage: TestImage3,
-      createdAt: "30 min",
-      content: "Don't forget the meeting at 3 PM.",
-      // Unread: 1,
-      handler: onClickChatRoom,
-    },
-  ];
-  const mockMessageData: CharMessageDto[] = [
-    {
-      content: "Hello, how are you?",
-      userId: 1,
-    },
-    {
-      content: "I'm doing great, thank you!",
-      userId: 2,
-    },
-    {
-      content: "What are your plans for today?",
-      userId: 1,
-    },
-    {
-      content:
-        "I have a meeting in the morning and then I'm free in the afternoon.",
-      userId: 2,
-    },
-    {
-      content: "Sounds good. Let's catch up later.",
-      userId: 1,
-    },
-    {
-      content: "Sure, talk to you later!",
-      userId: 2,
-    },
-  ];
 
   // const selectUserImg = mockChatListData[selectedIndex]?.profileImage;
   const selectUserImg =
@@ -145,11 +84,7 @@ const MessagePage = () => {
           ))}
       </ChatLobbyWrapper>
       <ChatRoomWrapper>
-        <ChatRoom
-          mockMessageData={mockMessageData}
-          selectUser={selectUser}
-          selectUserImg={selectUserImg}
-        />
+        <ChatRoom chatHistory={chatHistory} selectUserImg={selectUserImg} />
       </ChatRoomWrapper>
     </Wrapper>
   );

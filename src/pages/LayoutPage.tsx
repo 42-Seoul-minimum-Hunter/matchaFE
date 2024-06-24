@@ -38,8 +38,8 @@ const COLORS = [
 const Layout = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [state, setState] = useState({ message: "", name: "" });
-  const [chat, setChat] = useState([]);
+  // const [state, setState] = useState({ message: "", name: "" });
+  // const [chat, setChat] = useState([]);
 
   //  jwt 토큰이 있으면 search, 없으면 로그인 페이지로 이동
   const isRootPath: boolean = location.pathname === "/";

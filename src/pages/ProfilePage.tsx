@@ -20,7 +20,7 @@ import { ReactComponent as MessageIcon } from "@/assets/icons/sendMessage-icon.s
 import LocationDropdown from "@/components/LocationDropdown";
 import Stars from "@/components/Stars";
 // import Stars from "@/components/Stars";
-import { axiosProfile } from "@/api/axios.custom";
+import { axiosProfile, axiosProfileMe } from "@/api/axios.custom";
 import { useParams, useSearchParams } from "react-router-dom";
 import { SocketContext } from "./LayoutPage";
 
@@ -35,7 +35,8 @@ const mockData: RegisterDto = {
   gender: "FEMALE",
   preference: "BISEXUAL",
   rate: 4.5,
-  hashtags: ["BOOKS", "MUSIC", "MOVIES", "SPORTS", "TRAVEL"],
+  // hashtags: ["BOOKS", "MUSIC", "MOVIES", "SPORTS", " TRAVEL"],
+  hashtags: "BOOKS MUSIC MOVIES SPORTS TRAVEL",
 
   isGps: true,
 };
@@ -57,12 +58,18 @@ const preferenceTagList: tagItem[] = Object.entries(PreferenceLableMap).map(
 );
 
 const ProfilePage = () => {
+  const [profileData, setProfileData] = useState<RegisterDto | null>(null);
   const [genderType, setGenderType] = useState<GenderType | null>(null);
   const [preferenceType, setPreferenceType] = useState<PreferenceType | null>(
     null
   );
   const [interestType, setInterestType] = useState<InterestType[] | null>(null);
   const [selectImg, setSelectImg] = useState<string>(images[0]);
+  const [userStatus, setUserStatus] = useState<boolean>(false);
+  const socket = useContext(SocketContext);
+  const [searchParams, setSeratchParams] = useSearchParams();
+  const username = searchParams.get("username");
+
   let mockDataTag = mockData.hashtags.split(" ");
   console.log("mockDataTag", mockDataTag);
 
@@ -80,28 +87,20 @@ const ProfilePage = () => {
   // const productId = params.username;
 
   // userID는 나중에 jwt로 대체
-  // me에 해당하는 axios 하나 더 만들기 -> 요청
   const tryToGetProfile = async (username: any, userID: number) => {
     try {
-      const res = await axiosProfile(username, userID);
-      console.log("profile", res);
+      const res = await (!username
+        ? axiosProfileMe()
+        : axiosProfile(username, userID));
+      console.log("profile", res.data);
+      setProfileData(res.data);
     } catch (error) {
       console.log(error);
     }
   };
-
   useEffect(() => {
     tryToGetProfile(username, 2);
   }, []);
-
-  const socket = useContext(SocketContext);
-  const [searchParams, setSeratchParams] = useSearchParams();
-  const username = searchParams.get("username");
-  // 유저네임이 없으면 me로 정보 전달
-  if (!username) {
-    console.log("test");
-  }
-  console.log("username", username);
 
   // socket.on("connect", () => {});
   // useEffect(() => {
@@ -111,18 +110,6 @@ const ProfilePage = () => {
   // }, []);
 
   // 백에서 받아온 정보 넘기기
-  const [selectedArea, setSelectedArea] = useState<string>("서울");
-  const [selectedSubArea, setSelectedSubArea] = useState<string>("강남구");
-  const [userStatus, setUserStatus] = useState<boolean>(false);
-
-  // const socket = useContext(SocketContext);
-
-  // const handleAreaChange = (e: any) => {
-  //   setSelectedArea(e.target.value);
-  // };
-  // const handleSubAreaChange = (e: any) => {
-  //   setSelectedSubArea(e.target.value);
-  // };
 
   const [rate, setRate] = useState<number>(0);
   const handleRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -168,7 +155,7 @@ const ProfilePage = () => {
         </UserInfoStyled> */}
 
         <UserInfoWrapper>
-          <h1>{mockData.firstName}</h1>
+          <h1>{profileData?.firstName}</h1>
           <OnlineStatusWrapper>
             <OnlineStatusStyled $userStatus={userStatus}></OnlineStatusStyled>
           </OnlineStatusWrapper>
@@ -180,7 +167,7 @@ const ProfilePage = () => {
           initialState={interestType}
           setState={setInterestType}
           isModify={true}
-          selectedTag={mockData.preference.split(" ")}
+          selectedTag={profileData?.preference.split(" ")}
         />
         <TagTemplate
           title="Gender"
@@ -188,12 +175,12 @@ const ProfilePage = () => {
           initialState={genderType}
           setState={setGenderType}
           isModify={true}
-          selectedTag={[mockData.gender]}
+          selectedTag={[profileData?.gender]}
         />
         <StarWrapper>
           <StarsSubmitWrapper>
             <h2>Rating</h2>
-            <Stars rating={mockData.rate} />
+            <Stars rating={profileData?.rate} />
           </StarsSubmitWrapper>
           <StarsSubmitWrapper>
             <h2>평점 주기</h2>
@@ -218,13 +205,13 @@ const ProfilePage = () => {
           initialState={preferenceType}
           setState={setPreferenceType}
           isModify={true}
-          selectedTag={[mockData.preference]}
+          selectedTag={[profileData?.preference]}
         />
         <LocationWrapper>
           <h2>Location</h2>
           <LocationDropdown
-            selectedArea={selectedArea}
-            selectedSubArea={selectedSubArea}
+            selectedArea={profileData?.si}
+            selectedSubArea={profileData?.gu}
             isFixed={true}
             // handleAreaChange={handleAreaChange}
             // handleSubAreaChange={handleSubAreaChange}
@@ -233,7 +220,7 @@ const ProfilePage = () => {
         </LocationWrapper>
         <BioWrapper>
           <h2>Bio</h2>
-          <p>{mockData.biography}</p>
+          <p>{profileData?.biography}</p>
         </BioWrapper>
       </RightWrapper>
     </Wrapper>

@@ -44,14 +44,10 @@ instance.interceptors.request.use(async (config: any) => {
   return config;
 });
 
-// localhost:3000/user/profile/me
-const axiosProfileMeURL = "/user/profile/me";
-export const axiosProfileMe = async (): Promise<any> => {};
-
 const axiosResgisterURL = "";
 export const axiosRegister = async (register: RegisterDto): Promise<any> => {
   try {
-    const response = await instance.get(axiosProfileMeURL);
+    const response = await instance.get(axiosResgisterURL);
     return response;
   } catch (error) {
     throw error;
@@ -177,6 +173,17 @@ export const axiosAuthLogin = async (): Promise<any> => {
   }
 };
 
+// localhost:3000/user/profile/me
+const axiosProfileMeURL = "/user/profile/me";
+export const axiosProfileMe = async (): Promise<any> => {
+  try {
+    const response = await instance.get(axiosProfileMeURL);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 // useriD 나중에 jwt 대체
 const axiosProfileURL = "/user/profile";
 export const axiosProfile = async (
@@ -184,10 +191,6 @@ export const axiosProfile = async (
   userID: number
 ): Promise<any> => {
   try {
-    console.log(
-      "back url : ",
-      `${axiosProfileURL}?username=${username}&id=${userID}`
-    );
     const response = await instance.get(
       `${axiosProfileURL}?username=${username}&id=${userID}`
     );

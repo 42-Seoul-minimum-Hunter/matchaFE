@@ -1,3 +1,4 @@
+import { formatTimeRemaining } from "@/utils/dataUtils";
 import styled from "styled-components";
 
 interface Props {
@@ -12,10 +13,7 @@ export interface IChatRoomProps {
   username: string;
   profileImage: string;
   createdAt: string; // date형식
-  // lastTime: string;
   content: string;
-  // Unread: number;
-  // handler?: (index: number) => void;
 }
 
 interface ChatListProps extends IChatRoomProps {
@@ -29,12 +27,11 @@ const ChatList = ({
   profileImage,
   createdAt,
   content,
-  // Unread,
   isSelected,
   index,
   handler,
-}: // handler,
-ChatListProps) => {
+}: ChatListProps) => {
+  // console.log("created at", formatTimeRemaining(createdAt));
   return (
     <Wrapper $isSelected={isSelected} onClick={() => handler(index)}>
       <ImageWrapper>
@@ -44,11 +41,10 @@ ChatListProps) => {
       <ColumnWrapper>
         <RowWrapper>
           <NicknameStyled>{username}</NicknameStyled>
-          <LastTimeStyled>{createdAt}</LastTimeStyled>
+          <LastTimeStyled>{formatTimeRemaining(createdAt)}</LastTimeStyled>
         </RowWrapper>
         <RowWrapper>
           <LastChatStyled>{content}</LastChatStyled>
-          {/* <UnreadStyled>{Unread}</UnreadStyled> */}
         </RowWrapper>
       </ColumnWrapper>
     </Wrapper>

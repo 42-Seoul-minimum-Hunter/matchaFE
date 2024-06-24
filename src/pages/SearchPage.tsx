@@ -147,25 +147,6 @@ const SearchPage = () => {
     // token: "abc123",
   };
 
-  const socket = useContext(SocketContext);
-  useEffect(() => {
-    socket.on("connect", () => {
-      {
-        message: "message";
-        id: 1;
-      }
-    });
-  }, []);
-
-  // const socket = useContext(SocketContext);
-  // socket.on("connect", () => {});
-  // useEffect(() => {
-  //   socket.on("message", () => {
-  //     console.log("message");
-  //   });
-  // }, []);
-
-  // sendMessage();
   return (
     <Wrapper>
       <FilterWrapper>
