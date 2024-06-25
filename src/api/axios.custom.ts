@@ -11,15 +11,15 @@ import { getCookie } from "./cookie";
 
 const instance = axios.create({
   baseURL: "http://localhost:3000",
-  // withCredentials: true,
+  withCredentials: true,
   headers: {
     "Content-type": "application/json",
     // "Access-Control-Allow-Origin": "http://localhost:5173", // 허용할 출처 설정
-    "Access-Control-Allow-Origin": "*",
+    //"Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS", // 허용할 HTTP 메서드 설정
     "Access-Control-Allow-Headers": "content-type", // 허용할 헤더 설정
     "Access-Control-Allow-Credentials": "true", // 이 부분이 추가되었습니다.
-    // origin: "http://localhost:3000"/,
+    origin: "http://localhost:5173",
   },
 });
 
