@@ -6,6 +6,8 @@ import "@/assets/css/reset.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <App />
+    <>
+      <App />
+    </>
   </React.StrictMode>
 );

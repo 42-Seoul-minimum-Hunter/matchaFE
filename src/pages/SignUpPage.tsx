@@ -49,21 +49,6 @@ const SignUpPage = () => {
   const [isLocation, setIsLocation] = useState<boolean>(false);
   const [showImages, setShowImages] = useState<string[]>([]);
   const navigate = useNavigate();
-
-  // const geolocationOptions = {
-  //   enableHighAccuracy: true,
-  //   timeout: 1000 * 10,
-  //   maximumAge: 1000 * 3600 * 24,
-  // };
-  // const { location, error } = useGeoLocation(geolocationOptions);
-
-  // useEffect(() => {
-  //   if (location) {
-  //   }
-  //   setIsLocation(!isLocation);
-  // }, [isLocation]);
-  // console.log("location", location);
-  // console.log("error", error);
   const { location, error, asking, getLocation } = useGeoLocation();
   const [showInstructions, setShowInstructions] = useState(false);
   const [isEmail, setIsEmail] = useState(false);
@@ -104,33 +89,36 @@ const SignUpPage = () => {
     }
   };
 
+  const onCLickEmailVerify = async () => {
+    try {
+      // 이메일 인증 절차 -> 통과하면 바로 search로 이동
+      const res = await axiosEmailVerify(userEmail);
+      console.log("email res", res);
+      navigate("/search");
+    } catch (error) {
+      setIsEmail(false);
+      // 이메일 인증 실패해도 login이동
+      // navigate("/login");
+      console.log("email error", error);
+    }
+  };
+
   const onClickLogin = async () => {
     try {
-      // 회원가입성공하면 바로 이메일 인증으로 감
-      try {
-        // 회원가입 실패시 오류 찾아서 프론트에 알려줌
-        const res = await trySignUp();
-        // res데이터 확인후 중복 검사 -> 이메일, username이 중복되면 오류 던짐
-        console.log("res", res);
-      } catch (error) {
-        console.log("error", error);
-      }
-      setIsEmail(true);
-      console.log("userEmail", userEmail);
-      try {
-        // 이메일 인증 절차 -> 통과하면 바로 search로 이동
-        const res = await axiosEmailVerify(userEmail);
-        console.log("res", res);
-        navigate("/search");
-      } catch (error) {
-        console.log("error", error);
-      }
+      const res = await trySignUp();
+      // res데이터 확인후 중복 검사 -> 이메일, username이 중복되면 오류 던짐
+      console.log("register res", res);
+      // 이메일 페이지로 변환 -> 나중에 풀기 ##
+      // setIsEmail(true);
+      alert("회원가입 성공");
     } catch (error) {
-      // setIsEmail(false);
-      console.log("error", error);
+      // 회원가입 백엔드 실패시 login이동
+      // navigate("/login");
+      alert("회원가입 백엔드 실패");
+      console.log("register error", error);
     }
-    // navigate("/twoFactor");
   };
+  // navigate("/twoFactor");
 
   // useEffect(() => {}, []);
 
@@ -177,10 +165,17 @@ const SignUpPage = () => {
       {isEmail ? (
         <WrapperStyled>
           <div>이메일 함을 확인해주세요</div>
+          <button onClick={onCLickEmailVerify}>
+            이메일로 인증링크 받기 버튼
+          </button>
         </WrapperStyled>
       ) : (
         <WrapperStyled>
           <TitleStyled>Matcha</TitleStyled>
+          <div>이메일 함을 확인해주세요</div>
+          <button onClick={onCLickEmailVerify}>
+            이메일로 인증링크 받기 버튼
+          </button>
           <ContentStyled>
             <PhotoWrapper>
               <PhotoTitleStyled>Choose user profile</PhotoTitleStyled>

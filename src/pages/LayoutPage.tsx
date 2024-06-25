@@ -16,9 +16,7 @@ const header = {
 
 const socket = io("http://localhost:3001", {
   auth: {
-    //  jwt넣기
-    userId: 1,
-    // token: "abc123",
+    authorization: token,
   },
 });
 
@@ -59,8 +57,6 @@ const Layout = () => {
 
   // console.log("isLoginPage,isRegisterPage", isoginPage, isRegisterPage);
   // console.log("isLoginPage || isRegisterPage", isLoginPage || isRegisterPage);
-
-  //
 
   return isLoginPage ||
     isRegisterPage ||

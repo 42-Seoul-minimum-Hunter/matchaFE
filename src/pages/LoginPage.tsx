@@ -28,7 +28,6 @@ const LoginPage = () => {
   const onClickSignInButton = () => {
     navigate("/login");
   };
-
   const onClickSignUpButton = () => {
     navigate("/signup");
   };

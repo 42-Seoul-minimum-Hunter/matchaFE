@@ -28,6 +28,22 @@ export interface SearchUserDto {
   region: string;
 }
 
+export interface ProfileDto {
+  age: number;
+  biography: string;
+  firstName: string;
+  lastName: string;
+  si: string;
+  gu: string;
+  hashtags: InterestType[];
+  gender: GenderType;
+  preference: PreferenceType;
+  rate: number;
+  isBlocked: boolean;
+  username: string;
+  profileImages: string[];
+}
+
 // {
 //   "email" : "email@gmail",
 //   "username" : "hihi",

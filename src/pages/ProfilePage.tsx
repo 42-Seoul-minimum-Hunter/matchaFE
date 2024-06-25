@@ -4,7 +4,7 @@ import TestImage2 from "@/assets/mock/test2.png";
 import TestImage3 from "@/assets/mock/test3.png";
 import TestImage4 from "@/assets/mock/test4.png";
 import TestImage5 from "@/assets/mock/test5.png";
-import { RegisterDto } from "@/types/tag.dto";
+import { ProfileDto, RegisterDto } from "@/types/tag.dto";
 import TagTemplate from "@/components/TagTemplate";
 import { tagItem } from "./SignUpPage";
 import {
@@ -24,21 +24,22 @@ import { axiosProfile, axiosProfileMe } from "@/api/axios.custom";
 import { useParams, useSearchParams } from "react-router-dom";
 import { SocketContext } from "./LayoutPage";
 
-const mockData: RegisterDto = {
+const mockData: ProfileDto = {
+  username: "miyu",
   firstName: "John",
   lastName: "Doe",
-  email: "john.doe@example.com",
   biography:
     "I am a passionate software developer with over 5 years of experience in full-stack development. I love working on open-source projects and contributing to the developer community. When I'm not coding, I enjoy hiking, playing the guitar, and exploring new technologies.",
-  region: "New York, USA",
   age: 25,
   gender: "FEMALE",
   preference: "BISEXUAL",
   rate: 4.5,
-  // hashtags: ["BOOKS", "MUSIC", "MOVIES", "SPORTS", " TRAVEL"],
-  hashtags: "BOOKS MUSIC MOVIES SPORTS TRAVEL",
-
-  isGps: true,
+  hashtags: ["BOOKS", "MUSIC", "MOVIES", "SPORTS", "TRAVEL"],
+  isBlocked: true,
+  // hashtags: "BOOKS MUSIC MOVIES SPORTS TRAVEL",
+  si: "서울",
+  gu: "관악구",
+  profileImages: ["https://naver.com", "https://naver.com"],
 };
 
 export const images = [
@@ -70,11 +71,11 @@ const ProfilePage = () => {
   const [searchParams, setSeratchParams] = useSearchParams();
   const username = searchParams.get("username");
 
-  let mockDataTag = mockData.hashtags.split(" ");
-  console.log("mockDataTag", mockDataTag);
-
+  // const interestTagList: tagItem[] = Object.entries(InterestLableMap)
+  //   .filter(([key, _]) => mockData.hashtags.includes(key))
+  //   .map(([key, name]) => ({ key, name }));
   const interestTagList: tagItem[] = Object.entries(InterestLableMap)
-    .filter(([key, _]) => mockDataTag.includes(key))
+    .filter(([key, _]) => mockData.hashtags.includes(key))
     .map(([key, name]) => ({ key, name }));
 
   console.log("interestTagList", interestTagList);
@@ -82,9 +83,6 @@ const ProfilePage = () => {
   const onClickImage = (index: number) => {
     setSelectImg(images[index]);
   };
-
-  const params = useParams();
-  // const productId = params.username;
 
   // userID는 나중에 jwt로 대체
   const tryToGetProfile = async (username: any, userID: number) => {
@@ -101,6 +99,8 @@ const ProfilePage = () => {
   useEffect(() => {
     tryToGetProfile(username, 2);
   }, []);
+
+  // 현재 유저의 on,offline 상태 불러오기
 
   // socket.on("connect", () => {});
   // useEffect(() => {
@@ -167,7 +167,7 @@ const ProfilePage = () => {
           initialState={interestType}
           setState={setInterestType}
           isModify={true}
-          selectedTag={profileData?.preference.split(" ")}
+          selectedTag={profileData?.hashtags}
         />
         <TagTemplate
           title="Gender"

@@ -57,7 +57,9 @@ export const axiosRegister = async (register: RegisterDto): Promise<any> => {
 const axiosUserCreateURL = "/user/create/";
 export const axiosUserCreate = async (data: RegisterDto): Promise<any> => {
   try {
+    console.log("data : ", data);
     const response = await instance.post(axiosUserCreateURL, data);
+    console.log("data : 2", response);
     return response;
   } catch (error) {
     throw error;
