@@ -8,8 +8,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { images } from "./ProfilePage";
 import { tagItem } from "./SignUpPage";
-import { SocketContext } from "./LayoutPage";
-import { axiosProfile } from "@/api/axios.custom";
 
 const ageFilterList: tagItem[] = Object.entries(ageLableMap).map(
   ([key, name]) => ({ key, name })

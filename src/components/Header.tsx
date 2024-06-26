@@ -6,13 +6,21 @@ import { ReactComponent as AlarmIcon } from "@/assets/icons/alarm-icon.svg";
 import { ReactComponent as LogoutIcon } from "@/assets/icons/logout-icon.svg";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { axiosProfileMe } from "@/api/axios.custom";
+import { axiosLogout, axiosProfileMe } from "@/api/axios.custom";
 import { useMediaQuery } from "usehooks-ts";
+import { removeCookie } from "@/api/cookie";
 
 const Header = () => {
   const navigate = useNavigate();
   const isMobile = useMediaQuery("(max-width: 768px)");
   const onClickLogout = () => {
+    try {
+      const res = axiosLogout();
+      console.log("logout ", res);
+    } catch (error: any) {
+      console.log("error", error);
+      throw error;
+    }
     navigate("/login");
   };
   const onClickProfile = () => {

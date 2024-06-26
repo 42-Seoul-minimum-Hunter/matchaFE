@@ -19,17 +19,18 @@ const instance = axios.create({
     "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS", // 허용할 HTTP 메서드 설정
     "Access-Control-Allow-Headers": "content-type", // 허용할 헤더 설정
     "Access-Control-Allow-Credentials": "true", // 이 부분이 추가되었습니다.
-    origin: "http://localhost:5173",
+    // origin: "http://localhost:5173",
+    origin: "*",
   },
 });
 
 instance.interceptors.request.use(async (config: any) => {
   const token = getCookie("jwt");
-  // if (token) {
-  //   config.headers.Authorization = `Bearer ${token}`;
-  // } else {
-  //   delete config.headers.Authorization;
-  // }
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  } else {
+    delete config.headers.Authorization;
+  }
 
   // config.headers = {
   // Authorization : {token ? `Bearer ${token}` : null}
@@ -117,10 +118,10 @@ export const axiosCreateTwoFactor = async (email: string): Promise<any> => {
 };
 
 const axiosEmailVerifyURL = "/auth/register/email/send";
-export const axiosEmailVerify = async (email: string): Promise<any> => {
+export const axiosEmailVerify = async (): Promise<any> => {
   try {
     // {}안에 넣어야지 body에 넣어서 보내줌
-    const response = await instance.post(axiosEmailVerifyURL, { email: email });
+    const response = await instance.post(axiosEmailVerifyURL);
     return response;
   } catch (error) {
     throw error;
@@ -166,9 +167,15 @@ export const axiosFindUser = async (
 };
 
 const axiosAuthLoginURL = "/auth/login";
-export const axiosAuthLogin = async (): Promise<any> => {
+export const axiosAuthLogin = async (
+  username: string,
+  password: string
+): Promise<any> => {
   try {
-    const response = await instance.get(axiosAuthLoginURL);
+    const response = await instance.post(axiosAuthLoginURL, {
+      username: username,
+      password: password,
+    });
     return response;
   } catch (error) {
     throw error;
@@ -211,6 +218,16 @@ export const axiosChatroom = async (
   try {
     console.log("back url : ", `${axiosChatroomURL}?id=${userID}`);
     const response = await instance.get(`${axiosChatroomURL}?id=${userID}`);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const axiosLogoutURL = "/auth/logout";
+export const axiosLogout = async (): Promise<any> => {
+  try {
+    const response = await instance.delete(axiosLogoutURL);
     return response;
   } catch (error) {
     throw error;

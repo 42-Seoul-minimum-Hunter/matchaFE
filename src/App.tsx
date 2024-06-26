@@ -9,6 +9,7 @@ import SignUpPage from "@/pages/SignUpPage";
 import ProfilePage from "@/pages/ProfilePage";
 import FindPwPage from "@/pages/FindPwPage";
 import TwoFactor from "@/pages/TwoFactor";
+import EmailPage from "./pages/EamilPage";
 // import Layout from "@/pages/Layout";
 // import Home from "@/pages/Home";
 // import GamePreview from "@/pages/GamePreview";
@@ -28,6 +29,7 @@ function App() {
           <Route path="profile" element={<ProfilePage />} />
           <Route path="findPW" element={<FindPwPage />} />
           <Route path="twoFactor" element={<TwoFactor />} />
+          <Route path="email" element={<EmailPage />} />
 
           {/* <Route path="home" element={<Home />}></Route>
           <Route path="login" element={<Login />}></Route>

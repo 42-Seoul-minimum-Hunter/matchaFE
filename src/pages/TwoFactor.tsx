@@ -1,11 +1,16 @@
-import { axiosCreateTwoFactor, axiosVerifyTwoFactor } from "@/api/axios.custom";
+import {
+  axiosCreateTwoFactor,
+  axiosEmailVerify,
+  axiosVerifyTwoFactor,
+} from "@/api/axios.custom";
 import InputTemplate from "@/components/InputTemplate";
-import UseCounter from "@/hooks/useCounter";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+
 const TwoFactor = () => {
   const [password, setPassword] = useState("");
+  const [isEmail, setIsEmail] = useState(false);
   // const [isTimer, setIsTimer] = useState(false);
   const navigator = useNavigate();
 
@@ -19,13 +24,29 @@ const TwoFactor = () => {
       // 여기서 email을 보내줘야 하나? -> 지금은 jwt가 적용 안되어있으니까 지금만 이메일 보내기
       const res = axiosCreateTwoFactor(email);
       console.log("res", res);
+      setIsEmail(true);
       // setIsTimer(true);
-      navigator("/search");
+      // navigator("/search");
     } catch (error: any) {
+      setIsEmail(false);
       console.log("error", error);
       throw error;
     }
   }, []);
+
+  const onCLickEmailVerify = async () => {
+    try {
+      // 이메일 인증 절차 -> 통과하면 바로 search로 이동
+      const res = await axiosEmailVerify();
+      console.log("email res", res);
+      // navigate("/search");
+    } catch (error) {
+      setIsEmail(false);
+      // 이메일 인증 실패해도 login이동
+      // navigate("/login");
+      console.log("email error", error);
+    }
+  };
 
   // const onClickSubmit = async () => {
   //   try {
@@ -42,28 +63,39 @@ const TwoFactor = () => {
 
   return (
     <Wrapper>
-      <CardStyled>
-        <InputContainer>
-          <HeaderStyled>
-            <h1>Check 2fa</h1>
-            <InfoTextStyled>
-              <p>본인 계정의 이메일로 코드가 전송되었습니다.</p>
-              <p>코드를 입력해주세요</p>
-            </InfoTextStyled>
-          </HeaderStyled>
-          <InputTemplate
-            title="password"
-            placeholder="Add a your password"
-            value={password}
-            onChange={changePassword}
-            type="password"
-          />
-          {/* {isTimer ? <UseCounter /> : null} */}
-          {/* <SubmitButtonStyled onClick={onClickSubmit}>
+      {isEmail ? (
+        <>
+          <div>이메일 함을 확인해주세요</div>
+          <button onClick={onCLickEmailVerify}>
+            이메일로 인증링크 받기 버튼
+          </button>
+        </>
+      ) : (
+        <>
+          <CardStyled>
+            <InputContainer>
+              <HeaderStyled>
+                <h1>Check 2fa</h1>
+                <InfoTextStyled>
+                  <p>본인 계정의 이메일로 코드가 전송되었습니다.</p>
+                  <p>코드를 입력해주세요</p>
+                </InfoTextStyled>
+              </HeaderStyled>
+              <InputTemplate
+                title="password"
+                placeholder="Add a your password"
+                value={password}
+                onChange={changePassword}
+                type="password"
+              />
+              {/* {isTimer ? <UseCounter /> : null} */}
+              {/* <SubmitButtonStyled onClick={onClickSubmit}>
             submit
           </SubmitButtonStyled> */}
-        </InputContainer>
-      </CardStyled>
+            </InputContainer>
+          </CardStyled>
+        </>
+      )}
     </Wrapper>
   );
 };
