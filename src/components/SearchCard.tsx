@@ -41,19 +41,24 @@ import React, { useState } from "react";
 import { ISearchDateDto } from "@/pages/SearchPage";
 import styled from "styled-components";
 import Stars from "./Stars"; // Stars 컴포넌트를 import 합니다.
+import { useNavigate } from "react-router-dom";
 
 const SearchCard = ({
   profileImages,
   username,
   age,
-  handler,
+  // handler,
   rate,
 }: ISearchDateDto) => {
   const [isHovered, setIsHovered] = useState(false);
+  const navigator = useNavigate();
+  const onProfileClick = (nickname: string) => {
+    navigator(`/profile?username=${nickname}`);
+  };
 
   return (
     <Wrapper
-      onClick={handler}
+      onClick={() => onProfileClick(username)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

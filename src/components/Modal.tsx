@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { ReactComponent as ChevronIcon } from "@/assets/icons/chevron-icon.svg";
+
 import { useState } from "react";
 
 export interface IModalOptions {
@@ -28,9 +29,7 @@ const Modal = ({
   filterList,
   onSubmint,
 }: // ModalLable,
-// onChangeValue,
 IModalProps) => {
-  // console.log("options", options);
   const [selectedOption, setSelectedOption] =
     useState<IModalOptions[]>(filterList);
   console.log("age", title);

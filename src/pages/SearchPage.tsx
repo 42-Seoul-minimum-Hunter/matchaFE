@@ -8,6 +8,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { images } from "./ProfilePage";
 import { tagItem } from "./SignUpPage";
+import { ReactComponent as FilterIcon } from "@/assets/icons/filter-icon.svg";
 
 const ageFilterList: tagItem[] = Object.entries(ageLableMap).map(
   ([key, name]) => ({ key, name })
@@ -31,11 +32,9 @@ export interface ISearchDateDto {
 }
 
 const SearchPage = () => {
-  const navigator = useNavigate();
   const [searchData, setSearchData] = useState<ISearchDateDto[]>([]);
   const [filterList, setFilterList] = useState<IModalOptions[]>([]);
   const [modalTitle, setModalTitle] = useState<string>("");
-  // const [ageType, setAgeType] = useState<ageType | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedArea, setSelectedArea] = useState<string>("");
   const [selectedSubArea, setSelectedSubArea] = useState<string>("");
@@ -77,12 +76,12 @@ const SearchPage = () => {
     let hashtags: string[] = [];
     try {
       const res = await axiosFindUser(
-        0,
-        50,
         undefined,
         undefined,
         undefined,
         undefined,
+        si,
+        gu,
         undefined
       );
       console.log("res", res);
@@ -116,33 +115,18 @@ const SearchPage = () => {
     }
   };
 
-  const onProfileClick = (nickname: string) => {
-    navigator(`/profile?username=${nickname}`);
-  };
-
-  const mockData: ISearchDateDto[] = Array.from({ length: 30 }, (_, index) => ({
-    img: images[index % images.length],
-    nickname: `User${index + 1}`,
-    age: index + 23,
-    rate: Math.round(Math.random() * 60) / 10,
-    handler: () => {
-      // userName 백으로 보내고 profile 페이지로 이동
-      onProfileClick(`User${index + 1}`);
-      // console.log(`Handler for User${index + 1}`);
-    },
-  }));
-
   return (
     <Wrapper>
       <FilterWrapper>
         <FilterTitleStyled onClick={() => openModal("Age")}>
           Age
+          <FilterIcon />
         </FilterTitleStyled>
         <FilterTitleStyled onClick={() => openModal("Rate")}>
           Rate
         </FilterTitleStyled>
         <FilterTitleStyled onClick={() => openModal("Interest")}>
-          Interest
+          Hashtags
         </FilterTitleStyled>
         <LocationDropdown
           selectedArea={selectedArea}
@@ -158,7 +142,7 @@ const SearchPage = () => {
       </SelectTagStyled>
       <SearchCardWrapper>
         {searchData.map((data) => (
-          <SearchCard key={data.nickname} {...data} />
+          <SearchCard key={data.username} {...data} />
         ))}
       </SearchCardWrapper>
       {modalOpen && (

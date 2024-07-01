@@ -96,7 +96,6 @@ const ProfilePage = () => {
 
       console.log("newHashtagList", newHashtagList);
       setHashtagList(newHashtagList);
-      // console.log()
     } catch (error) {
       console.log("profile page error", error);
     }
@@ -120,7 +119,7 @@ const ProfilePage = () => {
     <Wrapper>
       <LeftWrapper>
         {/* <ProfileImages images={mockData.profileImages} /> */}
-        <ProfileImages images={images} />
+        {profileData && <ProfileImages images={profileData?.profileImages} />}
       </LeftWrapper>
       <RightWrapper>
         <UserInfoWrapper>
