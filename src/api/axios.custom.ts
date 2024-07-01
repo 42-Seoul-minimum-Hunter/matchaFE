@@ -15,17 +15,17 @@ const instance = axios.create({
   headers: {
     "Content-type": "application/json",
     // "Access-Control-Allow-Origin": "http://localhost:5173", // 허용할 출처 설정
-    //"Access-Control-Allow-Origin": "*",
+    // "Access-Control-Allow-Origin": "*",
     "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS", // 허용할 HTTP 메서드 설정
     "Access-Control-Allow-Headers": "content-type", // 허용할 헤더 설정
     "Access-Control-Allow-Credentials": "true", // 이 부분이 추가되었습니다.
-    // origin: "http://localhost:5173",
-    origin: "*",
+    origin: "http://localhost:5173",
   },
 });
 
 instance.interceptors.request.use(async (config: any) => {
   const token = getCookie("jwt");
+  // console.log("token : ", token);
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   } else {
@@ -80,7 +80,9 @@ export const axiosFindPW = async (email: string): Promise<any> => {
 const axiosChangePasswordURL = "/auth/reset/email/verify";
 export const axiosChangePassword = async (password: string): Promise<any> => {
   try {
-    const response = await instance.post(axiosChangePasswordURL, password);
+    const response = await instance.post(axiosChangePasswordURL, {
+      password: password,
+    });
     return response;
   } catch (error) {
     throw error;
@@ -100,7 +102,10 @@ export const axiosSearchProfile = async (email: string): Promise<any> => {
 const axiosVerifyTwoFactorURL = "/auth/twofactor/verify";
 export const axiosVerifyTwoFactor = async (code: string): Promise<any> => {
   try {
-    const response = await instance.post(axiosVerifyTwoFactorURL, code);
+    console.log("co'de : ", code);
+    const response = await instance.post(axiosVerifyTwoFactorURL, {
+      code: code,
+    });
     return response;
   } catch (error) {
     throw error;
@@ -108,17 +113,19 @@ export const axiosVerifyTwoFactor = async (code: string): Promise<any> => {
 };
 
 const axiosCreateTwoFactorURL = "/auth/twofactor/create";
-export const axiosCreateTwoFactor = async (email: string): Promise<any> => {
+export const axiosCreateTwoFactor = async (): Promise<any> => {
   try {
-    const response = await instance.post(axiosCreateTwoFactorURL, email);
+    const response = await instance.post(axiosCreateTwoFactorURL);
     return response;
   } catch (error) {
     throw error;
   }
 };
 
+// 로그인시 이메일 인증
 const axiosEmailVerifyURL = "/auth/register/email/send";
 export const axiosEmailVerify = async (): Promise<any> => {
+  // console.log("token", token);
   try {
     // {}안에 넣어야지 body에 넣어서 보내줌
     const response = await instance.post(axiosEmailVerifyURL);
@@ -129,37 +136,32 @@ export const axiosEmailVerify = async (): Promise<any> => {
 };
 
 const axiosFindUserURL = "/user/find";
-// export const axiosFindUser = async (): Promise<any> => {
-//   try {
-//     const response = await instance.get(axiosFindUserURL);
-//     return response;
-//   } catch (error) {
-//     throw error;
-//   }
-// };
-
 export const axiosFindUser = async (
-  minAge: number,
-  maxAge: number,
-  username: string,
-  minRate: number,
-  maxRate: number,
-  si: string,
-  gu: string,
-  hashtags: string[]
+  minAge?: number,
+  maxAge?: number,
+  minRate?: number,
+  maxRate?: number,
+  si?: string,
+  gu?: string,
+  hashtags?: string[]
 ): Promise<any> => {
   try {
-    const params = {
-      minAge,
-      maxAge,
-      username,
-      minRate,
-      maxRate,
-      si,
-      gu,
-      hashtags: hashtags.join(","),
-    };
-    const response = await instance.get(axiosFindUserURL, { params });
+    const params: Record<string, string> = {};
+    if (minAge !== undefined) params.minAge = minAge.toString();
+    if (maxAge !== undefined) params.maxAge = maxAge.toString();
+    if (minRate !== undefined) params.minRate = minRate.toString();
+    if (maxRate !== undefined) params.maxRate = maxRate.toString();
+    if (si) params.si = si;
+    if (gu) params.gu = gu;
+    if (hashtags && hashtags.length > 0) params.hashtags = hashtags.join(",");
+    // params.hashtags = hashtags;
+
+    const queryString = new URLSearchParams(params).toString();
+    const url = queryString
+      ? `${axiosFindUserURL}?${queryString}`
+      : axiosFindUserURL;
+    console.log("search user rul", url);
+    const response = await instance.get(url);
     return response;
   } catch (error) {
     throw error;
@@ -196,12 +198,12 @@ export const axiosProfileMe = async (): Promise<any> => {
 // useriD 나중에 jwt 대체
 const axiosProfileURL = "/user/profile";
 export const axiosProfile = async (
-  username: string,
-  userID: number
+  username: string
+  // userID: number
 ): Promise<any> => {
   try {
     const response = await instance.get(
-      `${axiosProfileURL}?username=${username}&id=${userID}`
+      `${axiosProfileURL}?username=${username}`
     );
     return response;
   } catch (error) {

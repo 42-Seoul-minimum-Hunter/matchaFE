@@ -12,6 +12,7 @@ const EmailPage = () => {
       // setIsEmail(false);
       // 이메일 인증 실패해도 login이동
       // navigate("/login");
+      // TODO: cookie 날리기 -> login 으로 이동
       console.log("email enpmrror", error);
     }
   };

@@ -1,12 +1,12 @@
 // import { ISearchDateDto } from "@/pages/SearchPage";
 // import styled from "styled-components";
 
-// const SearchCard = ({ img, nickname, age, handler, rate }: ISearchDateDto) => {
+// const SearchCard = ({ profileImages, username, age, handler, rate }: ISearchDateDto) => {
 //   return (
 //     <Wrapper onClick={handler}>
-//       <img src={img} />
+//       <profileImages src={profileImages} />
 //       <TitleStyled>
-//         <p>{nickname}</p>
+//         <p>{username}</p>
 //         <p>{age}</p>
 //         <p>rate</p>
 //       </TitleStyled>
@@ -42,7 +42,13 @@ import { ISearchDateDto } from "@/pages/SearchPage";
 import styled from "styled-components";
 import Stars from "./Stars"; // Stars 컴포넌트를 import 합니다.
 
-const SearchCard = ({ img, nickname, age, handler, rate }: ISearchDateDto) => {
+const SearchCard = ({
+  profileImages,
+  username,
+  age,
+  handler,
+  rate,
+}: ISearchDateDto) => {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
@@ -52,10 +58,10 @@ const SearchCard = ({ img, nickname, age, handler, rate }: ISearchDateDto) => {
       onMouseLeave={() => setIsHovered(false)}
     >
       <ImageContainer>
-        <StyledImage src={img} alt={nickname} />
+        <StyledImage src={profileImages} alt={username} />
         <Overlay $isHovered={isHovered}>
           <OverlayContent>
-            <p>{nickname}</p>
+            <p>{username}</p>
             {isHovered && (
               <>
                 <p>{age}</p>

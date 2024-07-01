@@ -14,15 +14,17 @@ import {
 } from "@/types/maps";
 import { useContext, useEffect, useState } from "react";
 import { GenderType, InterestType, PreferenceType } from "@/types/tag.enum";
-import { ReactComponent as BanIcon } from "@/assets/icons/ban-icon.svg";
-import { ReactComponent as HeartIcon } from "@/assets/icons/heart-icon.svg";
-import { ReactComponent as MessageIcon } from "@/assets/icons/sendMessage-icon.svg";
+// import { ReactComponent as BanIcon } from "@/assets/icons/ban-icon.svg";
+// import { ReactComponent as HeartIcon } from "@/assets/icons/heart-icon.svg";
+// import { ReactComponent as MessageIcon } from "@/assets/icons/sendMessage-icon.svg";
 import LocationDropdown from "@/components/LocationDropdown";
 import Stars from "@/components/Stars";
 // import Stars from "@/components/Stars";
 import { axiosProfile, axiosProfileMe } from "@/api/axios.custom";
 import { useParams, useSearchParams } from "react-router-dom";
 import { SocketContext } from "./LayoutPage";
+import ProfileImages from "@/components/ProfileImages";
+import { convertToUpperCase } from "@/utils/inputCheckUtils";
 
 const mockData: ProfileDto = {
   username: "miyu",
@@ -34,7 +36,8 @@ const mockData: ProfileDto = {
   gender: "FEMALE",
   preference: "BISEXUAL",
   rate: 4.5,
-  hashtags: ["BOOKS", "MUSIC", "MOVIES", "SPORTS", "TRAVEL"],
+  // hashtags: ["BOOKS", "MUSIC", "MOVIES", "SPORTS", "TRAVEL"],
+  hashtags: ["books", "music"],
   isBlocked: true,
   // hashtags: "BOOKS MUSIC MOVIES SPORTS TRAVEL",
   si: "서울",
@@ -59,45 +62,48 @@ const preferenceTagList: tagItem[] = Object.entries(PreferenceLableMap).map(
 );
 
 const ProfilePage = () => {
-  const [profileData, setProfileData] = useState<RegisterDto | null>(null);
+  const [profileData, setProfileData] = useState<RegisterDto | null>();
   const [genderType, setGenderType] = useState<GenderType | null>(null);
   const [preferenceType, setPreferenceType] = useState<PreferenceType | null>(
     null
   );
   const [interestType, setInterestType] = useState<InterestType[] | null>(null);
-  const [selectImg, setSelectImg] = useState<string>(images[0]);
   const [userStatus, setUserStatus] = useState<boolean>(false);
   const socket = useContext(SocketContext);
   const [searchParams, setSeratchParams] = useSearchParams();
   const username = searchParams.get("username");
-
-  // const interestTagList: tagItem[] = Object.entries(InterestLableMap)
-  //   .filter(([key, _]) => mockData.hashtags.includes(key))
-  //   .map(([key, name]) => ({ key, name }));
-  const interestTagList: tagItem[] = Object.entries(InterestLableMap)
-    .filter(([key, _]) => mockData.hashtags.includes(key))
-    .map(([key, name]) => ({ key, name }));
-
-  console.log("interestTagList", interestTagList);
-
-  const onClickImage = (index: number) => {
-    setSelectImg(images[index]);
-  };
-
-  // userID는 나중에 jwt로 대체
-  const tryToGetProfile = async (username: any, userID: number) => {
-    try {
-      const res = await (!username
-        ? axiosProfileMe()
-        : axiosProfile(username, userID));
-      console.log("profile", res.data);
-      setProfileData(res.data);
-    } catch (error) {
-      console.log(error);
+  const [rate, setRate] = useState<number>(0);
+  const handleRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newRate = parseFloat(e.target.value);
+    if (newRate >= 0 && newRate <= 5) {
+      setRate(newRate);
     }
   };
+
+  // 실제 있는 값들이 모두 있어야 하니까
+  const [hashtagList, setHashtagList] = useState<tagItem[]>([]);
+
+  // userID는 나중에 jwt로 대체
+  const tryToGetProfile = async (username: any) => {
+    try {
+      const res = await (!username ? axiosProfileMe() : axiosProfile(username));
+      console.log("profile", res.data);
+      setProfileData(res.data);
+      const convertUpperCaseHashtags = convertToUpperCase(res.data.hashtags);
+      const newHashtagList: tagItem[] = Object.entries(InterestLableMap)
+        .filter(([key, _]) => convertUpperCaseHashtags.includes(key))
+        .map(([key, name]) => ({ key, name }));
+
+      console.log("newHashtagList", newHashtagList);
+      setHashtagList(newHashtagList);
+      // console.log()
+    } catch (error) {
+      console.log("profile page error", error);
+    }
+  };
+
   useEffect(() => {
-    tryToGetProfile(username, 2);
+    tryToGetProfile(username);
   }, []);
 
   // 현재 유저의 on,offline 상태 불러오기
@@ -110,83 +116,49 @@ const ProfilePage = () => {
   // }, []);
 
   // 백에서 받아온 정보 넘기기
-
-  const [rate, setRate] = useState<number>(0);
-  const handleRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newRate = parseFloat(e.target.value);
-    if (newRate >= 0 && newRate <= 5) {
-      setRate(newRate);
-    }
-  };
   return (
     <Wrapper>
       <LeftWrapper>
-        <PohtoWrapper>
-          <MainPohtoWrapper>
-            <img src={selectImg} />
-            <UserInteractionWrapper>
-              <BanIconStyled>
-                <BanIcon />
-              </BanIconStyled>
-              <MessageIconStyled>
-                <MessageIcon />
-                <p>Message</p>
-              </MessageIconStyled>
-              <HeartIconStyled>
-                <HeartIcon />
-              </HeartIconStyled>
-            </UserInteractionWrapper>
-          </MainPohtoWrapper>
-          <SubPohtoWrapper>
-            {images.map((image, index) => (
-              <img
-                key={index}
-                src={image}
-                alt={`Image ${index}`}
-                onClick={() => onClickImage(index)}
-              />
-            ))}
-          </SubPohtoWrapper>
-        </PohtoWrapper>
+        {/* <ProfileImages images={mockData.profileImages} /> */}
+        <ProfileImages images={images} />
       </LeftWrapper>
       <RightWrapper>
-        {/* <UserInfoStyled>
-          <h1>{mockData.firstName}</h1>
-        </UserInfoStyled> */}
-
         <UserInfoWrapper>
           <h1>{profileData?.firstName}</h1>
-          <OnlineStatusWrapper>
-            <OnlineStatusStyled $userStatus={userStatus}></OnlineStatusStyled>
-          </OnlineStatusWrapper>
+          {/* <OnlineStatusWrapper> */}
+          <OnlineStatusStyled $userStatus={userStatus}></OnlineStatusStyled>
+          {/* </OnlineStatusWrapper> */}
         </UserInfoWrapper>
+        {profileData && (
+          <TagTemplate
+            title="hashtag"
+            tagList={hashtagList}
+            initialState={interestType}
+            setState={setInterestType}
+            isModify={true}
+            selectedTag={profileData?.hashtags}
+          />
+        )}
+        {profileData && (
+          <TagTemplate
+            title="Gender"
+            tagList={genderTagList}
+            initialState={genderType}
+            setState={setGenderType}
+            isModify={true}
+            selectedTag={[profileData.gender]}
+          />
+        )}
 
-        <TagTemplate
-          title="Interest"
-          tagList={interestTagList}
-          initialState={interestType}
-          setState={setInterestType}
-          isModify={true}
-          selectedTag={profileData?.hashtags}
-        />
-        <TagTemplate
-          title="Gender"
-          tagList={genderTagList}
-          initialState={genderType}
-          setState={setGenderType}
-          isModify={true}
-          selectedTag={[profileData?.gender]}
-        />
         <StarWrapper>
           <StarsSubmitWrapper>
             <h2>Rating</h2>
-            <Stars rating={profileData?.rate} />
+            {profileData && <Stars rating={profileData.rate} />}
           </StarsSubmitWrapper>
           <StarsSubmitWrapper>
-            <h2>평점 주기</h2>
+            {/* <h2>평점 주기</h2> */}
             <StarSubmitStyled>
-              <Stars rating={rate} />
-              <input
+              <StarInputStyled
                 type="number"
                 value={rate}
                 onChange={handleRateChange}
@@ -194,29 +166,33 @@ const ProfilePage = () => {
                 min="0"
                 max="5"
               />
-              <StarSubmitButtonStyled>평점 주기 ~!</StarSubmitButtonStyled>
+              <StarSubmitButtonStyled>submit</StarSubmitButtonStyled>
             </StarSubmitStyled>
-            <button value="평점 주기"></button>
+            <Stars rating={rate} />
           </StarsSubmitWrapper>
         </StarWrapper>
-        <TagTemplate
-          title="Preference"
-          tagList={preferenceTagList}
-          initialState={preferenceType}
-          setState={setPreferenceType}
-          isModify={true}
-          selectedTag={[profileData?.preference]}
-        />
+        {profileData && (
+          <TagTemplate
+            title="Preference"
+            tagList={preferenceTagList}
+            initialState={preferenceType}
+            setState={setPreferenceType}
+            isModify={true}
+            selectedTag={[profileData.preference]}
+          />
+        )}
+
         <LocationWrapper>
           <h2>Location</h2>
-          <LocationDropdown
-            selectedArea={profileData?.si}
-            selectedSubArea={profileData?.gu}
-            isFixed={true}
-            // handleAreaChange={handleAreaChange}
-            // handleSubAreaChange={handleSubAreaChange}
-          />
-          {/* <Dropdown /> */}
+          {profileData && (
+            <LocationDropdown
+              selectedArea={profileData.si}
+              selectedSubArea={profileData.gu}
+              isFixed={true}
+              // handleAreaChange={handleAreaChange}
+              // handleSubAreaChange={handleSubAreaChange}
+            />
+          )}
         </LocationWrapper>
         <BioWrapper>
           <h2>Bio</h2>
@@ -236,20 +212,20 @@ const StarsSubmitWrapper = styled.div`
 `;
 
 const StarSubmitStyled = styled.div`
+  margin-bottom: 21px;
+  gap: 10px;
   display: flex;
 `;
 
 const StarSubmitButtonStyled = styled.div`
   display: flex;
-`;
-
-const OnlineStatusWrapper = styled.div``;
-
-const OnlineStatusStyled = styled.div<{ $userStatus: boolean }>`
-  background-color: var(--online);
-  width: 28px;
-  height: 28px;
+  color: var(--white);
+  justify-content: center;
+  align-items: center;
+  width: 80px;
+  background-color: var(--light-vermilion);
   border-radius: 20px;
+  font-weight: 400;
 `;
 
 const Wrapper = styled.div`
@@ -379,9 +355,30 @@ const LocationWrapper = styled.div`
 `;
 
 const UserInfoWrapper = styled.div`
-  dispaly: flex;
+  width: 80%;
+  display: flex;
+  justify-content: space-between;
   & > h1 {
     font-size: 1.5rem;
     font-weight: 700;
   }
+`;
+
+const OnlineStatusStyled = styled.div<{ $userStatus: boolean }>`
+  background-color: var(--online);
+  width: 24px;
+  height: 24px;
+  border-radius: 20px;
+  box-shadow: 0 0 0.5rem #fff, inset 0 0 0.5rem #fff, 0 0 2rem var(--online),
+    inset 0 0 2rem var(--online), 0 0 4rem var(--online),
+    inset 0 0 4rem var(--online);
+`;
+
+const StarInputStyled = styled.input`
+  padding-left: 12px;
+  background-color: var(--white);
+  color: var(--black);
+  border-radius: 20px;
+  width: 80px;
+  height: 1.1rem;
 `;

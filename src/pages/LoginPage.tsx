@@ -25,27 +25,29 @@ const LoginPage = () => {
       const res = await axiosAuthLogin(username, password);
       console.log("res", res.status);
       if (res.status == 200) {
-        setIsEmail(true);
+        navigate("/twoFactor");
       }
     } catch (error: any) {
-      console.log("error", error);
+      // console.log("error", error);
+      // console.log("error", error.response.data.error);
+      alert(error.response.data);
       throw error;
     }
   };
 
-  const onCLickEmailVerify = async () => {
-    try {
-      // 이메일 인증 절차 -> 통과하면 바로 search로 이동
-      const res = await axiosEmailVerify();
-      console.log("email res", res);
-      // navigate("/search");
-    } catch (error) {
-      setIsEmail(false);
-      // 이메일 인증 실패해도 login이동
-      // navigate("/login");
-      console.log("email error", error);
-    }
-  };
+  // const onCLickEmailVerify = async () => {
+  //   try {
+  //     // 이메일 인증 절차 -> 통과하면 바로 search로 이동
+  //     const res = await axiosEmailVerify();
+  //     console.log("email res", res);
+  //     // navigate("/search");
+  //   } catch (error) {
+  //     setIsEmail(false);
+  //     // 이메일 인증 실패해도 login이동
+  //     // navigate("/login");
+  //     console.log("email error", error);
+  //   }
+  // };
 
   const onClickSignInButton = () => {
     navigate("/login");
@@ -73,59 +75,48 @@ const LoginPage = () => {
 
   return (
     <Wrapper>
-      {isEmail ? (
-        <>
-          <div>이메일 함을 확인해주세요</div>
-          <button onClick={onCLickEmailVerify}>
-            이메일로 인증링크 받기 버튼
-          </button>
-        </>
-      ) : (
-        <>
-          <SectionStyled>
-            <CardStyled>
-              <TitleStyled>MATCHA</TitleStyled>
-              <HeartIcon />
-              <SignWrapper>
-                <p>새로운 인연을 만나세요</p>
-              </SignWrapper>
-            </CardStyled>
-          </SectionStyled>
-          <SectionStyled>
-            <CardStyled>
-              <TitleStyled>{isMobile ? "MATCHA" : "LOGIN"}</TitleStyled>
-              <LoginFormStyled>
-                <InputTemplate
-                  title="username"
-                  placeholder="Add a your username"
-                  value={username}
-                  onChange={saveUsername}
-                />
-                <InputTemplate
-                  title="Password"
-                  placeholder="Add a your pw"
-                  value={password}
-                  onChange={savePassword}
-                  type="password"
-                />
-                <SubmitButtonStyled onClick={onClickLogin}>
-                  Submit
-                </SubmitButtonStyled>
-              </LoginFormStyled>
-              <InfoTextStyled>간편 로그인</InfoTextStyled>
-              <OauthButtonStyled onClick={onClickOauthButton}>
-                sign in with 42
-              </OauthButtonStyled>
-              <UtilsContainer>
-                <p onClick={onClickSignUpButton}>회원이 아니신가요?</p>
-                <p onClick={onClickFindPasswordButton}>
-                  비밀번호를 잊으셨나요?
-                </p>
-              </UtilsContainer>
-            </CardStyled>
-          </SectionStyled>
-        </>
-      )}
+      <>
+        <SectionStyled>
+          <CardStyled>
+            <TitleStyled>MATCHA</TitleStyled>
+            <HeartIcon />
+            <SignWrapper>
+              <p>새로운 인연을 만나세요</p>
+            </SignWrapper>
+          </CardStyled>
+        </SectionStyled>
+        <SectionStyled>
+          <CardStyled>
+            <TitleStyled>{isMobile ? "MATCHA" : "LOGIN"}</TitleStyled>
+            <LoginFormStyled>
+              <InputTemplate
+                title="username"
+                placeholder="Add a your username"
+                value={username}
+                onChange={saveUsername}
+              />
+              <InputTemplate
+                title="Password"
+                placeholder="Add a your pw"
+                value={password}
+                onChange={savePassword}
+                type="password"
+              />
+              <SubmitButtonStyled onClick={onClickLogin}>
+                Submit
+              </SubmitButtonStyled>
+            </LoginFormStyled>
+            <InfoTextStyled>간편 로그인</InfoTextStyled>
+            <OauthButtonStyled onClick={onClickOauthButton}>
+              sign in with 42
+            </OauthButtonStyled>
+            <UtilsContainer>
+              <p onClick={onClickSignUpButton}>회원이 아니신가요?</p>
+              <p onClick={onClickFindPasswordButton}>비밀번호를 잊으셨나요?</p>
+            </UtilsContainer>
+          </CardStyled>
+        </SectionStyled>
+      </>
     </Wrapper>
   );
 };

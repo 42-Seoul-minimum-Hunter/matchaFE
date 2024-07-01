@@ -1,5 +1,7 @@
 // const CheckName = (name: string) => {};
 
+import { GenderType, InterestType, PreferenceType } from "@/types/tag.enum";
+
 // username 검사 함수
 export function validateUsername(username: string) {
   const usernameRegex = /^[a-zA-Z0-9]{4,15}$/;
@@ -32,45 +34,37 @@ export function validateAge(age: string) {
 }
 
 // gender 검사 함수
-export function validateGender(gender) {
-  if (!gender === "male" || !gender === "female") {
+export function validateGender(gender: GenderType | undefined): boolean {
+  if (gender === undefined) {
     return false;
   }
-  return true;
+  return gender === GenderType.MALE || gender === GenderType.FEMALE;
 }
 
 // preference 검사 함수
-function validatePreference(preference) {
-  if (
-    !preference === "male" ||
-    !preference === "female" ||
-    !preference === "both" ||
-    !preference === "none"
-  ) {
+export function validatePreference(
+  preference: PreferenceType | undefined
+): boolean {
+  if (preference === undefined) {
     return false;
   }
-  return true;
+  return (
+    preference === PreferenceType.BISEXUAL ||
+    preference === PreferenceType.HETEROSEXUAL ||
+    preference === PreferenceType.HOMOSEXUAL ||
+    preference === PreferenceType.NONE
+  );
 }
 
 // hashtags 검사 함수
-function validateHashtags(hashtags) {
+export function validateHashtags(hashtags: InterestType[] | undefined) {
+  if (hashtags === undefined) {
+    return false;
+  }
+  const validInterestTypes = Object.values(InterestType);
+
   for (let hashtag of hashtags) {
-    if (
-      !hashtag === "shopping" ||
-      !hashtag === "traveling" ||
-      !hashtag === "karaoke" ||
-      !hashtag === "yoga" ||
-      !hashtag === "music" ||
-      !hashtag === "cooking" ||
-      !hashtag === "extreme" ||
-      !hashtag === "tennis" ||
-      !hashtag === "video_games" ||
-      !hashtag === "run" ||
-      !hashtag === "drink" ||
-      !hashtag === "swimming" ||
-      !hashtag === "photography" ||
-      !hashtag === "art"
-    ) {
+    if (!validInterestTypes.includes(hashtag)) {
       return false;
     }
   }
@@ -451,10 +445,18 @@ function validateGu(si, gu) {
   }
 }
 
-function validateEmail(email) {
+export function validateEmail(email: string) {
   // 이메일 형식 정규식
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   // 정규식을 이용하여 이메일 형식 검증
   return emailRegex.test(email);
+}
+
+export function convertToUpperCase(arr: any) {
+  return arr.map((item: string) => item.toUpperCase());
+}
+
+export function convertToLowerCase(arr: any) {
+  return arr.map((item: string) => item.toLowerCase());
 }

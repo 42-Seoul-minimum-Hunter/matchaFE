@@ -23,10 +23,14 @@ const TagTemplate = <T,>({
   const wrapperRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const buttons = wrapperRef.current?.querySelectorAll("button");
-    console.log("selectedTag", selectedTag);
+    // console.log("selectedTag", selectedTag);
+    // console.log("tagList", tagList);
     if (isModify) {
       buttons?.forEach((button) => {
-        if (selectedTag && selectedTag.includes(button.classList[0])) {
+        if (
+          selectedTag &&
+          selectedTag.includes(button.classList[0].toLowerCase())
+        ) {
           button.classList.add("selected");
         }
       });

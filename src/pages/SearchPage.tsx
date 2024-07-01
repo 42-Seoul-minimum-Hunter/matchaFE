@@ -21,15 +21,18 @@ const interestTagList: tagItem[] = Object.entries(InterestLableMap).map(
 );
 
 export interface ISearchDateDto {
-  img: string;
-  nickname: string;
+  profileImages: string;
+  username: string;
   age: number;
   rate: number;
-  handler: () => void;
+  // 프론트에서 필요한가?
+  commonHashtags: number;
+  // handler: () => void;
 }
 
 const SearchPage = () => {
   const navigator = useNavigate();
+  const [searchData, setSearchData] = useState<ISearchDateDto[]>([]);
   const [filterList, setFilterList] = useState<IModalOptions[]>([]);
   const [modalTitle, setModalTitle] = useState<string>("");
   // const [ageType, setAgeType] = useState<ageType | null>(null);
@@ -63,47 +66,36 @@ const SearchPage = () => {
     // }
   };
 
-  useEffect(() => {
+  const tryFindUser = async () => {
     let si = selectedArea;
     let gu = selectedSubArea;
     let minAge = 0;
     let maxAge = 0;
-    let username = "";
+    // let username = "";
     let minRate = 0;
     let maxRate = 0;
     let hashtags: string[] = [];
-    filterList.forEach((option) => {
-      if (ageFilterList.some((item) => item.name === option.name)) {
-        // 나이 필터 처리
-        const [min, max] = option.name.split("~");
-        minAge = parseInt(min);
-        maxAge = parseInt(max);
-      }
-      //   else if (rateFilterList.some((item) => item.name === option.name)) {
-      //     // 평점 필터 처리
-      //     const [min, max] = option.name.split("~");
-      //     minRate = parseInt(min);
-      //     maxRate = parseInt(max);
-      //   } else if (interestTagList.some((item) => item.name === option.name)) {
-      //     // 관심사 태그 처리
-      //     hashtags.push(option.name);
-      //   }
-    });
     try {
-      const res = axiosFindUser({
-        minAge,
-        maxAge,
-        username,
-        minRate,
-        maxRate,
-        si,
-        gu,
-        hashtags,
-      });
-      console.log(res);
-    } catch (e) {
-      console.log(e);
+      const res = await axiosFindUser(
+        0,
+        50,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined
+      );
+      console.log("res", res);
+      // console.log("res json", res.json);
+      console.log("res data", res.data.users);
+      setSearchData(res.data.users);
+    } catch (error: any) {
+      console.log("search page error", error);
     }
+  };
+
+  useEffect(() => {
+    tryFindUser();
   }, [filterList]);
 
   const selectModalOptions = (title: string) => {
@@ -140,11 +132,6 @@ const SearchPage = () => {
     },
   }));
 
-  const headerInfo = {
-    userId: 1,
-    // token: "abc123",
-  };
-
   return (
     <Wrapper>
       <FilterWrapper>
@@ -169,9 +156,8 @@ const SearchPage = () => {
           <TagStyled key={tag.name}>{tag.name}</TagStyled>
         ))}
       </SelectTagStyled>
-
       <SearchCardWrapper>
-        {mockData.map((data) => (
+        {searchData.map((data) => (
           <SearchCard key={data.nickname} {...data} />
         ))}
       </SearchCardWrapper>
@@ -207,6 +193,21 @@ const SearchCardWrapper = styled.div`
 
   /* grid-template-rows: 200px 200px; */
   grid-auto-rows: 250px;
+  @media (max-width: 1000px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  /* @media (max-width: 960px) {
+    grid-template-columns: repeat(3, 1fr);
+  } */
+
+  @media (max-width: 720px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const TagStyled = styled.div`

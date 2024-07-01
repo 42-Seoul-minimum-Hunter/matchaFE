@@ -12,6 +12,7 @@ const MessagePage = () => {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [chatRoom, setChatRoom] = useState<IChatRoomProps[]>([]);
   const [chatHistory, setChatHistory] = useState<CharMessageDto[]>([]);
+  // const socket = useContext(SocketContext);
   const socket = useContext(SocketContext);
 
   const CheckChatList = async () => {

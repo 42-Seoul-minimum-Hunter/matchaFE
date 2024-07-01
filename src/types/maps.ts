@@ -29,7 +29,7 @@ export const InterestLableMap = {
   [InterestType.MOVIES]: "영화",
   [InterestType.SPORTS]: "스포츠",
   [InterestType.MUSIC]: "음악",
-  [InterestType.GAMES]: "게임",
+  [InterestType.GAME]: "게임",
   [InterestType.TRAVEL]: "여행",
   [InterestType.PHOTOGRAPHY]: "사진",
   [InterestType.NATURE]: "자연",
@@ -53,6 +53,7 @@ export const InterestLableMap = {
   [InterestType.RELATIONSHIPS]: "관계",
   [InterestType.DATING]: "데이트",
   [InterestType.MARRIAGE]: "결혼",
+  [InterestType.RUNNING]: "달리기",
 };
 
 export const ageLableMap = {

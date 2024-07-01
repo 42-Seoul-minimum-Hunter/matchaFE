@@ -5,14 +5,38 @@ import { ReactComponent as MessageIcon } from "@/assets/icons/message-icon.svg";
 import { ReactComponent as AlarmIcon } from "@/assets/icons/alarm-icon.svg";
 import { ReactComponent as LogoutIcon } from "@/assets/icons/logout-icon.svg";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { axiosLogout, axiosProfileMe } from "@/api/axios.custom";
 import { useMediaQuery } from "usehooks-ts";
-import { removeCookie } from "@/api/cookie";
+import { SocketContext } from "@/pages/LayoutPage";
 
 const Header = () => {
   const navigate = useNavigate();
   const isMobile = useMediaQuery("(max-width: 768px)");
+  const socket = useContext(SocketContext);
+
+  // socket.on("getAlarms", (data: any) => {
+  //   console.log("onlineStatus On", data);
+  // });
+  // useEffect(() => {}, []);
+
+  // socket.on("connect_error", (error: any) => {
+  //   console.error("Socket connection error:", error);
+  // });
+
+  useEffect(() => {
+    if (socket) {
+      console.log("socket", socket);
+      socket.on("getAlarms", (data: any) => {
+        console.log("onlineStatus On", data);
+      });
+    }
+  }, []);
+
+  // const checkAlarm = () => {
+  //   socket.emit("getAlarms");
+  // };
+
   const onClickLogout = () => {
     try {
       const res = axiosLogout();
@@ -35,8 +59,6 @@ const Header = () => {
   const onClickAlarm = () => {
     navigate("/alarm");
   };
-
-  useEffect(() => {}, []);
 
   const tryProfileMe = async () => {
     try {

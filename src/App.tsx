@@ -9,7 +9,7 @@ import SignUpPage from "@/pages/SignUpPage";
 import ProfilePage from "@/pages/ProfilePage";
 import FindPwPage from "@/pages/FindPwPage";
 import TwoFactor from "@/pages/TwoFactor";
-import EmailPage from "./pages/EamilPage";
+import EmailPage from "./pages/EmailPage";
 // import Layout from "@/pages/Layout";
 // import Home from "@/pages/Home";
 // import GamePreview from "@/pages/GamePreview";

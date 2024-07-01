@@ -8,19 +8,17 @@ import { io, Socket } from "socket.io-client";
 
 const loginToken = false;
 const token = getCookie("jwt");
-const registerToken = false;
 
-const header = {
-  userID: 1,
-};
-
+// interface SocketContextType {
+//   socket: Socket<any, any>;
+// }
 const socket = io("http://localhost:3001", {
   auth: {
     authorization: token,
   },
 });
 
-export const SocketContext = createContext(null);
+export const SocketContext = createContext<null>(null);
 
 const COLORS = [
   "#27F122",
@@ -31,13 +29,8 @@ const COLORS = [
   "#00FFE0",
 ];
 
-// const token = getCookie("jwt");
-
 const Layout = () => {
-  const navigate = useNavigate();
   const location = useLocation();
-  // const [state, setState] = useState({ message: "", name: "" });
-  // const [chat, setChat] = useState([]);
 
   //  jwt 토큰이 있으면 search, 없으면 로그인 페이지로 이동
   const isRootPath: boolean = location.pathname === "/";

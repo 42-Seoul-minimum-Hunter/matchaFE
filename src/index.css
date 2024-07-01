@@ -25,6 +25,9 @@ body,
   --online: #2aac7a;
   --offline: #d22727;
 
+  /* --neon-text-color: #f40; */
+  --neon-border-color: #2aac7a;
+
   font-size: 16px;
   line-height: 24px;
   font-weight: 400;

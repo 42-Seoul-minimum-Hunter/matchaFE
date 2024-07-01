@@ -12,14 +12,19 @@ import LocationDropdown from "../components/LocationDropdown";
 import ImageUpload from "@/components/ImageUpload";
 import CheckBox from "@/components/CheckBox";
 import { useGeoLocation } from "@/hooks/useGeoLocation";
-import { axiosEmailVerify, axiosUserCreate } from "@/api/axios.custom";
 import {
   validateAge,
   validateBiography,
+  validateEmail,
+  validateGender,
+  validateHashtags,
   validateName,
   validatePassword,
+  validatePreference,
   validateUsername,
 } from "@/utils/inputCheckUtils";
+import { axiosUserCreate } from "@/api/axios.custom";
+import { useNavigate } from "react-router-dom";
 
 // const GenderTag: ITagProps[] = [{ title: "male" }];
 //  나중에 꼭 수정 필요 -> useMemo, useCallback 렌더링 최적화 해야함
@@ -50,12 +55,20 @@ const SignUpPage = () => {
   const [userEmail, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [bio, setBio] = useState<string>("");
-  const [age, setAge] = useState<number>();
+  const [age, setAge] = useState<number>(0);
   const [isLocation, setIsLocation] = useState<boolean>(false);
   const [showImages, setShowImages] = useState<string[]>([]);
   const { location, error, asking, getLocation } = useGeoLocation();
   const [showInstructions, setShowInstructions] = useState(false);
-  // const [isEmail, setIsEmail] = useState(false);
+  const [selectedArea, setSelectedArea] = useState<string>("");
+  const [selectedSubArea, setSelectedSubArea] = useState<string>("");
+  const navigator = useNavigate();
+  const handleAreaChange = (e: any) => {
+    setSelectedArea(e.target.value);
+  };
+  const handleSubAreaChange = (e: any) => {
+    setSelectedSubArea(e.target.value);
+  };
 
   const handleClick = () => {
     getLocation();
@@ -66,7 +79,6 @@ const SignUpPage = () => {
   };
 
   const trySignUp = async () => {
-    // 인풋값들 확인해버리기
     const validations = [
       { check: validateUsername(userName), error: "username 4 ~ 15" },
       { check: validatePassword(password), error: "password 8 ~ 15" },
@@ -75,23 +87,26 @@ const SignUpPage = () => {
         error: "first last name 1 ~ 10",
       },
       { check: validateBiography(bio), error: "biography 1 ~ 100" },
-      // { check: validateAge(age), error: "Invalid age" },
-      // { check: validateGender(genderType), error: "Invalid gender" },
-      // {
-      //   check: validatePreference(preferenceType),
-      //   error: "Invalid preference",
-      // },
-      // { check: validateHashtags(interestType), error: "Invalid hashtags" },
+      { check: validateEmail(userEmail), error: "Invalid email" },
+      { check: validateAge(age?.toString()), error: "Choose age" },
+      {
+        check: validateGender(genderType),
+        error: "Choose gender",
+      },
+      {
+        check: validatePreference(preferenceType),
+        error: "Choose preference",
+      },
+      { check: validateHashtags(interestType), error: "Invalid hashtags" },
+      { check: validateHashtags(interestType), error: "Invalid hashtags" },
     ];
 
     for (const { check, error } of validations) {
       if (!check) {
-        // console.log(error);
         alert(error);
         return;
       }
     }
-
     try {
       const res = await axiosUserCreate({
         email: userEmail,
@@ -110,25 +125,15 @@ const SignUpPage = () => {
         profileImages: showImages,
       });
       console.log("res", res);
+      if (res.status === 200) navigator("/email");
+      else {
+        alert("회원가입 실패");
+      }
     } catch (error: any) {
       console.log("error", error);
       throw error;
     }
   };
-
-  // const onCLickEmailVerify = async () => {
-  //   try {
-  //     // 이메일 인증 절차 -> 통과하면 바로 search로 이동
-  //     const res = await axiosEmailVerify();
-  //     console.log("email res", res);
-  //     // navigate("/search");
-  //   } catch (error) {
-  //     // setIsEmail(false);
-  //     // 이메일 인증 실패해도 login이동
-  //     // navigate("/login");
-  //     console.log("email error", error);
-  //   }
-  // };
 
   const onClickLogin = async () => {
     try {
@@ -138,6 +143,9 @@ const SignUpPage = () => {
       console.log("register res", res);
       // 이메일 페이지로 변환 -> 나중에 풀기 ##
       // setIsEmail(true);
+      // console.log("res.data.status", res.status);
+      // if (res.status === 200) console.log("res.;");
+
       alert("회원가입 성공");
     } catch (error) {
       // 회원가입 백엔드 실패시 login이동
@@ -170,15 +178,6 @@ const SignUpPage = () => {
   };
   const saveAge = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAge(Number(e.target.value));
-  };
-
-  const [selectedArea, setSelectedArea] = useState<string>("");
-  const [selectedSubArea, setSelectedSubArea] = useState<string>("");
-  const handleAreaChange = (e: any) => {
-    setSelectedArea(e.target.value);
-  };
-  const handleSubAreaChange = (e: any) => {
-    setSelectedSubArea(e.target.value);
   };
 
   return (
@@ -226,13 +225,13 @@ const SignUpPage = () => {
             value={userName}
             onChange={saveUserName}
           />
+          <InputTemplate
+            title="Bio"
+            placeholder="Add a your bio"
+            value={bio}
+            onChange={saveBio}
+          />
         </InputTextWrapper>
-        <InputTemplate
-          title="Bio"
-          placeholder="Add a your bio"
-          value={bio}
-          onChange={saveBio}
-        />
         <NameWrapper>
           <LocationWrapper>
             <h2>Location</h2>
@@ -303,7 +302,7 @@ const SignUpPage = () => {
           onChange={saveLocation}
         />
       </ContentStyled>
-      <SubmitButtonStyled onClick={onClickLogin}>Submit</SubmitButtonStyled>
+      <SubmitButtonStyled onClick={trySignUp}>Submit</SubmitButtonStyled>
     </WrapperStyled>
   );
 };
@@ -322,11 +321,14 @@ const LocationWrapper = styled.div`
 const InputTextWrapper = styled.div`
   width: 80%;
   max-width: 1000px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 
-  & > :nth-child(2),
+  /* & > :nth-child(2),
   & > :nth-child(3) {
     margin-top: 20px;
-  }
+  } */
 `;
 
 const PhotoWrapper = styled.div`
