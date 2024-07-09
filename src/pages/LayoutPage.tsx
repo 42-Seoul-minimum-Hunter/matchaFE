@@ -6,7 +6,7 @@ import Header from "@/components/Header";
 import { getCookie } from "@/api/cookie";
 import { io, Socket } from "socket.io-client";
 
-const loginToken = false;
+// const loginToken = false;
 const token = getCookie("jwt");
 
 // interface SocketContextType {

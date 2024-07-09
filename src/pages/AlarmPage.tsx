@@ -28,7 +28,7 @@ const mockAlarmData: IAlarmProps[] = [
     username: "Test",
   },
   {
-    type: AlarmType.UNLIKED,
+    type: AlarmType.DISLIKED,
     lastTime: "2024-06-13T09:45:00",
     isViewed: true,
     username: "Code",

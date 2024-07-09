@@ -101,6 +101,8 @@ const ProfilePage = () => {
     }
   };
 
+  // likeUser -> username을 보내기
+  // alarm으로 알람
   useEffect(() => {
     tryToGetProfile(username);
   }, []);
@@ -114,12 +116,16 @@ const ProfilePage = () => {
   //   });
   // }, []);
 
-  // 백에서 받아온 정보 넘기기
   return (
     <Wrapper>
       <LeftWrapper>
         {/* <ProfileImages images={mockData.profileImages} /> */}
-        {profileData && <ProfileImages images={profileData?.profileImages} />}
+        {profileData && (
+          <ProfileImages
+            images={profileData?.profileImages}
+            userName={profileData?.username}
+          />
+        )}
       </LeftWrapper>
       <RightWrapper>
         <UserInfoWrapper>

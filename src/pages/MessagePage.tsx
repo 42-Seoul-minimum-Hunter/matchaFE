@@ -15,24 +15,24 @@ const MessagePage = () => {
   // const socket = useContext(SocketContext);
   const socket = useContext(SocketContext);
 
-  const CheckChatList = async () => {
-    try {
-      // jwt있으면 userID 없어도 됨
-      const res = await axiosChatroom(1);
-      // console.log("chat list :", res);
-      setChatRoom(res.data);
-      console.log("chat list data:", res.data);
-    } catch (error) {
-      // TODO
-      // 데이터 불러오는데 실패하거나 서버가 불안정한 경우
-      // 걍 터지면 404 페이지로 보내버리기
-      console.log(error);
-    }
-  };
+  // const CheckChatList = async () => {
+  //   try {
+  //     // jwt있으면 userID 없어도 됨
+  //     const res = await axiosChatroom(1);
+  //     console.log("chat list :", res);
+  //     setChatRoom(res.data);
+  //     console.log("chat list data:", res.data);
+  //   } catch (error) {
+  //     // TODO
+  //     // 데이터 불러오는데 실패하거나 서버가 불안정한 경우
+  //     // 걍 터지면 404 페이지로 보내버리기
+  //     console.log(error);
+  //   }
+  // };
 
-  useEffect(() => {
-    CheckChatList();
-  }, []);
+  // useEffect(() => {
+  //   CheckChatList();
+  // }, []);
 
   useEffect(() => {
     clickChatRoom();

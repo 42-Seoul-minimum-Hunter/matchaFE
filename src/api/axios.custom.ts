@@ -89,15 +89,15 @@ export const axiosChangePassword = async (password: string): Promise<any> => {
   }
 };
 
-const axiosSearchProfileURL = "/user/find";
-export const axiosSearchProfile = async (email: string): Promise<any> => {
-  try {
-    const response = await instance.post(axiosSearchProfileURL);
-    return response;
-  } catch (error) {
-    throw error;
-  }
-};
+// const axiosSearchProfileURL = "/user/find";
+// export const axiosSearchProfile = async (email: string): Promise<any> => {
+//   try {
+//     const response = await instance.post(axiosSearchProfileURL);
+//     return response;
+//   } catch (error) {
+//     throw error;
+//   }
+// };
 
 const axiosVerifyTwoFactorURL = "/auth/twofactor/verify";
 export const axiosVerifyTwoFactor = async (code: string): Promise<any> => {
@@ -230,6 +230,18 @@ const axiosLogoutURL = "/auth/logout";
 export const axiosLogout = async (): Promise<any> => {
   try {
     const response = await instance.delete(axiosLogoutURL);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const axiosUserBlockURL = "/user/block";
+export const axiosUserBlock = async (username: string): Promise<any> => {
+  try {
+    const response = await instance.post(`${axiosUserBlockURL}`, {
+      blockUsername: username,
+    });
     return response;
   } catch (error) {
     throw error;

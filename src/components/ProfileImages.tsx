@@ -1,14 +1,58 @@
+import { axiosUserBlock } from "@/api/axios.custom";
 import { ReactComponent as BanIcon } from "@/assets/icons/ban-icon.svg";
 import { ReactComponent as HeartIcon } from "@/assets/icons/heart-icon.svg";
 import { ReactComponent as MessageIcon } from "@/assets/icons/sendMessage-icon.svg";
-import { useState } from "react";
+import { SocketContext } from "@/pages/LayoutPage";
+import { useContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
-const ProfileImages = ({ images }: { images: string[] }) => {
+const ProfileImages = ({
+  images,
+  userName,
+}: {
+  images: string[];
+  userName: string;
+}) => {
+  // TODO 백한테서 like정보 받아서 색칠 ㄱㄱ
+  // match boolean형식으로 들어옴 -> true면 색칠, false면 색칠x
+  const socket = useContext(SocketContext);
   const [selectImg, setSelectImg] = useState<string>(images[0]);
+  const [isLike, setIsLike] = useState<boolean>(false);
+  const [isBan, setIsBan] = useState<boolean>(false);
+  const navigate = useNavigate();
   const onClickImage = (index: number) => {
     setSelectImg(images[index]);
   };
+
+  const onClickBanButton = async () => {
+    try {
+      const res = await axiosUserBlock(userName);
+      console.log("block ", res);
+      navigate("/search");
+    } catch (error) {
+      console.log("error", error);
+      throw error;
+    }
+  };
+
+  // socket.on("connect", () => {});
+  // me 일때는 userName 으로 안감
+  // console.log("userName", userName);
+  const onClickHeartButton = () => {
+    console.log("likeUser click", userName);
+    setIsLike(!isLike);
+    socket.emit("likeUser", {
+      username: userName,
+    });
+  };
+
+  // 여기서도 matched확인
+  useEffect(() => {
+    socket.on("likeUser", (data) => {
+      console.log("matched", data);
+    });
+  }, []);
 
   return (
     <>
@@ -16,14 +60,17 @@ const ProfileImages = ({ images }: { images: string[] }) => {
         <MainPohtoWrapper>
           <img src={selectImg} />
           <UserInteractionWrapper>
-            <BanIconStyled>
+            <BanIconStyled onClick={() => onClickBanButton()}>
               <BanIcon />
             </BanIconStyled>
             <MessageIconStyled>
               <MessageIcon />
               <p>Message</p>
             </MessageIconStyled>
-            <HeartIconStyled>
+            <HeartIconStyled
+              onClick={() => onClickHeartButton()}
+              $isLike={isLike}
+            >
               <HeartIcon />
             </HeartIconStyled>
           </UserInteractionWrapper>
@@ -127,14 +174,19 @@ const BanIconStyled = styled.div`
   border: 2px solid var(--light-vermilion);
 `;
 
-const HeartIconStyled = styled.div`
+const HeartIconStyled = styled.div<{ $isLike: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
   width: 45px;
   height: 45px;
+  /* background-color: var(--light-vermilion); */
   border-radius: 50%;
   border: 2px solid var(--light-vermilion);
+  svg {
+    fill: ${(props) =>
+      props.$isLike ? "var(--light-vermilion)" : "var(--white)"};
+  }
 `;
 
 const MessageIconStyled = styled.div`

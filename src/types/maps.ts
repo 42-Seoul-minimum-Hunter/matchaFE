@@ -70,7 +70,7 @@ export const AlarmLableMap = {
   [AlarmType.VISITED]: "Your profile was viewed by",
   [AlarmType.MESSAGED]: "New Message Received by",
   [AlarmType.MATCHED]: "Your Like Was Reciprocated by",
-  [AlarmType.UNLIKED]: "A Connection Removed Like ",
+  [AlarmType.DISLIKED]: "A Connection Removed Like ",
 };
 
 export const rateLableMap = {

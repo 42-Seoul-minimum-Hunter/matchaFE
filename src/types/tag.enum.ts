@@ -69,5 +69,5 @@ export enum AlarmType {
   VISITED = "VISITED",
   MESSAGED = "MESSAGED",
   MATCHED = "MATCHED",
-  UNLIKED = "UNLIKED",
+  DISLIKED = "DISLIKED",
 }

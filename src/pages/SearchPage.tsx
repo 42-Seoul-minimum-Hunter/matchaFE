@@ -9,6 +9,7 @@ import styled from "styled-components";
 import { images } from "./ProfilePage";
 import { tagItem } from "./SignUpPage";
 import { ReactComponent as FilterIcon } from "@/assets/icons/filter-icon.svg";
+import ModalFin from "@/components/ModalFIn";
 
 const ageFilterList: tagItem[] = Object.entries(ageLableMap).map(
   ([key, name]) => ({ key, name })
@@ -52,18 +53,12 @@ const SearchPage = () => {
     setModalOpen(false);
   };
 
+  // useEffect(() => {
+  //   console.log("selectedArea", selectedArea);
+  //   console.log("selectedSubArea", selectedSubArea);
+  // }, [selectedArea, selectedSubArea]);
+
   // 모달 태그 선택 창
-  const onSubmint = (selectedOption: IModalOptions[]) => {
-    setFilterList([...selectedOption]);
-    console.log("filterList", filterList);
-    closeModal();
-    // try {
-    //   const res = axiosFindUser();
-    //   console.log(res);
-    // } catch (e) {
-    //   console.log(e);
-    // }
-  };
 
   const tryFindUser = async () => {
     let si = selectedArea;
@@ -85,7 +80,6 @@ const SearchPage = () => {
         undefined
       );
       console.log("res", res);
-      // console.log("res json", res.json);
       console.log("res data", res.data.users);
       setSearchData(res.data.users);
     } catch (error: any) {
@@ -93,9 +87,12 @@ const SearchPage = () => {
     }
   };
 
-  useEffect(() => {
+  const onSubmint = (selectedOption: IModalOptions[]) => {
+    setFilterList([...selectedOption]);
+    console.log("filterList", filterList);
+    closeModal();
     tryFindUser();
-  }, [filterList]);
+  };
 
   const selectModalOptions = (title: string) => {
     if (title === "Age") {
@@ -118,22 +115,10 @@ const SearchPage = () => {
   return (
     <Wrapper>
       <FilterWrapper>
-        <FilterTitleStyled onClick={() => openModal("Age")}>
-          Age
+        <FilterTitleStyled onClick={() => openModal("test")}>
+          Filter
           <FilterIcon />
         </FilterTitleStyled>
-        <FilterTitleStyled onClick={() => openModal("Rate")}>
-          Rate
-        </FilterTitleStyled>
-        <FilterTitleStyled onClick={() => openModal("Interest")}>
-          Hashtags
-        </FilterTitleStyled>
-        <LocationDropdown
-          selectedArea={selectedArea}
-          selectedSubArea={selectedSubArea}
-          handleAreaChange={handleAreaChange}
-          handleSubAreaChange={handleSubAreaChange}
-        />
       </FilterWrapper>
       <SelectTagStyled>
         {filterList.map((tag) => (
@@ -146,15 +131,18 @@ const SearchPage = () => {
         ))}
       </SearchCardWrapper>
       {modalOpen && (
-        <Modal
+        <ModalFin
           modalTitle={modalTitle}
           options={selectModalOptions(modalTitle)}
           title="Age"
-          // modalOpen={modalOpen}
           closeModal={closeModal}
           onClickTag={onClickTag}
           filterList={filterList}
           onSubmint={onSubmint}
+          selectedArea={selectedArea}
+          selectedSubArea={selectedSubArea}
+          handleAreaChange={handleAreaChange}
+          handleSubAreaChange={handleSubAreaChange}
         />
       )}
     </Wrapper>
