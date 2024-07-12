@@ -24,14 +24,15 @@ const Header = () => {
   //   console.error("Socket connection error:", error);
   // });
 
-  useEffect(() => {
-    if (socket) {
-      console.log("socket", socket);
-      socket.on("getAlarms", (data: any) => {
-        console.log("onlineStatus On", data);
-      });
-    }
-  }, []);
+  // 알람 설정 나중에
+  // useEffect(() => {
+  //   if (socket) {
+  //     console.log("socket", socket);
+  //     socket.on("getAlarms", (data: any) => {
+  //       console.log("onlineStatus On", data);
+  //     });
+  //   }
+  // }, []);
 
   // const checkAlarm = () => {
   //   socket.emit("getAlarms");

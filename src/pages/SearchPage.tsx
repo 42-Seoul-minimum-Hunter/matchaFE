@@ -9,9 +9,9 @@ import styled from "styled-components";
 import { images } from "./ProfilePage";
 import { tagItem } from "./SignUpPage";
 import { ReactComponent as FilterIcon } from "@/assets/icons/filter-icon.svg";
-import ModalFin from "@/components/ModalFIn";
 import { SocketContext } from "./LayoutPage";
 import { axiosProfile } from "@/api/axios.custom";
+import FilterModal from "@/components/FilterModal";
 
 const ageFilterList: tagItem[] = Object.entries(ageLableMap).map(
   ([key, name]) => ({ key, name })
@@ -34,13 +34,21 @@ export interface ISearchDateDto {
   // handler: () => void;
 }
 
+export interface IRangeDto {
+  rate: { min: number; max: number };
+  age: { min: number; max: number };
+  location: { si: string; gu: string };
+}
+
 const SearchPage = () => {
+  // const [rangeData, setRangeData] = useState<IRangeDto>();
   const [searchData, setSearchData] = useState<ISearchDateDto[]>([]);
   const [filterList, setFilterList] = useState<IModalOptions[]>([]);
   const [modalTitle, setModalTitle] = useState<string>("");
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedArea, setSelectedArea] = useState<string>("");
   const [selectedSubArea, setSelectedSubArea] = useState<string>("");
+  const navigator = useNavigate();
   const handleAreaChange = (e: any) => {
     setSelectedArea(e.target.value);
   };
@@ -55,11 +63,6 @@ const SearchPage = () => {
     setModalOpen(false);
   };
 
-  // useEffect(() => {
-  //   console.log("selectedArea", selectedArea);
-  //   console.log("selectedSubArea", selectedSubArea);
-  // }, [selectedArea, selectedSubArea]);
-
   // 모달 태그 선택 창
 
   const tryFindUser = async () => {
@@ -67,7 +70,6 @@ const SearchPage = () => {
     let gu = selectedSubArea;
     let minAge = 0;
     let maxAge = 0;
-    // let username = "";
     let minRate = 0;
     let maxRate = 0;
     let hashtags: string[] = [];
@@ -77,8 +79,8 @@ const SearchPage = () => {
         undefined,
         undefined,
         undefined,
-        si,
-        gu,
+        undefined,
+        undefined,
         undefined
       );
       console.log("res", res);
@@ -95,6 +97,10 @@ const SearchPage = () => {
     closeModal();
     tryFindUser();
   };
+
+  useEffect(() => {
+    tryFindUser();
+  }, []);
 
   const selectModalOptions = (title: string) => {
     if (title === "Age") {
@@ -114,34 +120,28 @@ const SearchPage = () => {
     }
   };
 
-=======
   const onProfileClick = (nickname: string) => {
     navigator(`/profile?username=${nickname}`);
   };
 
-  const mockData: ISearchDateDto[] = Array.from({ length: 30 }, (_, index) => ({
-    img: images[index % images.length],
-    nickname: `User${index + 1}`,
-    age: index + 23,
-    handler: () => {
-      // userName 백으로 보내고 profile 페이지로 이동
-      onProfileClick(`User${index + 1}`);
-      // console.log(`Handler for User${index + 1}`);
-    },
-  }));
-  const [selectedArea, setSelectedArea] = useState<string>("");
-  const [selectedSubArea, setSelectedSubArea] = useState<string>("");
-  const handleAreaChange = (e: any) => {
-    setSelectedArea(e.target.value);
-  };
-  const handleSubAreaChange = (e: any) => {
-    setSelectedSubArea(e.target.value);
-  };
-
-  const headerInfo = {
-    userId: 1,
-    // token: "abc123",
-  };
+  // const mockData: ISearchDateDto[] = Array.from({ length: 30 }, (_, index) => ({
+  //   img: images[index % images.length],
+  //   nickname: `User${index + 1}`,
+  //   age: index + 23,
+  //   handler: () => {
+  //     // userName 백으로 보내고 profile 페이지로 이동
+  //     onProfileClick(`User${index + 1}`);
+  //     // console.log(`Handler for User${index + 1}`);
+  //   },
+  // }));
+  // const [selectedArea, setSelectedArea] = useState<string>("");
+  // const [selectedSubArea, setSelectedSubArea] = useState<string>("");
+  // const handleAreaChange = (e: any) => {
+  //   setSelectedArea(e.target.value);
+  // };
+  // const handleSubAreaChange = (e: any) => {
+  //   setSelectedSubArea(e.target.value);
+  // };
 
   const socket = useContext(SocketContext);
   useEffect(() => {
@@ -160,9 +160,8 @@ const SearchPage = () => {
   //     console.log("message");
   //   });
   // }, []);
-
   // sendMessage();
->>>>>>> 425dc65 ([FE] FEAT: 웹소켓 ㄷㄷ)
+
   return (
     <Wrapper>
       <FilterWrapper>
@@ -182,7 +181,7 @@ const SearchPage = () => {
         ))}
       </SearchCardWrapper>
       {modalOpen && (
-        <ModalFin
+        <FilterModal
           modalTitle={modalTitle}
           options={selectModalOptions(modalTitle)}
           title="Age"

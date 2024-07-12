@@ -6,7 +6,6 @@ import Header from "@/components/Header";
 import { getCookie } from "@/api/cookie";
 import { io, Socket } from "socket.io-client";
 
-// const loginToken = false;
 const token = getCookie("jwt");
 
 // interface SocketContextType {
@@ -19,10 +18,6 @@ const socket = io("http://localhost:3001", {
 });
 
 export const SocketContext = createContext<null>(null);
-
-const header = {
-  userID: 1,
-};
 
 // const socket = io("http://localhost:3001", {
 //   auth: {

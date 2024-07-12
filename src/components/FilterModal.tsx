@@ -10,6 +10,11 @@ export interface IModalOptions {
   name: string;
 }
 
+export interface RangeState {
+  min: number;
+  max: number;
+}
+
 interface IModalProps {
   options: IModalOptions[];
   title: string;
@@ -27,9 +32,9 @@ interface IModalProps {
   handleSubAreaChange: (e: any) => void;
 }
 
-const ModalFin = ({
+const FilterModal = ({
   options,
-  title,
+  // title,
   closeModal,
   filterList,
   onSubmint,
@@ -37,11 +42,20 @@ const ModalFin = ({
   selectedSubArea,
   handleAreaChange,
   handleSubAreaChange,
-}: // ModalLable,
-IModalProps) => {
+}: IModalProps) => {
   const [selectedOption, setSelectedOption] =
     useState<IModalOptions[]>(filterList);
-  console.log("age", title);
+  const [rateRange, setRateRange] = useState({ min: 0, max: 100 });
+  const [ageRange, setAgeRange] = useState({ min: 0, max: 100 });
+
+  const handleRateChange = (minOrMax: "min" | "max", value: number) => {
+    setRateRange((prev) => ({ ...prev, [minOrMax]: value }));
+  };
+
+  const handleAgeChange = (minOrMax: "min" | "max", value: number) => {
+    setAgeRange((prev) => ({ ...prev, [minOrMax]: value }));
+  };
+
   const onClickTagTest = (tag: IModalOptions) => {
     if (selectedOption.some((item) => item.name === tag.name)) {
       setSelectedOption(
@@ -51,21 +65,33 @@ IModalProps) => {
       setSelectedOption([...selectedOption, tag]);
     }
   };
-
+  console.log("filter render");
   return (
     <ModalStyled onClick={closeModal}>
       <ModalBodyStyled onClick={(e: any) => e.stopPropagation()}>
         <RowContainer>
-          <NumberRangeInput type="rate" />
-          <NumberRangeInput type="age" />
+          {/* <NumberRangeInput type="Rate" />
+          <NumberRangeInput type="Age" /> */}
+          <NumberRangeInput
+            type="Rate"
+            range={rateRange}
+            onChange={handleRateChange}
+          />
+          <NumberRangeInput
+            type="Age"
+            range={ageRange}
+            onChange={handleAgeChange}
+          />
         </RowContainer>
-        <TitleStyled>Location</TitleStyled>
-        <LocationDropdown
-          selectedArea={selectedArea}
-          selectedSubArea={selectedSubArea}
-          handleAreaChange={handleAreaChange}
-          handleSubAreaChange={handleSubAreaChange}
-        />
+        <RowStyled>
+          <TitleStyled>Location</TitleStyled>
+          <LocationDropdown
+            selectedArea={selectedArea}
+            selectedSubArea={selectedSubArea}
+            handleAreaChange={handleAreaChange}
+            handleSubAreaChange={handleSubAreaChange}
+          />
+        </RowStyled>
         <TitleStyled>Hashtags</TitleStyled>
         <ModalSelectionContainer>
           {options.map((option) => (
@@ -81,6 +107,7 @@ IModalProps) => {
             </ModalSelectionOption>
           ))}
         </ModalSelectionContainer>
+        {/* 여기서 정보 넘겨주기 */}
         <SubmitStyled onClick={() => onSubmint(selectedOption)}>
           적용하기
         </SubmitStyled>
@@ -89,17 +116,25 @@ IModalProps) => {
   );
 };
 
-export default ModalFin;
+export default FilterModal;
+
+const RowStyled = styled.div`
+  margin-bottom: 40px;
+`;
 
 const TitleStyled = styled.div`
+  text-align: left;
+  padding-bottom: 20px;
   font-size: 2rem;
   margin-bottom: 20px;
   font-weight: 500;
+  border-bottom: 1px solid #d9d9d9;
 `;
 
 const RowContainer = styled.div`
   display: flex;
   justify-content: space-between;
+  gap: 10px;
   align-items: center;
   margin-bottom: 20px;
 `;

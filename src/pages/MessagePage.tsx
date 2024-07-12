@@ -70,12 +70,12 @@ const MessagePage = () => {
   };
 
   // const selectUserImg = mockChatListData[selectedIndex]?.profileImage;
-  const selectUserImg =
-    selectedIndex !== null ? chatRoom[selectedIndex]?.profileImage : null;
+  // const selectUserImg =
+  //   selectedIndex !== null ? chatRoom[selectedIndex]?.profileImage : null;
 
-  // const selectUserImg = mockChatListData[selectedIndex]?.profileImage;
-  const selectUserImg =
-    selectedIndex !== null ? chatRoom[selectedIndex]?.profileImage : null;
+  // // const selectUserImg = mockChatListData[selectedIndex]?.profileImage;
+  // const selectUserImg =
+  //   selectedIndex !== null ? chatRoom[selectedIndex]?.profileImage : null;
 
   return (
     <Wrapper>
