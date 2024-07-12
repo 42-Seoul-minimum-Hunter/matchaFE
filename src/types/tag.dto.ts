@@ -28,6 +28,22 @@ export interface SearchUserDto {
   region: string;
 }
 
+export interface ProfileDto {
+  age: number;
+  biography: string;
+  firstName: string;
+  lastName: string;
+  si: string;
+  gu: string;
+  hashtags: InterestType[];
+  gender: GenderType;
+  preference: PreferenceType;
+  rate: number;
+  isBlocked: boolean;
+  username: string;
+  profileImages: string[];
+}
+
 // {
 //   "email" : "email@gmail",
 //   "username" : "hihi",
@@ -46,6 +62,17 @@ export interface SearchUserDto {
 //   "isOauth" : false,
 //   "isValid" : false,
 // }
+
+// chatroom dto
+// content :"hello"
+// createdAt : "2019-12-31T15:00:00.000Z"
+// profileImage : "https://naver.com"
+// username :"" "User2"
+
+// chatcontent dto
+// message : "world"
+// time :  "2019-12-31T15:00:00.000Z"
+// username :  "User3"
 
 // export interface OverdueUserDto {
 //   building: string;

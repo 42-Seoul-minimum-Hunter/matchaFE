@@ -2,7 +2,6 @@ import styled from "styled-components";
 
 import { useEffect, useRef, useState } from "react";
 import { tagItem } from "@/pages/SignUpPage";
-import { InterestType } from "@/types/tag.enum";
 
 export interface ITagTemplateProps<T> {
   title?: string;
@@ -22,12 +21,16 @@ const TagTemplate = <T,>({
   selectedTag,
 }: ITagTemplateProps<T>) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     const buttons = wrapperRef.current?.querySelectorAll("button");
+    // console.log("selectedTag", selectedTag);
+    // console.log("tagList", tagList);
     if (isModify) {
       buttons?.forEach((button) => {
-        if (selectedTag && selectedTag.includes(button.classList[0])) {
+        if (
+          selectedTag &&
+          selectedTag.includes(button.classList[0].toLowerCase())
+        ) {
           button.classList.add("selected");
         }
       });
@@ -58,10 +61,9 @@ const TagTemplate = <T,>({
     if (title === "Interest") {
       const selectedKey = target.className.split(" ")[0];
       const buttons = wrapperRef.current?.querySelectorAll("button");
-      // let temp: [] = initialState;
+
       let temp: any[] = initialState ? [...(initialState as any[])] : [];
       if (target.classList.contains("selected")) {
-        console.log("1");
         // setState(temp?.filter((item: any) => item !== selectedKey));
         setState(
           temp.filter((item) => item !== selectedKey) as React.SetStateAction<T>
@@ -69,7 +71,6 @@ const TagTemplate = <T,>({
         target.classList.remove("selected");
         return;
       } else {
-        console.log("2");
         setState([...temp, selectedKey] as React.SetStateAction<T>);
       }
     } else {

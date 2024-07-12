@@ -2,15 +2,14 @@ import { axiosFindUser } from "@/api/axios.custom";
 import LocationDropdown from "@/components/LocationDropdown";
 import Modal, { IModalOptions } from "@/components/Modal";
 import SearchCard from "@/components/SearchCard";
-import SearchHeader from "@/components/SearchHeader";
-import SearchModal from "@/components/SearchModal";
 import { ageLableMap, InterestLableMap, rateLableMap } from "@/types/maps";
-import { ageType } from "@/types/tag.enum";
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { images } from "./ProfilePage";
 import { tagItem } from "./SignUpPage";
+import { ReactComponent as FilterIcon } from "@/assets/icons/filter-icon.svg";
+import ModalFin from "@/components/ModalFIn";
 
 const ageFilterList: tagItem[] = Object.entries(ageLableMap).map(
   ([key, name]) => ({ key, name })
@@ -24,18 +23,19 @@ const interestTagList: tagItem[] = Object.entries(InterestLableMap).map(
 );
 
 export interface ISearchDateDto {
-  img: string;
-  nickname: string;
+  profileImages: string;
+  username: string;
   age: number;
   rate: number;
-  handler: () => void;
+  // 프론트에서 필요한가?
+  commonHashtags: number;
+  // handler: () => void;
 }
 
 const SearchPage = () => {
-  const navigator = useNavigate();
+  const [searchData, setSearchData] = useState<ISearchDateDto[]>([]);
   const [filterList, setFilterList] = useState<IModalOptions[]>([]);
   const [modalTitle, setModalTitle] = useState<string>("");
-  // const [ageType, setAgeType] = useState<ageType | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedArea, setSelectedArea] = useState<string>("");
   const [selectedSubArea, setSelectedSubArea] = useState<string>("");
@@ -53,61 +53,46 @@ const SearchPage = () => {
     setModalOpen(false);
   };
 
-  // 모달 태그 선택 창
-  const onSubmint = (selectedOption: IModalOptions[]) => {
-    setFilterList([...selectedOption]);
-    console.log("filterList", filterList);
-    closeModal();
-    // try {
-    //   const res = axiosFindUser();
-    //   console.log(res);
-    // } catch (e) {
-    //   console.log(e);
-    // }
-  };
+  // useEffect(() => {
+  //   console.log("selectedArea", selectedArea);
+  //   console.log("selectedSubArea", selectedSubArea);
+  // }, [selectedArea, selectedSubArea]);
 
-  useEffect(() => {
+  // 모달 태그 선택 창
+
+  const tryFindUser = async () => {
     let si = selectedArea;
     let gu = selectedSubArea;
     let minAge = 0;
     let maxAge = 0;
-    let username = "";
+    // let username = "";
     let minRate = 0;
     let maxRate = 0;
     let hashtags: string[] = [];
-    filterList.forEach((option) => {
-      if (ageFilterList.some((item) => item.name === option.name)) {
-        // 나이 필터 처리
-        const [min, max] = option.name.split("~");
-        minAge = parseInt(min);
-        maxAge = parseInt(max);
-      }
-      //   else if (rateFilterList.some((item) => item.name === option.name)) {
-      //     // 평점 필터 처리
-      //     const [min, max] = option.name.split("~");
-      //     minRate = parseInt(min);
-      //     maxRate = parseInt(max);
-      //   } else if (interestTagList.some((item) => item.name === option.name)) {
-      //     // 관심사 태그 처리
-      //     hashtags.push(option.name);
-      //   }
-    });
     try {
-      const res = axiosFindUser({
-        minAge,
-        maxAge,
-        username,
-        minRate,
-        maxRate,
+      const res = await axiosFindUser(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
         si,
         gu,
-        hashtags,
-      });
-      console.log(res);
-    } catch (e) {
-      console.log(e);
+        undefined
+      );
+      console.log("res", res);
+      console.log("res data", res.data.users);
+      setSearchData(res.data.users);
+    } catch (error: any) {
+      console.log("search page error", error);
     }
-  }, [filterList]);
+  };
+
+  const onSubmint = (selectedOption: IModalOptions[]) => {
+    setFilterList([...selectedOption]);
+    console.log("filterList", filterList);
+    closeModal();
+    tryFindUser();
+  };
 
   const selectModalOptions = (title: string) => {
     if (title === "Age") {
@@ -127,62 +112,37 @@ const SearchPage = () => {
     }
   };
 
-  const onProfileClick = () => {
-    navigator("/profile");
-  };
-
-  const mockData: ISearchDateDto[] = Array.from({ length: 30 }, (_, index) => ({
-    img: images[index % images.length],
-    nickname: `User${index + 1}`,
-    age: index + 23,
-    rate: Math.round(Math.random() * 60) / 10,
-    handler: () => {
-      // userName 백으로 보내고 profile 페이지로 이동
-      onProfileClick();
-      // console.log(`Handler for User${index + 1}`);
-    },
-  }));
-
   return (
     <Wrapper>
       <FilterWrapper>
-        <FilterTitleStyled onClick={() => openModal("Age")}>
-          Age
+        <FilterTitleStyled onClick={() => openModal("test")}>
+          Filter
+          <FilterIcon />
         </FilterTitleStyled>
-        <FilterTitleStyled onClick={() => openModal("Rate")}>
-          Rate
-        </FilterTitleStyled>
-        <FilterTitleStyled onClick={() => openModal("Interest")}>
-          Interest
-        </FilterTitleStyled>
-        <LocationDropdown
-          selectedArea={selectedArea}
-          selectedSubArea={selectedSubArea}
-          handleAreaChange={handleAreaChange}
-          handleSubAreaChange={handleSubAreaChange}
-        />
       </FilterWrapper>
       <SelectTagStyled>
         {filterList.map((tag) => (
           <TagStyled key={tag.name}>{tag.name}</TagStyled>
         ))}
       </SelectTagStyled>
-
       <SearchCardWrapper>
-        {mockData.map((data) => (
-          <SearchCard key={data.nickname} {...data} />
+        {searchData.map((data) => (
+          <SearchCard key={data.username} {...data} />
         ))}
       </SearchCardWrapper>
       {modalOpen && (
-        <Modal
+        <ModalFin
           modalTitle={modalTitle}
           options={selectModalOptions(modalTitle)}
           title="Age"
-          // modalOpen={modalOpen}
           closeModal={closeModal}
           onClickTag={onClickTag}
           filterList={filterList}
           onSubmint={onSubmint}
+          selectedArea={selectedArea}
+          selectedSubArea={selectedSubArea}
+          handleAreaChange={handleAreaChange}
+          handleSubAreaChange={handleSubAreaChange}
         />
       )}
     </Wrapper>
@@ -205,6 +165,21 @@ const SearchCardWrapper = styled.div`
 
   /* grid-template-rows: 200px 200px; */
   grid-auto-rows: 250px;
+  @media (max-width: 1000px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  /* @media (max-width: 960px) {
+    grid-template-columns: repeat(3, 1fr);
+  } */
+
+  @media (max-width: 720px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 480px) {
+    grid-template-columns: 1fr;
+  }
 `;
 
 const TagStyled = styled.div`

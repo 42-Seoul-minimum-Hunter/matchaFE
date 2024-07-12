@@ -15,7 +15,7 @@ export enum InterestType {
   MUSIC = "MUSIC",
   MOVIES = "MOVIES",
   BOOKS = "BOOKS",
-  GAMES = "GAMES",
+  GAME = "GAME",
   TRAVEL = "TRAVEL",
   FOOD = "FOOD",
   FASHION = "FASHION",
@@ -44,6 +44,7 @@ export enum InterestType {
   RELATIONSHIPS = "RELATIONSHIPS",
   DATING = "DATING",
   MARRIAGE = "MARRIAGE",
+  RUNNING = "RUNNING",
 }
 
 export enum ageType {
@@ -68,5 +69,5 @@ export enum AlarmType {
   VISITED = "VISITED",
   MESSAGED = "MESSAGED",
   MATCHED = "MATCHED",
-  UNLIKED = "UNLIKED",
+  DISLIKED = "DISLIKED",
 }

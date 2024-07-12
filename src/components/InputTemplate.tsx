@@ -9,19 +9,6 @@ interface InputTemplateProps {
   type?: string;
 }
 
-// const InputTemplate: React.FC<InputTemplateProps> = memo(
-//   ({ title, placeholder, value, onChange }) => (
-//     <Wrapper>
-//       <TitleStyled>{title}</TitleStyled>
-//       <InputStyled
-//         placeholder={placeholder}
-//         value={value}
-//         onChange={onChange}
-//       />
-//     </Wrapper>
-//   )
-// );
-
 const InputTemplate = (props: InputTemplateProps) => (
   <Wrapper>
     <TitleStyled>{props.title}</TitleStyled>
@@ -29,7 +16,6 @@ const InputTemplate = (props: InputTemplateProps) => (
       placeholder={props.placeholder}
       value={props.value}
       onChange={props.onChange}
-      // max-length="20"
       type={props.type ? props.type : "text"}
       required={
         props.type === "email" || props.type === "number" ? true : false

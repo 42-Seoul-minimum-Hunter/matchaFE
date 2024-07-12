@@ -2,9 +2,10 @@ import styled from "styled-components";
 import { ReactComponent as ChevronIcon } from "@/assets/icons/chevron-icon.svg";
 
 import { useState } from "react";
+import NumberRangeInput from "./NumberRangeInput";
+import LocationDropdown from "./LocationDropdown";
 
 export interface IModalOptions {
-  // title: string;
   key: string;
   name: string;
 }
@@ -20,14 +21,22 @@ interface IModalProps {
   onSubmint: (selectedOption: IModalOptions[]) => void;
   // ModalLable: string;
   // onChangeValue: (value: string) => void;
+  selectedArea: string;
+  selectedSubArea: string;
+  handleAreaChange: (e: any) => void;
+  handleSubAreaChange: (e: any) => void;
 }
 
-const Modal = ({
+const ModalFin = ({
   options,
   title,
   closeModal,
   filterList,
   onSubmint,
+  selectedArea,
+  selectedSubArea,
+  handleAreaChange,
+  handleSubAreaChange,
 }: // ModalLable,
 IModalProps) => {
   const [selectedOption, setSelectedOption] =
@@ -46,6 +55,18 @@ IModalProps) => {
   return (
     <ModalStyled onClick={closeModal}>
       <ModalBodyStyled onClick={(e: any) => e.stopPropagation()}>
+        <RowContainer>
+          <NumberRangeInput type="rate" />
+          <NumberRangeInput type="age" />
+        </RowContainer>
+        <TitleStyled>Location</TitleStyled>
+        <LocationDropdown
+          selectedArea={selectedArea}
+          selectedSubArea={selectedSubArea}
+          handleAreaChange={handleAreaChange}
+          handleSubAreaChange={handleSubAreaChange}
+        />
+        <TitleStyled>Hashtags</TitleStyled>
         <ModalSelectionContainer>
           {options.map((option) => (
             <ModalSelectionOption
@@ -68,9 +89,20 @@ IModalProps) => {
   );
 };
 
-export default Modal;
+export default ModalFin;
 
-// const ModalContainer = styled.div``;
+const TitleStyled = styled.div`
+  font-size: 2rem;
+  margin-bottom: 20px;
+  font-weight: 500;
+`;
+
+const RowContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+`;
 
 const ModalSelectionOption = styled.div<{ $isSelected: boolean }>`
   background-color: ${(props) =>
@@ -105,7 +137,8 @@ const ModalStyled = styled.div`
 
 const ModalBodyStyled = styled.div`
   position: absolute;
-  width: 400px;
+  width: 520px;
+  /* width: 80%; */
   /* height: 500px; */
   padding: 40px;
   text-align: center;
@@ -114,7 +147,8 @@ const ModalBodyStyled = styled.div`
   box-shadow: 0 2px 3px 0 rgba(34, 36, 38, 0.15);
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
+  align-items: space-between;
 `;
 
 const SubmitStyled = styled.div`

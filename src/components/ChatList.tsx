@@ -1,3 +1,4 @@
+import { formatTimeRemaining } from "@/utils/dataUtils";
 import styled from "styled-components";
 
 interface Props {
@@ -8,45 +9,42 @@ const Image: React.FC<Props> = ({ imageSource }) => {
   return <img src={imageSource} />;
 };
 
-export interface IChatListProps {
-  nickname: string;
-  img: string;
-  lastTime: string;
-  lastChat: string;
-  Unread: number;
+export interface IChatRoomProps {
+  username: string;
+  profileImage: string;
+  createdAt: string; // date형식
+  content: string;
+}
+
+interface ChatListProps extends IChatRoomProps {
+  isSelected: boolean;
+  index: number;
   handler: (index: number) => void;
 }
 
-interface ChatListProps extends IChatListProps {
-  isSelected: boolean;
-  index: number;
-}
-
 const ChatList = ({
-  nickname,
-  img,
-  lastTime,
-  lastChat,
-  Unread,
+  username,
+  profileImage,
+  createdAt,
+  content,
   isSelected,
-  handler,
   index,
-}: // handler,
-ChatListProps) => {
+  handler,
+}: ChatListProps) => {
+  // console.log("created at", formatTimeRemaining(createdAt));
   return (
     <Wrapper $isSelected={isSelected} onClick={() => handler(index)}>
       <ImageWrapper>
         {/* <Image imageSource={img} /> */}
-        <img src={img} />
+        <img src={profileImage} />
       </ImageWrapper>
       <ColumnWrapper>
         <RowWrapper>
-          <NicknameStyled>{nickname}</NicknameStyled>
-          <LastTimeStyled>{lastTime}</LastTimeStyled>
+          <NicknameStyled>{username}</NicknameStyled>
+          <LastTimeStyled>{formatTimeRemaining(createdAt)}</LastTimeStyled>
         </RowWrapper>
         <RowWrapper>
-          <LastChatStyled>{lastChat}</LastChatStyled>
-          <UnreadStyled>{Unread}</UnreadStyled>
+          <LastChatStyled>{content}</LastChatStyled>
         </RowWrapper>
       </ColumnWrapper>
     </Wrapper>

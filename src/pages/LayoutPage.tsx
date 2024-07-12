@@ -1,13 +1,24 @@
 import styled from "styled-components";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { createContext, useEffect, useState } from "react";
 import CircleContainer from "@/components/BackgroundColor";
 import Header from "@/components/Header";
 import { getCookie } from "@/api/cookie";
+import { io, Socket } from "socket.io-client";
 
-const loginToken = false;
+// const loginToken = false;
 const token = getCookie("jwt");
-const registerToken = false;
+
+// interface SocketContextType {
+//   socket: Socket<any, any>;
+// }
+const socket = io("http://localhost:3001", {
+  auth: {
+    authorization: token,
+  },
+});
+
+export const SocketContext = createContext<null>(null);
 
 const COLORS = [
   "#27F122",
@@ -18,10 +29,7 @@ const COLORS = [
   "#00FFE0",
 ];
 
-// const token = getCookie("jwt");
-
 const Layout = () => {
-  const navigate = useNavigate();
   const location = useLocation();
 
   //  jwt 토큰이 있으면 search, 없으면 로그인 페이지로 이동
@@ -43,21 +51,21 @@ const Layout = () => {
   // console.log("isLoginPage,isRegisterPage", isoginPage, isRegisterPage);
   // console.log("isLoginPage || isRegisterPage", isLoginPage || isRegisterPage);
 
-  //
-
   return isLoginPage ||
     isRegisterPage ||
     isFindPasswordPage ||
     isTwoFactorPage ? (
     <Outlet />
   ) : (
-    <Wrapper>
-      {/* <CircleContainer circleCount={12} circleColors={COLORS} /> */}
-      <Header />
-      <MainStyled>
-        <Outlet />
-      </MainStyled>
-    </Wrapper>
+    <SocketContext.Provider value={socket}>
+      <Wrapper>
+        {/* <CircleContainer circleCount={12} circleColors={COLORS} /> */}
+        <Header />
+        <MainStyled>
+          <Outlet />
+        </MainStyled>
+      </Wrapper>
+    </SocketContext.Provider>
   );
 };
 

@@ -1,12 +1,12 @@
 // import { ISearchDateDto } from "@/pages/SearchPage";
 // import styled from "styled-components";
 
-// const SearchCard = ({ img, nickname, age, handler, rate }: ISearchDateDto) => {
+// const SearchCard = ({ profileImages, username, age, handler, rate }: ISearchDateDto) => {
 //   return (
 //     <Wrapper onClick={handler}>
-//       <img src={img} />
+//       <profileImages src={profileImages} />
 //       <TitleStyled>
-//         <p>{nickname}</p>
+//         <p>{username}</p>
 //         <p>{age}</p>
 //         <p>rate</p>
 //       </TitleStyled>
@@ -41,21 +41,32 @@ import React, { useState } from "react";
 import { ISearchDateDto } from "@/pages/SearchPage";
 import styled from "styled-components";
 import Stars from "./Stars"; // Stars 컴포넌트를 import 합니다.
+import { useNavigate } from "react-router-dom";
 
-const SearchCard = ({ img, nickname, age, handler, rate }: ISearchDateDto) => {
+const SearchCard = ({
+  profileImages,
+  username,
+  age,
+  // handler,
+  rate,
+}: ISearchDateDto) => {
   const [isHovered, setIsHovered] = useState(false);
+  const navigator = useNavigate();
+  const onProfileClick = (nickname: string) => {
+    navigator(`/profile?username=${nickname}`);
+  };
 
   return (
     <Wrapper
-      onClick={handler}
+      onClick={() => onProfileClick(username)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       <ImageContainer>
-        <StyledImage src={img} alt={nickname} />
+        <StyledImage src={profileImages} alt={username} />
         <Overlay $isHovered={isHovered}>
           <OverlayContent>
-            <p>{nickname}</p>
+            <p>{username}</p>
             {isHovered && (
               <>
                 <p>{age}</p>
