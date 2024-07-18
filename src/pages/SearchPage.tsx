@@ -1,28 +1,13 @@
 import { axiosFindUser } from "@/api/axios.custom";
-import LocationDropdown from "@/components/LocationDropdown";
 import Modal, { IModalOptions } from "@/components/Modal";
 import SearchCard from "@/components/SearchCard";
-import { ageLableMap, InterestLableMap, rateLableMap } from "@/types/maps";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
-import { images } from "./ProfilePage";
-import { tagItem } from "./SignUpPage";
 import { ReactComponent as FilterIcon } from "@/assets/icons/filter-icon.svg";
 import { SocketContext } from "./LayoutPage";
-import { axiosProfile } from "@/api/axios.custom";
 import FilterModal from "@/components/FilterModal";
-
-const ageFilterList: tagItem[] = Object.entries(ageLableMap).map(
-  ([key, name]) => ({ key, name })
-);
-const rateFilterList: tagItem[] = Object.entries(rateLableMap).map(
-  ([key, name]) => ({ key, name })
-);
-
-const interestTagList: tagItem[] = Object.entries(InterestLableMap).map(
-  ([key, name]) => ({ key, name })
-);
+import Tag from "@/components/Tag";
 
 export interface ISearchDateDto {
   profileImages: string;
@@ -31,33 +16,39 @@ export interface ISearchDateDto {
   rate: number;
   // 프론트에서 필요한가?
   commonHashtags: number;
-  // handler: () => void;
 }
 
 export interface IRangeDto {
-  rate: { min: number; max: number };
-  age: { min: number; max: number };
+  rate: { min: number | undefined; max: number | undefined };
+  age: { min: number | undefined; max: number | undefined };
   location: { si: string; gu: string };
 }
 
 const SearchPage = () => {
-  // const [rangeData, setRangeData] = useState<IRangeDto>();
   const [searchData, setSearchData] = useState<ISearchDateDto[]>([]);
   const [filterList, setFilterList] = useState<IModalOptions[]>([]);
-  const [modalTitle, setModalTitle] = useState<string>("");
   const [modalOpen, setModalOpen] = useState(false);
-  const [selectedArea, setSelectedArea] = useState<string>("");
-  const [selectedSubArea, setSelectedSubArea] = useState<string>("");
   const navigator = useNavigate();
-  const handleAreaChange = (e: any) => {
-    setSelectedArea(e.target.value);
-  };
-  const handleSubAreaChange = (e: any) => {
-    setSelectedSubArea(e.target.value);
-  };
-  const openModal = (title: string) => {
+  const [rangeData, setRangeData] = useState<IRangeDto>({
+    rate: { min: undefined, max: undefined },
+    age: { min: undefined, max: undefined },
+    location: { si: "", gu: "" },
+  });
+
+  const handleChange = useCallback(
+    (category: keyof IRangeDto, field: string, value: number | string) => {
+      setRangeData((prev) => ({
+        ...prev,
+        [category]: {
+          ...prev[category],
+          [field]: value,
+        },
+      }));
+    },
+    []
+  );
+  const openModal = () => {
     setModalOpen(true);
-    setModalTitle(title);
   };
   const closeModal = () => {
     setModalOpen(false);
@@ -65,25 +56,29 @@ const SearchPage = () => {
 
   // 모달 태그 선택 창
 
-  const tryFindUser = async () => {
-    let si = selectedArea;
-    let gu = selectedSubArea;
-    let minAge = 0;
-    let maxAge = 0;
-    let minRate = 0;
-    let maxRate = 0;
-    let hashtags: string[] = [];
+  const tryFindUser = async (selectedOption: IModalOptions[]) => {
+    let si = rangeData.location.si || undefined;
+    let gu = rangeData.location.gu || undefined;
+    let minAge = rangeData.age.min || undefined;
+    let maxAge = rangeData.age.max || undefined;
+    let minRate = rangeData.rate.min || undefined;
+    let maxRate = rangeData.rate.max || undefined;
+    // let hashtags = selectedOption.map((item) => item.key) || [];
+    let hashtags =
+      selectedOption && Array.isArray(selectedOption)
+        ? selectedOption.map((item) => item.key)
+        : undefined;
     try {
       const res = await axiosFindUser(
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined
+        si,
+        gu,
+        minAge,
+        maxAge,
+        minRate,
+        maxRate,
+        hashtags
       );
-      console.log("res", res);
+      // console.log("res", res);
       console.log("res data", res.data.users);
       setSearchData(res.data.users);
     } catch (error: any) {
@@ -92,25 +87,21 @@ const SearchPage = () => {
   };
 
   const onSubmint = (selectedOption: IModalOptions[]) => {
+    // 이때 모달의 모든 값들 여기로 보냄
     setFilterList([...selectedOption]);
     console.log("filterList", filterList);
+    console.log(
+      "selectedOption",
+      selectedOption.map((item) => item.key)
+    );
+    console.log("submit", rangeData);
     closeModal();
-    tryFindUser();
+    tryFindUser(selectedOption);
   };
 
   useEffect(() => {
     tryFindUser();
   }, []);
-
-  const selectModalOptions = (title: string) => {
-    if (title === "Age") {
-      return ageFilterList;
-    } else if (title === "Rate") {
-      return rateFilterList;
-    } else {
-      return interestTagList;
-    }
-  };
 
   const onClickTag = (tag: IModalOptions) => {
     if (filterList.some((item) => item.name === tag.name)) {
@@ -124,25 +115,6 @@ const SearchPage = () => {
     navigator(`/profile?username=${nickname}`);
   };
 
-  // const mockData: ISearchDateDto[] = Array.from({ length: 30 }, (_, index) => ({
-  //   img: images[index % images.length],
-  //   nickname: `User${index + 1}`,
-  //   age: index + 23,
-  //   handler: () => {
-  //     // userName 백으로 보내고 profile 페이지로 이동
-  //     onProfileClick(`User${index + 1}`);
-  //     // console.log(`Handler for User${index + 1}`);
-  //   },
-  // }));
-  // const [selectedArea, setSelectedArea] = useState<string>("");
-  // const [selectedSubArea, setSelectedSubArea] = useState<string>("");
-  // const handleAreaChange = (e: any) => {
-  //   setSelectedArea(e.target.value);
-  // };
-  // const handleSubAreaChange = (e: any) => {
-  //   setSelectedSubArea(e.target.value);
-  // };
-
   const socket = useContext(SocketContext);
   useEffect(() => {
     socket.on("connect", () => {
@@ -153,24 +125,33 @@ const SearchPage = () => {
     });
   }, []);
 
-  // const socket = useContext(SocketContext);
-  // socket.on("connect", () => {});
-  // useEffect(() => {
-  //   socket.on("message", () => {
-  //     console.log("message");
-  //   });
-  // }, []);
-  // sendMessage();
-
   return (
     <Wrapper>
       <FilterWrapper>
-        <FilterTitleStyled onClick={() => openModal("test")}>
+        <FilterTitleStyled onClick={() => openModal()}>
           Filter
           <FilterIcon />
         </FilterTitleStyled>
       </FilterWrapper>
       <SelectTagStyled>
+        {rangeData.location.si && (
+          <TagStyled>{rangeData.location.si}</TagStyled>
+        )}
+        {rangeData.location.gu && (
+          <TagStyled>{rangeData.location.gu}</TagStyled>
+        )}
+        {
+          <TagStyled>
+            age
+            {rangeData.age.min} ~ {rangeData.age.max}
+          </TagStyled>
+        }
+        {
+          <TagStyled>
+            rate
+            {rangeData.rate.min} ~ {rangeData.rate.max}
+          </TagStyled>
+        }
         {filterList.map((tag) => (
           <TagStyled key={tag.name}>{tag.name}</TagStyled>
         ))}
@@ -182,17 +163,12 @@ const SearchPage = () => {
       </SearchCardWrapper>
       {modalOpen && (
         <FilterModal
-          modalTitle={modalTitle}
-          options={selectModalOptions(modalTitle)}
-          title="Age"
           closeModal={closeModal}
           onClickTag={onClickTag}
           filterList={filterList}
           onSubmint={onSubmint}
-          selectedArea={selectedArea}
-          selectedSubArea={selectedSubArea}
-          handleAreaChange={handleAreaChange}
-          handleSubAreaChange={handleSubAreaChange}
+          handleChange={handleChange}
+          rangeData={rangeData}
         />
       )}
     </Wrapper>

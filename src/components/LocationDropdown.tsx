@@ -1,21 +1,31 @@
 import { LocationData } from "@/assets/mock/mock";
+import { IRangeDto } from "@/pages/SearchPage";
 import styled from "styled-components";
 
 const LocationDropdown = ({
   selectedArea,
   selectedSubArea,
-  handleAreaChange,
-  handleSubAreaChange,
+  handleChange,
   isFixed,
 }: {
   selectedArea: string;
   selectedSubArea: string;
-  handleAreaChange?: (e: any) => void;
-  handleSubAreaChange?: (e: any) => void;
+  handleChange: (
+    category: keyof IRangeDto,
+    field: string,
+    value: string
+  ) => void;
   isFixed?: boolean;
 }) => {
   const subAreas =
     LocationData.find((area) => area.name === selectedArea)?.subArea || [];
+  const handleAreaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    handleChange("location", "si", e.target.value);
+  };
+
+  const handleSubAreaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    handleChange("location", "gu", e.target.value);
+  };
   return (
     <Area>
       {isFixed ? (

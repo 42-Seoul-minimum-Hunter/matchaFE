@@ -30,10 +30,6 @@ function App() {
           <Route path="findPW" element={<FindPwPage />} />
           <Route path="twoFactor" element={<TwoFactor />} />
           <Route path="email" element={<EmailPage />} />
-
-          {/* <Route path="home" element={<Home />}></Route>
-          <Route path="login" element={<Login />}></Route>
-          <Route path="game" element={<GamePreview />}></Route> */}
         </Route>
       </Routes>
     </BrowserRouter>

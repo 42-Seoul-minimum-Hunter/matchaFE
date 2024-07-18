@@ -1,127 +1,79 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-// import { useEffect, useState } from "react";
 import { RangeState } from "./FilterModal";
-
-// const NumberRangeInput = ({ type }: { type: string }) => {
-//   // console.log("type", type);
-//   const [minNumber, setMinNumber] = useState<number>(0);
-//   const [maxNumber, setMaxNumber] = useState<number>(100);
-//   const [error, setError] = useState<string>("");
-//   console.log("number rerender");
-//   useEffect(() => {
-//     validateNumbers();
-//   }, [minNumber, maxNumber]);
-
-//   const validateNumbers = () => {
-//     if (minNumber > maxNumber) {
-//       setError("Minimum number cannot be greater than maximum number.");
-//     } else {
-//       setError("");
-//     }
-//   };
-
-//   const handleMinChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     const value = Math.max(0, Math.min(100, Number(e.target.value)));
-//     setMinNumber(value);
-//   };
-
-//   const handleMaxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-//     const value = Math.max(0, Math.min(100, Number(e.target.value)));
-//     setMaxNumber(value);
-//   };
-
-//   return (
-//     <Container>
-//       <TitleStyled>{type}</TitleStyled>
-//       <InputGroup>
-//         <Label htmlFor="minNumber">Min {type}:</Label>
-//         <Input
-//           type="number"
-//           id="minNumber"
-//           value={minNumber}
-//           onChange={handleMinChange}
-//           min={0}
-//           max={100}
-//         />
-//       </InputGroup>
-//       <InputGroup>
-//         <Label htmlFor="maxNumber">Max {type}:</Label>
-//         <Input
-//           type="number"
-//           id="maxNumber"
-//           value={maxNumber}
-//           onChange={handleMaxChange}
-//           min={0}
-//           max={100}
-//         />
-//       </InputGroup>
-//       {error && <ErrorMessage>{error}</ErrorMessage>}
-//     </Container>
-//   );
-// };
+import { IRangeDto } from "@/pages/SearchPage";
 
 interface NumberRangeInputProps {
-  type: string;
+  type: "Rate" | "Age";
   range: RangeState;
-  onChange: (minOrMax: "min" | "max", value: number) => void;
+  handleChange: (
+    category: keyof IRangeDto,
+    field: string,
+    value: string
+  ) => void;
 }
 
 const NumberRangeInput: React.FC<NumberRangeInputProps> = ({
   type,
   range,
-  onChange,
+  handleChange,
 }) => {
-  const [error, setError] = useState<string>("");
+  const maxAllowedValue = type === "Rate" ? 5 : 100;
+  const [error, setError] = useState("");
+  const [minValue, setMinValue] = useState(range.min || 0);
+  const [maxValue, setMaxValue] = useState(range.max || maxAllowedValue);
 
-  console.log("number rerender");
   useEffect(() => {
     validateNumbers();
-  }, [range.min, range.max]);
+  }, [minValue, maxValue]);
 
   const validateNumbers = () => {
-    if (range.min > range.max) {
+    if (minValue > maxValue) {
       setError("Minimum number cannot be greater than maximum number.");
     } else {
       setError("");
     }
   };
 
-  const handleChange =
-    (minOrMax: "min" | "max") => (e: React.ChangeEvent<HTMLInputElement>) => {
-      const value = Math.max(0, Math.min(100, Number(e.target.value)));
-      onChange(minOrMax, value);
+  const handleRangeChange =
+    (field: "min" | "max") => (e: React.ChangeEvent<HTMLInputElement>) => {
+      const category = type.toLowerCase() as keyof IRangeDto;
+      const value = Math.max(
+        0,
+        Math.min(maxAllowedValue, Number(e.target.value))
+      );
+      if (field === "min") {
+        setMinValue(value);
+      } else {
+        setMaxValue(value);
+      }
+      handleChange(category, field, value.toString());
     };
 
   return (
     <Container>
       <TitleStyled>{type}</TitleStyled>
       <InputGroup>
-        <Label htmlFor={`min${type}`}>Min {type}:</Label>
+        <Label>Min {type}:</Label>
         <Input
           type="number"
-          id={`min${type}`}
-          value={range.min}
-          onChange={handleChange("min")}
-          min={0}
-          max={100}
+          value={minValue.toString()}
+          onChange={handleRangeChange("min")}
         />
       </InputGroup>
       <InputGroup>
-        <Label htmlFor={`max${type}`}>Max {type}:</Label>
+        <Label>Max {type}:</Label>
         <Input
           type="number"
-          id={`max${type}`}
-          value={range.max}
-          onChange={handleChange("max")}
-          min={0}
-          max={100}
+          value={maxValue.toString()}
+          onChange={handleRangeChange("max")}
         />
       </InputGroup>
       {error && <ErrorMessage>{error}</ErrorMessage>}
     </Container>
   );
 };
+
 export default NumberRangeInput;
 
 const Container = styled.div`

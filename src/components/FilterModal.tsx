@@ -4,6 +4,9 @@ import { ReactComponent as ChevronIcon } from "@/assets/icons/chevron-icon.svg";
 import { useState } from "react";
 import NumberRangeInput from "./NumberRangeInput";
 import LocationDropdown from "./LocationDropdown";
+import { IRangeDto } from "@/pages/SearchPage";
+import { InterestLableMap } from "@/types/maps";
+import { tagItem } from "@/pages/SignUpPage";
 
 export interface IModalOptions {
   key: string;
@@ -11,50 +14,45 @@ export interface IModalOptions {
 }
 
 export interface RangeState {
-  min: number;
-  max: number;
+  min: number | undefined;
+  max: number | undefined;
 }
 
 interface IModalProps {
-  options: IModalOptions[];
-  title: string;
+  // options: IModalOptions[];
+  // title: string;
   // modalOpen: boolean;
   closeModal: () => void;
   onClickTag: (tag: IModalOptions) => void;
-  modalTitle: string;
+  // modalTitle: string;
   filterList: IModalOptions[];
   onSubmint: (selectedOption: IModalOptions[]) => void;
   // ModalLable: string;
   // onChangeValue: (value: string) => void;
-  selectedArea: string;
-  selectedSubArea: string;
-  handleAreaChange: (e: any) => void;
-  handleSubAreaChange: (e: any) => void;
+  // selectedArea: string;
+  // selectedSubArea: string;
+  // handleAreaChange: (e: any) => void;
+  // handleSubAreaChange: (e: any) => void;
+  handleChange: (
+    category: keyof IRangeDto,
+    field: string,
+    value: number | string
+  ) => void;
+  rangeData: IRangeDto;
 }
 
 const FilterModal = ({
-  options,
-  // title,
   closeModal,
   filterList,
   onSubmint,
-  selectedArea,
-  selectedSubArea,
-  handleAreaChange,
-  handleSubAreaChange,
+  handleChange,
+  rangeData,
 }: IModalProps) => {
   const [selectedOption, setSelectedOption] =
     useState<IModalOptions[]>(filterList);
-  const [rateRange, setRateRange] = useState({ min: 0, max: 100 });
-  const [ageRange, setAgeRange] = useState({ min: 0, max: 100 });
-
-  const handleRateChange = (minOrMax: "min" | "max", value: number) => {
-    setRateRange((prev) => ({ ...prev, [minOrMax]: value }));
-  };
-
-  const handleAgeChange = (minOrMax: "min" | "max", value: number) => {
-    setAgeRange((prev) => ({ ...prev, [minOrMax]: value }));
-  };
+  const hashTagsList: tagItem[] = Object.entries(InterestLableMap).map(
+    ([key, name]) => ({ key, name })
+  );
 
   const onClickTagTest = (tag: IModalOptions) => {
     if (selectedOption.some((item) => item.name === tag.name)) {
@@ -65,45 +63,42 @@ const FilterModal = ({
       setSelectedOption([...selectedOption, tag]);
     }
   };
-  console.log("filter render");
+
   return (
     <ModalStyled onClick={closeModal}>
       <ModalBodyStyled onClick={(e: any) => e.stopPropagation()}>
         <RowContainer>
-          {/* <NumberRangeInput type="Rate" />
-          <NumberRangeInput type="Age" /> */}
           <NumberRangeInput
             type="Rate"
-            range={rateRange}
-            onChange={handleRateChange}
+            range={rangeData.rate}
+            handleChange={handleChange}
           />
           <NumberRangeInput
             type="Age"
-            range={ageRange}
-            onChange={handleAgeChange}
+            range={rangeData.age}
+            handleChange={handleChange}
           />
         </RowContainer>
         <RowStyled>
           <TitleStyled>Location</TitleStyled>
           <LocationDropdown
-            selectedArea={selectedArea}
-            selectedSubArea={selectedSubArea}
-            handleAreaChange={handleAreaChange}
-            handleSubAreaChange={handleSubAreaChange}
+            selectedArea={rangeData.location.si}
+            selectedSubArea={rangeData.location.gu}
+            handleChange={handleChange}
           />
         </RowStyled>
         <TitleStyled>Hashtags</TitleStyled>
         <ModalSelectionContainer>
-          {options.map((option) => (
+          {hashTagsList.map((tag) => (
             <ModalSelectionOption
-              key={option.key}
-              // onClick={() => onClickTag(option)}
-              onClick={() => onClickTagTest(option)}
+              // 이미 선택된 태그 색칠
               $isSelected={selectedOption.some(
-                (item) => item.name === option.name
+                (item) => item.name === tag.name
               )}
+              key={tag.name}
+              onClick={() => onClickTagTest(tag)}
             >
-              {option.name}
+              {tag.name}
             </ModalSelectionOption>
           ))}
         </ModalSelectionContainer>

@@ -1,6 +1,7 @@
 import { RegisterDto } from "@/types/tag.dto";
 import axios, { AxiosRequestConfig } from "axios";
 import { getCookie } from "./cookie";
+import { IModalOptions } from "@/components/Modal";
 
 // axios 요청 파라미터 옵션인 withCredentials의 기본값은 fals로 설정되어 CORS 요청을 허용하지 않음
 // instance.interceptors.request.use
@@ -32,16 +33,6 @@ instance.interceptors.request.use(async (config: any) => {
     delete config.headers.Authorization;
   }
 
-  // config.headers = {
-  // Authorization : {token ? `Bearer ${token}` : null}
-  // Authorization: `Bearer ${token}`,
-
-  // instance.interceptors.request.use(async (config) => {
-  // const token = getCookie("admin_access_token") ?? getCookie("access_token");
-  // config.headers = {
-  // Authorization: `Bearer ${token}`,
-  // Authorization :
-  // };
   return config;
 });
 
@@ -135,15 +126,16 @@ export const axiosEmailVerify = async (): Promise<any> => {
   }
 };
 
+// NOTE : 굳이 undefined를 넣어줄 필요가 없음.., params의 요소의 값을 지정안하면 undefined가 됨
 const axiosFindUserURL = "/user/find";
 export const axiosFindUser = async (
-  minAge?: number,
-  maxAge?: number,
-  minRate?: number,
-  maxRate?: number,
-  si?: string,
-  gu?: string,
-  hashtags?: string[]
+  si: string | undefined,
+  gu?: string | undefined,
+  minAge?: number | undefined,
+  maxAge?: number | undefined,
+  minRate?: number | undefined,
+  maxRate?: number | undefined,
+  hashtags?: string[] | undefined
 ): Promise<any> => {
   try {
     const params: Record<string, string> = {};
@@ -154,6 +146,8 @@ export const axiosFindUser = async (
     if (si) params.si = si;
     if (gu) params.gu = gu;
     if (hashtags && hashtags.length > 0) params.hashtags = hashtags.join(",");
+    console.log("params", params);
+    // console.log("hashtags", hashtags);
     // params.hashtags = hashtags;
 
     const queryString = new URLSearchParams(params).toString();

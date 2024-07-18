@@ -43,13 +43,7 @@ import styled from "styled-components";
 import Stars from "./Stars"; // Stars 컴포넌트를 import 합니다.
 import { useNavigate } from "react-router-dom";
 
-const SearchCard = ({
-  profileImages,
-  username,
-  age,
-  // handler,
-  rate,
-}: ISearchDateDto) => {
+const SearchCard = ({ profileImages, username, age, rate }: ISearchDateDto) => {
   const [isHovered, setIsHovered] = useState(false);
   const navigator = useNavigate();
   const onProfileClick = (nickname: string) => {
