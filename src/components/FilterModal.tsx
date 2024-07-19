@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import { ReactComponent as ChevronIcon } from "@/assets/icons/chevron-icon.svg";
-
 import { useState } from "react";
 import NumberRangeInput from "./NumberRangeInput";
 import LocationDropdown from "./LocationDropdown";
@@ -19,25 +18,18 @@ export interface RangeState {
 }
 
 interface IModalProps {
-  // options: IModalOptions[];
-  // title: string;
-  // modalOpen: boolean;
   closeModal: () => void;
   onClickTag: (tag: IModalOptions) => void;
-  // modalTitle: string;
   filterList: IModalOptions[];
-  onSubmint: (selectedOption: IModalOptions[]) => void;
-  // ModalLable: string;
-  // onChangeValue: (value: string) => void;
-  // selectedArea: string;
-  // selectedSubArea: string;
-  // handleAreaChange: (e: any) => void;
-  // handleSubAreaChange: (e: any) => void;
-  handleChange: (
-    category: keyof IRangeDto,
-    field: string,
-    value: number | string
+  onSubmint: (
+    selectedOption: IModalOptions[],
+    localRangeData: IRangeDto
   ) => void;
+  // handleChange: (
+  //   category: keyof IRangeDto,
+  //   field: string,
+  //   value: number | string
+  // ) => void;
   rangeData: IRangeDto;
 }
 
@@ -45,7 +37,7 @@ const FilterModal = ({
   closeModal,
   filterList,
   onSubmint,
-  handleChange,
+  // handleChange,
   rangeData,
 }: IModalProps) => {
   const [selectedOption, setSelectedOption] =
@@ -53,6 +45,22 @@ const FilterModal = ({
   const hashTagsList: tagItem[] = Object.entries(InterestLableMap).map(
     ([key, name]) => ({ key, name })
   );
+
+  const [localRangeData, setLocalRangeData] = useState<IRangeDto>(rangeData);
+
+  const handleLocalChange = (
+    category: keyof IRangeDto,
+    field: string,
+    value: number | string
+  ) => {
+    setLocalRangeData((prev) => ({
+      ...prev,
+      [category]: {
+        ...prev[category],
+        [field]: value,
+      },
+    }));
+  };
 
   const onClickTagTest = (tag: IModalOptions) => {
     if (selectedOption.some((item) => item.name === tag.name)) {
@@ -70,21 +78,21 @@ const FilterModal = ({
         <RowContainer>
           <NumberRangeInput
             type="Rate"
-            range={rangeData.rate}
-            handleChange={handleChange}
+            range={localRangeData.rate}
+            handleChange={handleLocalChange}
           />
           <NumberRangeInput
             type="Age"
-            range={rangeData.age}
-            handleChange={handleChange}
+            range={localRangeData.age}
+            handleChange={handleLocalChange}
           />
         </RowContainer>
         <RowStyled>
           <TitleStyled>Location</TitleStyled>
           <LocationDropdown
-            selectedArea={rangeData.location.si}
-            selectedSubArea={rangeData.location.gu}
-            handleChange={handleChange}
+            selectedArea={localRangeData.location.si}
+            selectedSubArea={localRangeData.location.gu}
+            handleChange={handleLocalChange}
           />
         </RowStyled>
         <TitleStyled>Hashtags</TitleStyled>
@@ -103,15 +111,29 @@ const FilterModal = ({
           ))}
         </ModalSelectionContainer>
         {/* 여기서 정보 넘겨주기 */}
-        <SubmitStyled onClick={() => onSubmint(selectedOption)}>
-          적용하기
-        </SubmitStyled>
+        <ButtonContainer>
+          <SubmitStyled className="exit" onClick={closeModal}>
+            나가기
+          </SubmitStyled>
+          <SubmitStyled
+            className="apply"
+            onClick={() => onSubmint(selectedOption, localRangeData)}
+          >
+            적용하기
+          </SubmitStyled>
+        </ButtonContainer>
       </ModalBodyStyled>
     </ModalStyled>
   );
 };
 
 export default FilterModal;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+`;
 
 const RowStyled = styled.div`
   margin-bottom: 40px;
@@ -166,8 +188,14 @@ const ModalStyled = styled.div`
 `;
 
 const ModalBodyStyled = styled.div`
+  z-index: 1000; // 높은 z-index 추가
   position: absolute;
   width: 520px;
+
+  @media screen and (max-width: 600px) {
+    width: 100%;
+  }
+  overflow: scroll;
   /* width: 80%; */
   /* height: 500px; */
   padding: 40px;
@@ -182,10 +210,15 @@ const ModalBodyStyled = styled.div`
 `;
 
 const SubmitStyled = styled.div`
-  background-color: var(--light-vermilion);
-  color: var(--white);
-  padding: 10px 0;
-
+  &.apply {
+    background-color: var(--light-vermilion);
+    color: var(--white);
+  }
+  &.exit {
+    background-color: #a1a1a1;
+    color: var(--white);
+  }
+  padding: 10px 15px;
   border-radius: 10px;
   margin-top: 20px;
 `;

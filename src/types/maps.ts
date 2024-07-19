@@ -12,11 +12,19 @@ export const GenderLableMap = {
   [GenderType.FEMALE]: "여성",
 };
 
+// export const PreferenceLableMap = {
+//   [PreferenceType.BISEXUAL]: "양성애자",
+//   [PreferenceType.HETEROSEXUAL]: "이성애자",
+//   [PreferenceType.HOMOSEXUAL]: "동성애자",
+//   [PreferenceType.NONE]: "취향없음",
+// };
+
+// NOTE: 타입을 굳이 이렇게 지정해야 하나..?
 export const PreferenceLableMap = {
-  [PreferenceType.BISEXUAL]: "양성애자",
-  [PreferenceType.HETEROSEXUAL]: "이성애자",
-  [PreferenceType.HOMOSEXUAL]: "동성애자",
-  [PreferenceType.NONE]: "취향없음",
+  [PreferenceType.MALE]: "남성",
+  [PreferenceType.FEMALE]: "여성",
+  [PreferenceType.ALL]: "양성",
+  [PreferenceType.NONE]: "없음",
 };
 
 export const InterestLableMap = {

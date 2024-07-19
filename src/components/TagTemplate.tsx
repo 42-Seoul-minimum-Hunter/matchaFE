@@ -12,6 +12,8 @@ export interface ITagTemplateProps<T> {
   selectedTag?: string[];
 }
 
+// BE : gender, preference를 모두 대문자로 받아오기
+// hashtag도 영어 대문자로 받아오기
 const TagTemplate = <T,>({
   title,
   tagList,
@@ -23,13 +25,12 @@ const TagTemplate = <T,>({
   const wrapperRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const buttons = wrapperRef.current?.querySelectorAll("button");
-    // console.log("selectedTag", selectedTag);
-    // console.log("tagList", tagList);
+    console.log("selectedTag", selectedTag);
     if (isModify) {
       buttons?.forEach((button) => {
         if (
           selectedTag &&
-          selectedTag.includes(button.classList[0].toLowerCase())
+          selectedTag.includes(button.classList[0].toUpperCase())
         ) {
           button.classList.add("selected");
         }
@@ -39,7 +40,6 @@ const TagTemplate = <T,>({
         let temp: any[] = initialState ? [...(initialState as any[])] : [];
         buttons?.forEach((button) => {
           const buttonClassName = button.className;
-          // if (button.classList.contains(`${initialState}`)) {
           if (temp.some((item) => buttonClassName.includes(item))) {
             button.classList.add("selected");
           }
@@ -86,7 +86,6 @@ const TagTemplate = <T,>({
           button.classList.remove("selected");
         }
       });
-      // target.classList.add("selected");
       setState(selectedKey as React.SetStateAction<T>);
     }
   };

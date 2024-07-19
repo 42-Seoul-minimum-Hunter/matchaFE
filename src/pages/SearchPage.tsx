@@ -28,7 +28,6 @@ const SearchPage = () => {
   const [searchData, setSearchData] = useState<ISearchDateDto[]>([]);
   const [filterList, setFilterList] = useState<IModalOptions[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
-  const navigator = useNavigate();
   const [rangeData, setRangeData] = useState<IRangeDto>({
     rate: { min: undefined, max: undefined },
     age: { min: undefined, max: undefined },
@@ -54,9 +53,9 @@ const SearchPage = () => {
     setModalOpen(false);
   };
 
-  // 모달 태그 선택 창
-
-  const tryFindUser = async (selectedOption: IModalOptions[]) => {
+  //NOTE:  모달 태그 선택 창, 최악의 방법... ?사용..
+  // TODO -> minAge만 들어갔을때 오류 안던지는거 같음
+  const tryFindUser = async (selectedOption?: IModalOptions[]) => {
     let si = rangeData.location.si || undefined;
     let gu = rangeData.location.gu || undefined;
     let minAge = rangeData.age.min || undefined;
@@ -86,17 +85,16 @@ const SearchPage = () => {
     }
   };
 
-  const onSubmint = (selectedOption: IModalOptions[]) => {
+  const onSubmint = (
+    selectedOption: IModalOptions[],
+    newRangeData: IRangeDto
+  ) => {
     // 이때 모달의 모든 값들 여기로 보냄
+    // 적용하기 버튼을 누르게 되면 range를 누르게 만들기
     setFilterList([...selectedOption]);
-    console.log("filterList", filterList);
-    console.log(
-      "selectedOption",
-      selectedOption.map((item) => item.key)
-    );
-    console.log("submit", rangeData);
-    closeModal();
+    setRangeData(newRangeData);
     tryFindUser(selectedOption);
+    closeModal();
   };
 
   useEffect(() => {
@@ -109,10 +107,6 @@ const SearchPage = () => {
     } else {
       setFilterList([...filterList, tag]);
     }
-  };
-
-  const onProfileClick = (nickname: string) => {
-    navigator(`/profile?username=${nickname}`);
   };
 
   const socket = useContext(SocketContext);
@@ -140,18 +134,19 @@ const SearchPage = () => {
         {rangeData.location.gu && (
           <TagStyled>{rangeData.location.gu}</TagStyled>
         )}
-        {
+        {rangeData.age.min !== undefined && rangeData.age.max !== undefined && (
           <TagStyled>
             age
             {rangeData.age.min} ~ {rangeData.age.max}
           </TagStyled>
-        }
-        {
-          <TagStyled>
-            rate
-            {rangeData.rate.min} ~ {rangeData.rate.max}
-          </TagStyled>
-        }
+        )}
+        {rangeData.rate.min !== undefined &&
+          rangeData.rate.max !== undefined && (
+            <TagStyled>
+              rate
+              {rangeData.rate.min} ~ {rangeData.rate.max}
+            </TagStyled>
+          )}
         {filterList.map((tag) => (
           <TagStyled key={tag.name}>{tag.name}</TagStyled>
         ))}
@@ -167,7 +162,7 @@ const SearchPage = () => {
           onClickTag={onClickTag}
           filterList={filterList}
           onSubmint={onSubmint}
-          handleChange={handleChange}
+          // handleChange={handleChange}
           rangeData={rangeData}
         />
       )}
@@ -180,12 +175,17 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  /* backdrop-filter: blur(6px); */
+  /* filter: blur(6px); */
+  /* position: relative; // 추가 */
   /* justify-content: center; */
   height: 100%;
   padding-top: 10px;
+  z-index: 1;
 `;
 
 const SearchCardWrapper = styled.div`
+  backdrop-filter: blur(6px);
   display: grid;
   grid-template-columns: repeat(5, 200px);
 
@@ -227,12 +227,14 @@ const FilterTitleStyled = styled.div`
 `;
 
 const SelectTagStyled = styled.div`
+  backdrop-filter: blur(6px);
   display: flex;
   gap: 10px;
   margin: 10px 0;
 `;
 
 const FilterWrapper = styled.div`
+  backdrop-filter: blur(6px);
   display: flex;
   gap: 30px;
 `;

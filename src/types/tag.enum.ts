@@ -4,9 +4,9 @@ export enum GenderType {
 }
 
 export enum PreferenceType {
-  HETEROSEXUAL = "HETEROSEXUAL",
-  HOMOSEXUAL = "HOMOSEXUAL",
-  BISEXUAL = "BISEXUAL",
+  MALE = "MALE",
+  FEMALE = "FEMALE",
+  ALL = "ALL",
   NONE = "NONE",
 }
 

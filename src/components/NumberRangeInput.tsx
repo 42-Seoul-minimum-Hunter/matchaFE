@@ -91,20 +91,25 @@ const Container = styled.div`
 const InputGroup = styled.div`
   display: flex;
   margin-bottom: 15px;
+  align-items: center;
+  justify-content: space-between;
 `;
 
 const Label = styled.label`
   display: block;
   margin-bottom: 5px;
+  /* width: 170px; */
 `;
 
 const Input = styled.input`
-  width: 100%;
+  width: 80px;
   padding: 8px;
   text-align: right;
   /* border: 1px solid #ddd; */
   border-radius: 4px;
-  color: #fff;
+  background-color: #fff;
+  border: 1px solid var(--gray);
+  color: var(--black);
   /* box-sizing: border-box; */
 `;
 

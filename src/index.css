@@ -15,7 +15,7 @@ body,
   --gray: #575756;
   --light-gray: #999999;
   --vermilion: #e94057;
-  --light-vermilion: #ff4b4b;
+  --light-vermilion: #fd686c;
   --white: #fff;
   --black: #000;
   --msg-view: #fcb8ba;
@@ -24,6 +24,8 @@ body,
   --light-blue: #d1eaff;
   --online: #2aac7a;
   --offline: #d22727;
+
+  --button-bg-color: #fd686c;
 
   /* --neon-text-color: #f40; */
   --neon-border-color: #2aac7a;
@@ -51,4 +53,16 @@ body {
 @font-face {
   font-family: "Margarine-Regular";
   src: url("./assets/font/Margarine/Margarine-Regular.ttf") format("truetype");
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox  */
+input[type="number"] {
+  -moz-appearance: textfield;
 }

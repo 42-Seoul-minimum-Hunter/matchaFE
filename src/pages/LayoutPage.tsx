@@ -5,6 +5,7 @@ import CircleContainer from "@/components/BackgroundColor";
 import Header from "@/components/Header";
 import { getCookie } from "@/api/cookie";
 import { io, Socket } from "socket.io-client";
+import Test from "@/components/Test";
 
 const token = getCookie("jwt");
 
@@ -66,15 +67,23 @@ const Layout = () => {
     isRegisterPage ||
     isFindPasswordPage ||
     isTwoFactorPage ? (
-    <Outlet />
+    <>
+      {/* <Test /> */}
+      {/* <Content> */}
+      <Outlet />
+      {/* </Content> */}
+    </>
   ) : (
     <SocketContext.Provider value={socket}>
       <Wrapper>
         {/* <CircleContainer circleCount={12} circleColors={COLORS} /> */}
-        <Header />
-        <MainStyled>
-          <Outlet />
-        </MainStyled>
+        <Test />
+        <Content>
+          <Header />
+          <MainStyled>
+            <Outlet />
+          </MainStyled>
+        </Content>
       </Wrapper>
     </SocketContext.Provider>
   );
@@ -82,31 +91,15 @@ const Layout = () => {
 
 export default Layout;
 
-const BackgroundCircleStyled = styled.div`
-  &::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    /* width: 100%;
-    height: 100%; */
-    background-color: rgba(22, 15, 15, 0.5);
-    z-index: -1;
-    width: 100%;
-    height: 100%;
-  }
-`;
-
-const TestCircle = styled.div`
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background-color: #27f122;
-  filter: blur(50px);
+const Content = styled.div`
+  width: 100%;
+  /* height: 100%; */
+  position: relative;
+  z-index: 1; // Test 컴포넌트보다 위에 위치하도록 설정
 `;
 
 const Wrapper = styled.div`
-  /* position: relative; */
+  position: relative;
   width: 100%;
   height: 100%;
   overflow: scroll;
@@ -117,7 +110,7 @@ const MainStyled = styled.div`
   max-width: 1200px;
   margin: 0 auto;
   margin-bottom: 30px;
-  height: 100%;
+  height: 80%;
   border-radius: 10px;
   box-shadow: 0 0 10px;
   overflow: hidden;

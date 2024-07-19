@@ -8,7 +8,7 @@ import { axiosAuthLogin, axiosEmailVerify } from "@/api/axios.custom";
 
 const LoginPage = () => {
   const navigate = useNavigate();
-  const isMobile = useMediaQuery("(max-width: 768px)");
+  const isMobile = useMediaQuery("(max-width: 900px)");
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [isEmail, setIsEmail] = useState(false);
@@ -71,8 +71,6 @@ const LoginPage = () => {
     window.location.href = url;
   };
 
-  console.log("isMobile", isMobile);
-
   return (
     <Wrapper>
       <>
@@ -85,9 +83,9 @@ const LoginPage = () => {
             </SignWrapper>
           </CardStyled>
         </SectionStyled>
-        <SectionStyled>
+        <SectionStyled className="right">
           <CardStyled>
-            <TitleStyled>{isMobile ? "MATCHA" : "LOGIN"}</TitleStyled>
+            <LoginTitleStyled>{isMobile ? "MATCHA" : "LOGIN"}</LoginTitleStyled>
             <LoginFormStyled>
               <InputTemplate
                 title="username"
@@ -137,18 +135,19 @@ const SignWrapper = styled.div`
   }
 `;
 
-const SignStyled = styled.div`
-  font-size: 1.5rem;
-  font-family: var(--main-font);
-`;
-
 const Wrapper = styled.div`
   width: 100%;
   height: 100%;
   display: flex;
   & > :first-child {
-    @media (max-width: 768px) {
+    @media (max-width: 900px) {
       display: none;
+    }
+  }
+  & > :last-child {
+    @media (max-width: 500px) {
+      width: 100%;
+      height: 100%;
     }
   }
 `;
@@ -156,6 +155,10 @@ const Wrapper = styled.div`
 const CardStyled = styled.div`
   width: 80%;
   min-width: 450px;
+  @media (max-width: 500px) {
+    width: 100%;
+    height: 100%;
+  }
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -193,13 +196,9 @@ const TitleStyled = styled.div`
   font-family: var(--main-font);
 `;
 
-const LoginTitleStyled = styled.div`
-  opacity: 1;
-  font-size: 3rem;
-  font-family: var(--main-font);
-  margin-bottom: 20px;
+const LoginTitleStyled = styled(TitleStyled)`
+  margin-bottom: 40px;
 `;
-
 const LoginFormStyled = styled.div`
   display: flex;
   flex-direction: column;
@@ -235,7 +234,7 @@ const InfoTextStyled = styled.div`
     line-height: 0px;
     margin: 0px 16px;
   }
-   {
+  /* {
     content: "";
     flex-grow: 1;
     background: rgba(0, 0, 0);
@@ -243,7 +242,7 @@ const InfoTextStyled = styled.div`
     font-size: 1px;
     line-height: 0px;
     margin: 0px 16px;
-  }
+  } */
 `;
 
 const OauthButtonStyled = styled.button`
