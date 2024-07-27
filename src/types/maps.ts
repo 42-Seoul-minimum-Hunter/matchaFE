@@ -3,6 +3,7 @@ import {
   AlarmType,
   GenderType,
   InterestType,
+  PathnameType,
   PreferenceType,
   RateType,
 } from "@/types/tag.enum";
@@ -88,3 +89,14 @@ export const rateLableMap = {
   [RateType.FOUR]: "4",
   [RateType.FIVE]: "5",
 };
+
+// export const pathnameLableMap = {
+//   [PathnameType.LOGIN]: "login",
+//   // [PathnameType.MAIN]:"메인",
+//   [PathnameType.PROFILE]: "프로필",
+//   [PathnameType.SEARCH]: "검색",
+//   [PathnameType.MESSAGE]: "메세지",
+//   [PathnameType.ALARM]: "알람",
+//   // [PathnameType.SETTING]:"설정",
+//   [PathnameType.REGISTER]: "회원가입",
+// };

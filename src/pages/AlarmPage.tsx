@@ -49,8 +49,10 @@ const AlarmPage = () => {
 export default AlarmPage;
 
 const Wrapper = styled.div`
+  backdrop-filter: blur(6px);
   display: flex;
   flex-direction: column;
+  height: 85vh;
   gap: 10px;
   padding: 50px;
 `;

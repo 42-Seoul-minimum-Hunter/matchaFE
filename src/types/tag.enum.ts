@@ -71,3 +71,13 @@ export enum AlarmType {
   MATCHED = "MATCHED",
   DISLIKED = "DISLIKED",
 }
+
+export enum PathnameType {
+  LOGIN = "/login",
+  REGISTER = "/register",
+  PROFILE = "/profile",
+  SEARCH = "/search",
+  MESSAGE = "/message",
+  ALARM = "/alarm",
+  NOT_FOUND = "/notFound",
+}

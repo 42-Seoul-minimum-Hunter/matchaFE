@@ -21,8 +21,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Layout />}>
           <Route path="login" element={<LoginPage />} />
-          <Route path="signup" element={<SignUpPage />} />
-          {/* <Route path="main" element={<MainPage />} /> */}
+          <Route path="register" element={<SignUpPage />} />
           <Route path="search" element={<SearchPage />} />
           <Route path="message" element={<MessagePage />} />
           <Route path="alarm" element={<AlarmPage />} />

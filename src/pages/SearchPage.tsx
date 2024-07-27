@@ -120,42 +120,45 @@ const SearchPage = () => {
   }, []);
 
   return (
-    <Wrapper>
-      <FilterWrapper>
-        <FilterTitleStyled onClick={() => openModal()}>
-          Filter
-          <FilterIcon />
-        </FilterTitleStyled>
-      </FilterWrapper>
-      <SelectTagStyled>
-        {rangeData.location.si && (
-          <TagStyled>{rangeData.location.si}</TagStyled>
-        )}
-        {rangeData.location.gu && (
-          <TagStyled>{rangeData.location.gu}</TagStyled>
-        )}
-        {rangeData.age.min !== undefined && rangeData.age.max !== undefined && (
-          <TagStyled>
-            age
-            {rangeData.age.min} ~ {rangeData.age.max}
-          </TagStyled>
-        )}
-        {rangeData.rate.min !== undefined &&
-          rangeData.rate.max !== undefined && (
-            <TagStyled>
-              rate
-              {rangeData.rate.min} ~ {rangeData.rate.max}
-            </TagStyled>
+    <>
+      <Wrapper>
+        <FilterWrapper>
+          <FilterTitleStyled onClick={() => openModal()}>
+            Filter
+            <FilterIcon />
+          </FilterTitleStyled>
+        </FilterWrapper>
+        <SelectTagStyled>
+          {rangeData.location.si && (
+            <TagStyled>{rangeData.location.si}</TagStyled>
           )}
-        {filterList.map((tag) => (
-          <TagStyled key={tag.name}>{tag.name}</TagStyled>
-        ))}
-      </SelectTagStyled>
-      <SearchCardWrapper>
-        {searchData.map((data) => (
-          <SearchCard key={data.username} {...data} />
-        ))}
-      </SearchCardWrapper>
+          {rangeData.location.gu && (
+            <TagStyled>{rangeData.location.gu}</TagStyled>
+          )}
+          {rangeData.age.min !== undefined &&
+            rangeData.age.max !== undefined && (
+              <TagStyled>
+                age
+                {rangeData.age.min} ~ {rangeData.age.max}
+              </TagStyled>
+            )}
+          {rangeData.rate.min !== undefined &&
+            rangeData.rate.max !== undefined && (
+              <TagStyled>
+                rate
+                {rangeData.rate.min} ~ {rangeData.rate.max}
+              </TagStyled>
+            )}
+          {filterList.map((tag) => (
+            <TagStyled key={tag.name}>{tag.name}</TagStyled>
+          ))}
+        </SelectTagStyled>
+        <SearchCardWrapper>
+          {searchData.map((data) => (
+            <SearchCard key={data.username} {...data} />
+          ))}
+        </SearchCardWrapper>
+      </Wrapper>
       {modalOpen && (
         <FilterModal
           closeModal={closeModal}
@@ -166,7 +169,7 @@ const SearchPage = () => {
           rangeData={rangeData}
         />
       )}
-    </Wrapper>
+    </>
   );
 };
 export default SearchPage;
@@ -175,36 +178,55 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* backdrop-filter: blur(6px); */
+  backdrop-filter: blur(3px);
   /* filter: blur(6px); */
-  /* position: relative; // 추가 */
   /* justify-content: center; */
-  height: 100%;
+  /* height: 100%; */
+  height: 85vh;
   padding-top: 10px;
   z-index: 1;
 `;
 
+// const SearchCardWrapper = styled.div`
+//   backdrop-filter: blur(6px);
+//   display: grid;
+//   grid-template-columns: repeat(5, 200px);
+
+//   /* grid-template-rows: 200px 200px; */
+//   grid-auto-rows: 250px;
+//   @media (max-width: 1000px) {
+//     grid-template-columns: repeat(4, 1fr);
+//   }
+
+//   @media (max-width: 720px) {
+//     grid-template-columns: repeat(2, 1fr);
+//   }
+
+//   @media (max-width: 480px) {
+//     grid-template-columns: 1fr;
+//   }
+// `;
+
 const SearchCardWrapper = styled.div`
   backdrop-filter: blur(6px);
   display: grid;
-  grid-template-columns: repeat(5, 200px);
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-gap: 20px;
+  padding: 20px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 
-  /* grid-template-rows: 200px 200px; */
-  grid-auto-rows: 250px;
-  @media (max-width: 1000px) {
-    grid-template-columns: repeat(4, 1fr);
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   }
 
-  /* @media (max-width: 960px) {
-    grid-template-columns: repeat(3, 1fr);
-  } */
-
-  @media (max-width: 720px) {
-    grid-template-columns: repeat(2, 1fr);
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   }
 
   @media (max-width: 480px) {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
   }
 `;
 
@@ -224,6 +246,11 @@ const FilterTitleStyled = styled.div`
   font-weight: 600;
   width: 100px;
   height: 40px;
+
+  color: var(--font-search-color);
+  & > svg > path {
+    stroke: var(--font-search-color);
+  }
 `;
 
 const SelectTagStyled = styled.div`

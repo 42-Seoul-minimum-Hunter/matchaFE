@@ -92,7 +92,7 @@ const MessagePage = () => {
           ))}
       </ChatLobbyWrapper>
       <ChatRoomWrapper>
-        <ChatRoom chatHistory={chatHistory} selectUserImg={selectUserImg} />
+        {/* <ChatRoom chatHistory={chatHistory} selectUserImg={selectUserImg} /> */}
       </ChatRoomWrapper>
     </Wrapper>
   );

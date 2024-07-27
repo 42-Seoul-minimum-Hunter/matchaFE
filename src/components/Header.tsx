@@ -104,11 +104,6 @@ const Header = () => {
 
 export default Header;
 
-const IconStyled = styled.div`
-  width: 24px;
-  height: 24px;
-`;
-
 const Wrapper = styled.div`
   display: flex;
   width: 100%;
@@ -120,6 +115,8 @@ const Wrapper = styled.div`
 
 const LogStyled = styled.div`
   font-family: var(--main-font);
+
+  color: var(--font-search-color);
   font-size: 2.2rem;
   font-weight: 700;
 `;
@@ -132,6 +129,13 @@ const NavBarStyled = styled.div`
 const NavItemStyled = styled.div`
   display: flex;
   align-items: center;
+  /* color: #6f9a85; */
+  color: var(--font-search-color);
+
+  & > svg > path {
+    /* stroke: #6f9a85; */
+    stroke: var(--font-search-color);
+  }
 
   & > p {
     font-size: 1rem;

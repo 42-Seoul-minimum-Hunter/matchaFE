@@ -1,17 +1,18 @@
 import styled from "styled-components";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ReactComponent as HeartIcon } from "@/assets/icons/main-heart.svg";
 import InputTemplate from "@/components/InputTemplate";
 import { useState } from "react";
 import { useMediaQuery } from "usehooks-ts";
-import { axiosAuthLogin, axiosEmailVerify } from "@/api/axios.custom";
+import { axiosAuthLogin } from "@/api/axios.custom";
 
+// TODO BE : id는 User1에 pw를 qwerasdf로 해도 로그인이됨
 const LoginPage = () => {
   const navigate = useNavigate();
   const isMobile = useMediaQuery("(max-width: 900px)");
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
-  const [isEmail, setIsEmail] = useState(false);
+
   // const isLoginPage: boolean = location.pathname === "/login";
   const saveUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUsername(e.target.value);
@@ -52,8 +53,8 @@ const LoginPage = () => {
   const onClickSignInButton = () => {
     navigate("/login");
   };
-  const onClickSignUpButton = () => {
-    navigate("/signup");
+  const onClickRegisterButton = () => {
+    navigate("/register");
   };
   const onClickFindPasswordButton = () => {
     navigate("/findPW");
@@ -109,7 +110,7 @@ const LoginPage = () => {
               sign in with 42
             </OauthButtonStyled>
             <UtilsContainer>
-              <p onClick={onClickSignUpButton}>회원이 아니신가요?</p>
+              <p onClick={onClickRegisterButton}>회원이 아니신가요?</p>
               <p onClick={onClickFindPasswordButton}>비밀번호를 잊으셨나요?</p>
             </UtilsContainer>
           </CardStyled>

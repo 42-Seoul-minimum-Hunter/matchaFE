@@ -84,17 +84,34 @@ const Wrapper = styled.div`
 
 const ImageContainer = styled.div`
   position: relative;
-  width: 180px;
-  height: 200px;
+  width: 100%;
+  padding-top: 110%; // 이미지의 비율을 유지하기 위해 (200 / 180 ≈ 110%)
   border-radius: 15px;
   overflow: hidden;
 `;
 
 const StyledImage = styled.img`
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
 `;
+
+// const ImageContainer = styled.div`
+//   position: relative;
+//   width: 180px;
+//   height: 200px;
+//   border-radius: 15px;
+//   overflow: hidden;
+// `;
+
+// const StyledImage = styled.img`
+//   width: 100%;
+//   height: 100%;
+//   object-fit: cover;
+// `;
 
 const Overlay = styled.div<{ $isHovered: boolean }>`
   position: absolute;

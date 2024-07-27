@@ -1,9 +1,47 @@
-import React from "react";
+import React, { useMemo } from "react";
 import styled, { createGlobalStyle, keyframes } from "styled-components";
+import BackgroundImage2 from "@/assets/images/back_2.png";
+import BackgroundImage3 from "@/assets/images/back_3.png";
 import BackgroundImage4 from "@/assets/images/back_4.png";
 import BackgroundImage5 from "@/assets/images/back_5.png";
 import BackgroundImage6 from "@/assets/images/back_6.png";
 import BackgroundImage7 from "@/assets/images/back_7.png";
+import { PathnameType } from "@/types/tag.enum";
+
+const CinemaEffect = () => {
+  let getUrl = window.location.pathname;
+
+  const backgroundImageMap = useMemo(
+    () => ({
+      [PathnameType.LOGIN]: BackgroundImage2,
+      [PathnameType.PROFILE]: BackgroundImage3,
+      [PathnameType.SEARCH]: BackgroundImage4,
+      [PathnameType.MESSAGE]: BackgroundImage5,
+      [PathnameType.ALARM]: BackgroundImage6,
+      [PathnameType.REGISTER]: BackgroundImage7,
+    }),
+    []
+  );
+
+  const getBackgroundImage = () => {
+    // const pathname = getUrl.split("/")[1]; // URL의 첫 번째 세그먼트만 사용
+    return (
+      backgroundImageMap[getUrl as keyof typeof backgroundImageMap] ||
+      BackgroundImage2
+    );
+  };
+  return (
+    <TestWrapper>
+      <GlobalStyle />
+      <CinemaWrapper>
+        <Background $backgroundImage={getBackgroundImage()} />
+        <OuterScratch />
+        <InnerScratch />
+        <Grain />
+      </CinemaWrapper>
+    </TestWrapper>
+  );
+};
 
 const GlobalStyle = createGlobalStyle`
   @import url(https://fonts.googleapis.com/css?family=Roboto:100);
@@ -70,11 +108,12 @@ const fade = keyframes`
   100% { opacity: 1; }
 `;
 
-const Background = styled.div`
+const Background = styled.div<{ $backgroundImage: string }>`
   width: 100%;
   height: 100vh;
   /* background-image: url("https://t0.gstatic.com/licensed-image?q=tbn:ANd9GcSsKj9_p9v7sgNxntllex9TJd8RAmRV5ZWlMGM1IWxDM8bBrfQ8xgYy_N6_eACDwTKL"); */
-  background-image: url(${BackgroundImage5});
+  /* background-image: url(${BackgroundImage5}); */
+  background-image: url(${(props) => props.$backgroundImage});
   background-position: center center;
   /* overflow-y: auto; */
   background-size: cover;
@@ -192,20 +231,6 @@ const CinemaWrapper = styled.div`
   height: 100%;
   overflow: hidden;
 `;
-
-const CinemaEffect = () => {
-  return (
-    <TestWrapper>
-      <GlobalStyle />
-      <CinemaWrapper>
-        <Background />
-        <OuterScratch />
-        <InnerScratch />
-        <Grain />
-      </CinemaWrapper>
-    </TestWrapper>
-  );
-};
 
 const TestWrapper = styled.div`
   &:before {

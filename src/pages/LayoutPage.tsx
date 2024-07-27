@@ -49,7 +49,7 @@ const Layout = () => {
   const isLoginPage: boolean = location.pathname === "/login";
   const isFindPasswordPage: boolean = location.pathname === "/findPW";
   const isTwoFactorPage: boolean = location.pathname === "/twoFactor";
-  const isRegisterPage: boolean = location.pathname === "/signup";
+  const isRegisterPage: boolean = location.pathname === "/register";
   // const isMainPage: boolean = location.pathname === "/main";
 
   // useEffect(() => {
