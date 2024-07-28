@@ -1,21 +1,17 @@
 import styled from "styled-components";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { createContext, useEffect, useState } from "react";
-import CircleContainer from "@/components/BackgroundColor";
 import Header from "@/components/Header";
 import { getCookie } from "@/api/cookie";
 import { io, Socket } from "socket.io-client";
 
 const token = getCookie("jwt");
 
-// interface SocketContextType {
-//   socket: Socket<any, any>;
-// }
-const socket = io("http://localhost:3001", {
-  auth: {
-    authorization: token,
-  },
-});
+// const socket = io("http://localhost:3001", {
+//   auth: {
+//     authorization: token,
+//   },
+// });
 
 export const SocketContext = createContext<null>(null);
 
@@ -68,46 +64,25 @@ const Layout = () => {
     isTwoFactorPage ? (
     <Outlet />
   ) : (
-    <SocketContext.Provider value={socket}>
-      <Wrapper>
-        {/* <CircleContainer circleCount={12} circleColors={COLORS} /> */}
-        <Header />
-        <MainStyled>
-          <Outlet />
-        </MainStyled>
-      </Wrapper>
-    </SocketContext.Provider>
+    // <SocketContext.Provider value={socket}>
+    <Wrapper>
+      <Header />
+      <MainStyled>
+        <Outlet />
+      </MainStyled>
+    </Wrapper>
+    // </SocketContext.Provider>
   );
 };
 
 export default Layout;
 
-const BackgroundCircleStyled = styled.div`
-  &::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    /* width: 100%;
-    height: 100%; */
-    background-color: rgba(22, 15, 15, 0.5);
-    z-index: -1;
-    width: 100%;
-    height: 100%;
-  }
-`;
-
-const TestCircle = styled.div`
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background-color: #27f122;
-  filter: blur(50px);
-`;
-
 const Wrapper = styled.div`
-  /* position: relative; */
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* width: 1440px; */
   height: 100%;
   overflow: scroll;
 `;

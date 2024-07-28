@@ -7,12 +7,11 @@ import { ReactComponent as LogoutIcon } from "@/assets/icons/logout-icon.svg";
 import { useNavigate } from "react-router-dom";
 import { useContext, useEffect } from "react";
 import { axiosLogout, axiosProfileMe } from "@/api/axios.custom";
-import { useMediaQuery } from "usehooks-ts";
 import { SocketContext } from "@/pages/LayoutPage";
 
+// TODO: Router 테이블 만들어서 해당 라우터에서 색상 표현
 const Header = () => {
   const navigate = useNavigate();
-  const isMobile = useMediaQuery("(max-width: 768px)");
   const socket = useContext(SocketContext);
 
   // socket.on("getAlarms", (data: any) => {
@@ -89,51 +88,95 @@ const Header = () => {
 
   return (
     <Wrapper>
-      <LogStyled>MATCHA</LogStyled>
-      <NavBarStyled>
-        {navItems.map((item, index) => (
-          <NavItemStyled key={index} onClick={item.onClick}>
-            {item.icon}
-            {!isMobile && <p>{item.label}</p>}
-          </NavItemStyled>
-        ))}
-      </NavBarStyled>
+      <HeaderContainer>
+        <NavStyled>Profile</NavStyled>
+        <NavStyled>Search</NavStyled>
+        <NavStyled>Chat</NavStyled>
+      </HeaderContainer>
+      <TitleStyled>
+        MEET<span>CHA</span>
+      </TitleStyled>
+      <HeaderContainer>
+        <NavStyled>Log In</NavStyled>
+        <NavStyled>Sign Up</NavStyled>
+      </HeaderContainer>
     </Wrapper>
   );
 };
 
 export default Header;
 
-const IconStyled = styled.div`
-  width: 24px;
-  height: 24px;
+const NavStyled = styled.div`
+  border: 1px solid var(--black);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  font-size: 1rem;
+  font-weight: 400;
+
+  @media screen and (max-width: 1024px) {
+    font-size: 0.8rem;
+  }
+
+  &:hover {
+    background-color: var(--brand-sub-2);
+    /* color: var(--white); */
+  }
+  /* @media screen and (max-width: 768px) {
+    font-size: 0.6rem;
+  } */
+`;
+
+const HeaderContainer = styled.div`
+  display: flex;
+  flex: 1;
+  min-width: 368px;
+  height: 100%;
+  @media screen and (max-width: 1024px) {
+    min-width: 280px;
+  }
+  @media screen and (max-width: 768px) {
+    min-width: unset;
+  }
 `;
 
 const Wrapper = styled.div`
   display: flex;
+  border: 1px solid var(--black);
+  min-height: 100px;
+  max-width: 1440px;
   width: 100%;
-  justify-content: space-between;
-  margin-top: 40px;
-  margin-bottom: 25px;
-  padding: 0 32px;
-`;
-
-const LogStyled = styled.div`
-  font-family: var(--main-font);
-  font-size: 2.2rem;
-  font-weight: 700;
-`;
-
-const NavBarStyled = styled.div`
-  display: flex;
-  gap: 15px;
-`;
-
-const NavItemStyled = styled.div`
-  display: flex;
   align-items: center;
-
-  & > p {
+  justify-content: space-between;
+  @media screen and (max-width: 768px) {
+    justify-content: center;
     font-size: 1rem;
+    min-height: 80px;
+  }
+`;
+
+const TitleStyled = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  border: 1px solid var(--black);
+  font-family: var(--main-font);
+  font-size: 3rem;
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: 0.06em;
+
+  & > span {
+    color: var(--brand-main-1);
+  }
+  @media screen and (max-width: 1024px) {
+    font-size: 2rem;
+  }
+  @media screen and (max-width: 768px) {
+    font-size: 1rem;
+    flex: 1;
   }
 `;

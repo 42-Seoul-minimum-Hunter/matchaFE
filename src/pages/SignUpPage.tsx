@@ -181,8 +181,17 @@ const SignUpPage = () => {
   };
 
   return (
-    <WrapperStyled>
-      <TitleStyled>Matcha</TitleStyled>
+    <Wrapper>
+      <TitleStyled>
+        MEET<span>CHA</span>
+      </TitleStyled>
+      <InputTemplate
+        type="email"
+        label="이메일"
+        // placeholder="이메일"
+        value={firstName}
+        onChange={saveFirstName}
+      ></InputTemplate>
       <ContentStyled>
         <PhotoWrapper>
           <PhotoTitleStyled>Choose user profile</PhotoTitleStyled>
@@ -191,42 +200,48 @@ const SignUpPage = () => {
         <InputTextWrapper>
           <NameWrapper>
             <InputTemplate
-              title="First Name"
+              type="name"
+              label="first name"
               placeholder="Add a your fisrt"
               value={firstName}
               onChange={saveFirstName}
             />
             <InputTemplate
-              title="Last Name"
+              label="last name"
+              type="name"
               placeholder="Add a your last"
               value={lastName}
               onChange={saveLastName}
             />
           </NameWrapper>
           <InputTemplate
-            title="Password"
+            label="비밀번호"
+            type="password"
             placeholder="Add a your Password"
             value={password}
             onChange={savePassword}
-            type="password"
+            // type="password"
           />
           <InputTemplate
-            title="Email"
+            label="이메일"
+            type="email"
             // input type="email",
             placeholder="Add a your email"
             value={userEmail}
             onChange={saveEmail}
-            type="email"
+            // type="email"
             // required
           />
           <InputTemplate
-            title="Username"
+            label="유저네임"
+            type="username"
             placeholder="Add a your userName"
             value={userName}
             onChange={saveUserName}
           />
           <InputTemplate
-            title="Bio"
+            label="약력"
+            type="bio"
             placeholder="Add a your bio"
             value={bio}
             onChange={saveBio}
@@ -242,27 +257,21 @@ const SignUpPage = () => {
               handleSubAreaChange={handleSubAreaChange}
             />
           </LocationWrapper>
-          <InputTemplate
-            title="Age"
-            placeholder="Add a your age"
-            type="number"
-            onChange={saveAge}
-          />
         </NameWrapper>
         <TagTemplate
-          title="Gender"
+          type="Gender"
           tagList={genderTagList}
           initialState={genderType}
           setState={setGenderType}
         />
         <TagTemplate
-          title="Preference"
+          type="Preference"
           tagList={preferenceTagList}
           initialState={preferenceType}
           setState={setPreferenceType}
         />
         <TagTemplate
-          title="Interest"
+          type="Interest"
           tagList={interestTagList}
           initialState={interestType}
           setState={setInterestType}
@@ -303,7 +312,7 @@ const SignUpPage = () => {
         />
       </ContentStyled>
       <SubmitButtonStyled onClick={trySignUp}>Submit</SubmitButtonStyled>
-    </WrapperStyled>
+    </Wrapper>
   );
 };
 
@@ -362,37 +371,25 @@ const NameWrapper = styled.div`
 `;
 
 const TitleStyled = styled.div`
-  opacity: 1;
   font-size: 3rem;
   font-family: var(--main-font);
   margin-bottom: 40px;
+  & > span {
+    color: var(--brand-main-1);
+  }
 `;
 
-const WrapperStyled = styled.div`
-  width: 80%;
-  height: auto;
+const Wrapper = styled.div`
   display: flex;
-  padding: 40px 0;
-  margin: 40px auto;
-  overflow-y: hidden;
+  padding-top: 15vh;
+
   flex-direction: column;
   align-items: center;
-  /* box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1); */
+  justify-content: center;
   border-radius: 10px;
-  box-shadow: 0 0 10px;
-  overflow: auto;
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    /* height: 100%; */
-    height: auto;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: -1;
-    overflow: auto;
-    height: auto;
-    margin: 40px auto;
+
+  @media screen and (max-width: 768px) {
+    padding: 10vh;
   }
 `;
 
