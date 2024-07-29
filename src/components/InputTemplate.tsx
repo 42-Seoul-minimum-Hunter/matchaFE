@@ -9,7 +9,8 @@ interface InputTemplateProps {
   onChange: (e: any) => void;
   value: string;
   label: string;
-  // type?: string;
+  checkPW?: string;
+  setErrorr?: (error: boolean) => void;
 }
 
 const InputTemplate = (props: InputTemplateProps) => {
@@ -17,21 +18,30 @@ const InputTemplate = (props: InputTemplateProps) => {
 
   // NOTE : Blur과 focusout차이 -> 버블링 유무
   const handleBlur = () => {
-    const validationError = useInputValidation(props.type, props.value);
+    const validationError = useInputValidation(
+      props.type,
+      props.value,
+      props.checkPW
+    );
     setError(validationError);
+    // if (error) props.setErrorr(true);
+    // else props.setErrorr(false);
   };
 
   return (
     // 에러 유무를 boolean으로 전달
     <InputContainer data-error={!!error}>
-      {/* <TitleStyled>{props.title}</TitleStyled> */}
       <InputStyled
         placeholder={""}
         value={props.value}
         onChange={props.onChange}
         onBlur={handleBlur}
-        // onChange={handleChange}
-        type={props.type ? props.type : "text"}
+        type={
+          props.type === "password" || props.type === "checkPassword"
+            ? "password"
+            : "text"
+        }
+        name={props.type}
       />
       <LabelStyled>{props.label}</LabelStyled>
       {error && <ErrorStyled>{error}</ErrorStyled>}

@@ -1,6 +1,5 @@
 import InputTemplate from "@/components/InputTemplate";
 import styled from "styled-components";
-import TagTemplate, { ITagTemplateProps } from "@/components/TagTemplate";
 import { GenderType, InterestType, PreferenceType } from "@/types/tag.enum";
 import { useEffect, useState, useCallback } from "react";
 import {
@@ -8,9 +7,6 @@ import {
   InterestLableMap,
   PreferenceLableMap,
 } from "@/types/maps";
-import LocationDropdown from "../components/LocationDropdown";
-import ImageUpload from "@/components/ImageUpload";
-import CheckBox from "@/components/CheckBox";
 import { useGeoLocation } from "@/hooks/useGeoLocation";
 import {
   validateAge,
@@ -25,27 +21,32 @@ import {
 } from "@/utils/inputCheckUtils";
 import { axiosUserCreate } from "@/api/axios.custom";
 import { useNavigate } from "react-router-dom";
+import PaginationDots from "@/components/PaginationDots";
+import StepOne from "@/components/Signup/StepOne";
+import StepTwo from "@/components/Signup/StepTwo";
+import StepThree from "@/components/Signup/StepThree";
 
 // const GenderTag: ITagProps[] = [{ title: "male" }];
 //  나중에 꼭 수정 필요 -> useMemo, useCallback 렌더링 최적화 해야함
 export interface tagItem {
-  name: string;
-  key: string;
+  value: string;
+  label: string;
 }
 
-const genderTagList: tagItem[] = Object.entries(GenderLableMap).map(
-  ([key, name]) => ({ key, name })
-);
+// const genderTagList: tagItem[] = Object.entries(GenderLableMap).map(
+//   ([key, name]) => ({ key, name })
+// );
 
-const preferenceTagList: tagItem[] = Object.entries(PreferenceLableMap).map(
-  ([key, name]) => ({ key, name })
-);
+// const preferenceTagList: tagItem[] = Object.entries(PreferenceLableMap).map(
+//   ([key, name]) => ({ key, name })
+// );
 
-const interestTagList: tagItem[] = Object.entries(InterestLableMap).map(
-  ([key, name]) => ({ key, name })
-);
+// const interestTagList: tagItem[] = Object.entries(InterestLableMap).map(
+//   ([key, name]) => ({ key, name })
+// );
 
 const SignUpPage = () => {
+  const [step, setStep] = useState(0);
   const [genderType, setGenderType] = useState<GenderType>();
   const [preferenceType, setPreferenceType] = useState<PreferenceType>();
   const [interestType, setInterestType] = useState<InterestType[]>();
@@ -54,6 +55,7 @@ const SignUpPage = () => {
   const [userName, setUserName] = useState<string>("");
   const [userEmail, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [checkPassword, setCheckPassword] = useState<string>("");
   const [bio, setBio] = useState<string>("");
   const [age, setAge] = useState<number>(0);
   const [isLocation, setIsLocation] = useState<boolean>(false);
@@ -62,6 +64,7 @@ const SignUpPage = () => {
   const [showInstructions, setShowInstructions] = useState(false);
   const [selectedArea, setSelectedArea] = useState<string>("");
   const [selectedSubArea, setSelectedSubArea] = useState<string>("");
+
   const navigator = useNavigate();
   const handleAreaChange = (e: any) => {
     setSelectedArea(e.target.value);
@@ -161,18 +164,16 @@ const SignUpPage = () => {
   const saveLastName = (e: React.ChangeEvent<HTMLInputElement>) => {
     setLastName(e.target.value);
   };
-  const saveEmail = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-  };
   const saveUserName = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUserName(e.target.value);
   };
   const saveBio = (e: React.ChangeEvent<HTMLInputElement>) => {
     setBio(e.target.value);
   };
-  const savePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
+  const saveShcekPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCheckPassword(e.target.value);
   };
+
   const saveLocation = () => {
     setIsLocation(!location);
   };
@@ -180,143 +181,40 @@ const SignUpPage = () => {
     setAge(Number(e.target.value));
   };
 
+  const onClickStepOne = (email: string, password: string) => {
+    console.log("Email:", email, "Password:", password);
+    setStep(step + 1);
+  };
+  const onClickStepTwo = () => {
+    // console.log("Email:", email, "Password:", password);
+    setStep(step + 1);
+  };
+
   return (
     <Wrapper>
-      <TitleStyled>
-        MEET<span>CHA</span>
-      </TitleStyled>
-      <InputTemplate
-        type="email"
-        label="이메일"
-        // placeholder="이메일"
-        value={firstName}
-        onChange={saveFirstName}
-      ></InputTemplate>
-      <ContentStyled>
-        <PhotoWrapper>
-          <PhotoTitleStyled>Choose user profile</PhotoTitleStyled>
-          <ImageUpload showImages={showImages} setShowImages={setShowImages} />
-        </PhotoWrapper>
-        <InputTextWrapper>
-          <NameWrapper>
-            <InputTemplate
-              type="name"
-              label="first name"
-              placeholder="Add a your fisrt"
-              value={firstName}
-              onChange={saveFirstName}
-            />
-            <InputTemplate
-              label="last name"
-              type="name"
-              placeholder="Add a your last"
-              value={lastName}
-              onChange={saveLastName}
-            />
-          </NameWrapper>
-          <InputTemplate
-            label="비밀번호"
-            type="password"
-            placeholder="Add a your Password"
-            value={password}
-            onChange={savePassword}
-            // type="password"
-          />
-          <InputTemplate
-            label="이메일"
-            type="email"
-            // input type="email",
-            placeholder="Add a your email"
-            value={userEmail}
-            onChange={saveEmail}
-            // type="email"
-            // required
-          />
-          <InputTemplate
-            label="유저네임"
-            type="username"
-            placeholder="Add a your userName"
-            value={userName}
-            onChange={saveUserName}
-          />
-          <InputTemplate
-            label="약력"
-            type="bio"
-            placeholder="Add a your bio"
-            value={bio}
-            onChange={saveBio}
-          />
-        </InputTextWrapper>
-        <NameWrapper>
-          <LocationWrapper>
-            <h2>Location</h2>
-            <LocationDropdown
-              selectedArea={selectedArea}
-              selectedSubArea={selectedSubArea}
-              handleAreaChange={handleAreaChange}
-              handleSubAreaChange={handleSubAreaChange}
-            />
-          </LocationWrapper>
-        </NameWrapper>
-        <TagTemplate
-          type="Gender"
-          tagList={genderTagList}
-          initialState={genderType}
-          setState={setGenderType}
-        />
-        <TagTemplate
-          type="Preference"
-          tagList={preferenceTagList}
-          initialState={preferenceType}
-          setState={setPreferenceType}
-        />
-        <TagTemplate
-          type="Interest"
-          tagList={interestTagList}
-          initialState={interestType}
-          setState={setInterestType}
-        />
-        <div>
-          <button onClick={handleClick} disabled={asking}>
-            {asking ? "위치 정보 요청 중..." : "위치 정보 가져오기"}
-          </button>
-          {location && (
-            <p>
-              위치: 위도 {location.latitude}, 경도 {location.longitude}
-            </p>
-          )}
-          {error && <p>에러: {error}</p>}
-          {error && error.includes("권한이 거부되었습니다") && (
-            <>
-              <p>위치 정보 접근 권한을 허용해주세요.</p>
-              <button onClick={() => setShowInstructions(!showInstructions)}>
-                {showInstructions ? "안내 숨기기" : "권한 허용 방법 보기"}
-              </button>
-              {showInstructions && (
-                <ol>
-                  <li>브라우저 설정을 엽니다.</li>
-                  <li>사이트 설정 또는 개인정보 설정을 찾습니다.</li>
-                  <li>위치 정보 설정을 찾습니다.</li>
-                  <li>이 사이트의 위치 정보 접근을 허용으로 변경합니다.</li>
-                  <li>페이지를 새로고침합니다.</li>
-                </ol>
-              )}
-              <button onClick={handleRefresh}>페이지 새로고침</button>
-            </>
-          )}
-        </div>
-        <CheckBox
-          title="GPS 위치 정보를 제공하시겠습니까?"
-          checked={isLocation}
-          onChange={saveLocation}
-        />
-      </ContentStyled>
-      <SubmitButtonStyled onClick={trySignUp}>Submit</SubmitButtonStyled>
+      <InputContainer>
+        <TitleStyled>
+          MEET<span>CHA</span>
+        </TitleStyled>
+        <PaginationDots step={step}></PaginationDots>
+        {step === 0 && <StepOne onClick={onClickStepOne} />}
+        {step === 1 && <StepTwo onClick={onClickStepTwo} />}
+        {step === 2 && <StepThree />}
+      </InputContainer>
     </Wrapper>
   );
 };
 
 export default SignUpPage;
+
+const InputContainer = styled.div`
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+`;
 
 const LocationWrapper = styled.div`
   display: flex;
@@ -373,7 +271,7 @@ const NameWrapper = styled.div`
 const TitleStyled = styled.div`
   font-size: 3rem;
   font-family: var(--main-font);
-  margin-bottom: 40px;
+  /* margin-bottom: 20px; */
   & > span {
     color: var(--brand-main-1);
   }
@@ -399,17 +297,20 @@ const ContentStyled = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  /* height: 200%; */
   gap: 30px;
 `;
 
 const SubmitButtonStyled = styled.button`
-  width: 80%;
-  font-size: 1.2rem;
-  padding: 15px 0px;
-  border-radius: 30px;
+  width: 350px;
+  font-size: 1.1rem;
+  background-color: var(--brand-main-1);
+  padding: 12px 0px;
+
+  /* border-radius: 30px; */
+  box-shadow: 4px 4px 3px 0px var(--black);
   margin-top: 30px;
-  background-color: var(--vermilion);
+  margin-bottom: 50px;
+  /* background-color: var(--vermilion); */
 `;
 
 const Area = styled.div``;

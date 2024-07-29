@@ -14,6 +14,11 @@ export function validatePassword(password: string) {
   return passwordRegex.test(password);
 }
 
+// password Check 검사 함수
+export function validateCheckPassword(password: string, checkPW?: string) {
+  return password === checkPW;
+}
+
 // lastName, firstName 검사 함수
 export function validateName(name: string) {
   const nameRegex = /^[a-zA-Z]{1,10}$/;
@@ -463,27 +468,30 @@ export function convertToLowerCase(arr: any) {
 
 export const useInputValidation = (
   type: string,
-  value: string
+  value: string,
+  checkPW?: string
 ): string | null => {
   switch (type) {
     case "username":
-      return !validateUsername(value)
-        ? "Username must be 4-15 characters long"
-        : null;
+      return !validateUsername(value) ? "유저네임은 4-15자여야 합니다." : null;
     case "password":
       return !validatePassword(value)
-        ? "Password must be 8-15 characters long"
+        ? "패스워드는 알파벳 8-15자여야 합니다."
         : null;
     case "name":
-      return !validateName(value) ? "Name must be 1-10 characters long" : null;
+      return !validateName(value) ? "이름은 알파벳 1~10글자여야 합니다." : null;
+    case "checkPassword":
+      return !validateCheckPassword(value, checkPW)
+        ? "비밀번호가 일치하지 않습니다."
+        : null;
     case "bio":
       return !validateBiography(value)
-        ? "Biography must be 1-100 characters long"
+        ? "약력은 알파벳 1-100자여야 합니다."
         : null;
     case "email":
-      return !validateEmail(value) ? "Invalid email address" : null;
+      return !validateEmail(value) ? "올바른 이메일 주소가 아닙니다." : null;
     default:
       return null;
   }
 };
-// export default useInputValidation;
+export default useInputValidation;

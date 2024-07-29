@@ -1,5 +1,5 @@
-import { useState } from "react";
 import styled from "styled-components";
+
 const ImageUpload = ({
   setShowImages,
   showImages,
@@ -7,8 +7,6 @@ const ImageUpload = ({
   setShowImages: (value: string[]) => void;
   showImages: string[];
 }) => {
-  // const [showImages, setShowImages] = useState<string[]>([]);
-
   // 이미지 상대경로 저장
   const handleAddImages = (event: any) => {
     const imageLists = event.target.files;
@@ -42,9 +40,7 @@ const ImageUpload = ({
         accept="image/*"
         onChange={handleAddImages}
       />
-      {/* <span> . asdf사진추가</span> */}
-      {/* </ImageLable> */}
-      {/* <Plus /> */}
+
       <SelectImageContainer>
         {showImages.map((image, id) => (
           <ImageContainer key={id}>
@@ -71,6 +67,7 @@ const DeleteStyled = styled.div`
   top: 10px;
   right: 10px;
   background-color: #646f7c;
+  border: 1px solid var(--line-gray-1);
   color: white;
   padding: 5px;
   border-radius: 8px;
@@ -81,22 +78,21 @@ const InputImageUpload = styled.input`
   &::-webkit-file-upload-button {
     visibility: hidden;
   }
-  width: 130px;
-  height: 140px;
+  width: 133px;
+  height: 143px;
+  border: 1px solid var(--line-gray-1);
+  border-radius: 10px;
 
   &::before {
     content: "+";
     display: inline-block;
-    width: 130px;
-    height: 140px;
-    background-color: #646f7c;
-    border-radius: 10px;
-    /* border: 1px solid #999; */
-    /* border-radius: 3px; */
-    /* padding: 5px 8px; */
+    width: 133px;
+    height: 143px;
+    /* background-color: #646f7c; */
     outline: none;
     white-space: nowrap;
-    -webkit-user-select: none;
+    /* font-family: ; */
+    /* -webkit-user-select: none; */
     cursor: pointer;
     display: flex;
     justify-content: center;
@@ -105,14 +101,6 @@ const InputImageUpload = styled.input`
     font-weight: 700;
     font-size: 4rem;
   }
-
-  /* &:hover::before {
-    border-color: black;
-  }
-
-  &:active::before {
-    background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
-  } */
 `;
 
 const SelectImageContainer = styled.div`
