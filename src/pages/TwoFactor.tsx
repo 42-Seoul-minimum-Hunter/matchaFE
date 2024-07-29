@@ -1,14 +1,7 @@
-import { axiosCreateTwoFactor } from "@/api/axios.custom";
-import React, {
-  useState,
-  useRef,
-  KeyboardEvent,
-  ChangeEvent,
-  useEffect,
-} from "react";
+import React, { useState, useRef, KeyboardEvent, ChangeEvent } from "react";
 import styled from "styled-components";
 
-const TwoFactor = () => {
+const TwoFactorPage = () => {
   const [code, setCode] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState<boolean>(true);
   const inputs = useRef<(HTMLInputElement | null)[]>([]);
@@ -189,7 +182,7 @@ const CodeGroupStyled = styled.div`
   gap: 10px; // 각 입력 필드 사이의 간격
 `;
 
-export default TwoFactor;
+export default TwoFactorPage;
 
 // const TwoFactor = () => {
 //   const [password, setPassword] = useState("");

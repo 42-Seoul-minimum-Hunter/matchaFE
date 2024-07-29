@@ -10,8 +10,8 @@ export interface tagItem {
   label: string;
 }
 
-const SignUpPage = () => {
-  const { goToSignup } = useRouter();
+const LoginPage = () => {
+  const { goToSignup, goToResetPW } = useRouter();
   const [error, setError] = useState<boolean>(false);
   const [signUpTextData, setSignUpTextData] = useState({
     username: "",
@@ -60,7 +60,7 @@ const SignUpPage = () => {
           <OauthLabelStyled>간편 회원가입</OauthLabelStyled>
           <OauthButtonStyled>42 login</OauthButtonStyled>
         </OauthContainer>
-        <InfoTextStyled>
+        <InfoTextStyled onClick={goToResetPW}>
           {`->`} 비밀번호를 잊으셨나요? <span>비밀번호 찾기</span>
         </InfoTextStyled>
         <InfoTextStyled onClick={goToSignup}>
@@ -71,7 +71,7 @@ const SignUpPage = () => {
   );
 };
 
-export default SignUpPage;
+export default LoginPage;
 
 const InfoTextStyled = styled.div`
   font-size: 0.9rem;

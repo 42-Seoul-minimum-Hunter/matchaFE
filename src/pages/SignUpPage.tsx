@@ -84,6 +84,7 @@ const SignUpPage = () => {
     //   alert("비밀번호가 일치하지 않습니다.");
     //   return;
     // }
+    // TODO : 비밀번호가 틀리면 버튼 자체가 안눌리게 만들기
     if (error === true) {
       return;
     }

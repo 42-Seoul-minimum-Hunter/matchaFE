@@ -8,10 +8,11 @@ import { useNavigate } from "react-router-dom";
 import { useContext, useEffect } from "react";
 import { axiosLogout, axiosProfileMe } from "@/api/axios.custom";
 import { SocketContext } from "@/pages/LayoutPage";
+import useRouter from "@/hooks/useRouter";
 
 // TODO: Router 테이블 만들어서 해당 라우터에서 색상 표현
 const Header = () => {
-  const navigate = useNavigate();
+  const { goToSignup, goToProfile, goTologin } = useRouter();
   const socket = useContext(SocketContext);
 
   // socket.on("getAlarms", (data: any) => {
@@ -37,28 +38,16 @@ const Header = () => {
   //   socket.emit("getAlarms");
   // };
 
-  const onClickLogout = () => {
-    try {
-      const res = axiosLogout();
-      console.log("logout ", res);
-    } catch (error: any) {
-      console.log("error", error);
-      throw error;
-    }
-    navigate("/login");
-  };
-  const onClickProfile = () => {
-    navigate("/profile");
-  };
-  const onClickSearch = () => {
-    navigate("/search");
-  };
-  const onClickMessage = () => {
-    navigate("/message");
-  };
-  const onClickAlarm = () => {
-    navigate("/signup");
-  };
+  // const onClickLogout = () => {
+  //   try {
+  //     const res = axiosLogout();
+  //     console.log("logout ", res);
+  //   } catch (error: any) {
+  //     console.log("error", error);
+  //     throw error;
+  //   }
+  //   navigate("/login");
+  // };
 
   const tryProfileMe = async () => {
     try {
@@ -70,21 +59,6 @@ const Header = () => {
       throw error;
     }
   };
-  // const navItems = [
-  //   { icon: <ProfileIcon />, label: "Profile", onClick: tryProfileMe },
-  //   {
-  //     icon: <SearchIcon />,
-  //     label: "Search",
-  //     onClick: onClickSearch,
-  //   },
-  //   {
-  //     icon: <MessageIcon />,
-  //     label: "Message",
-  //     onClick: onClickMessage,
-  //   },
-  //   { icon: <AlarmIcon />, label: "Alarm", onClick: onClickAlarm },
-  //   { icon: <LogoutIcon />, label: "Logout", onClick: onClickLogout },
-  // ];
 
   return (
     <Wrapper>
@@ -97,8 +71,8 @@ const Header = () => {
         MEET<span>CHA</span>
       </TitleStyled>
       <HeaderContainer>
-        <NavStyled>Log In</NavStyled>
-        <NavStyled onClick={onClickAlarm}>Sign Up</NavStyled>
+        <NavStyled onClick={goTologin}>Log In</NavStyled>
+        <NavStyled onClick={goToSignup}>Sign Up</NavStyled>
       </HeaderContainer>
     </Wrapper>
   );

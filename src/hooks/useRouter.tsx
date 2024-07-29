@@ -18,8 +18,22 @@ const useRouter = () => {
   const goToSignup = () => {
     navigate("/signup");
   };
+  const goTologin = () => {
+    navigate("/login");
+  };
+  const goToResetPW = () => {
+    navigate("/resetPW");
+  };
 
-  return { goToProfile, goToSearch, goToMessage, goToAlarm, goToSignup };
+  return {
+    goToProfile,
+    goToSearch,
+    goToMessage,
+    goToAlarm,
+    goToSignup,
+    goTologin,
+    goToResetPW,
+  };
 };
 
 export default useRouter;

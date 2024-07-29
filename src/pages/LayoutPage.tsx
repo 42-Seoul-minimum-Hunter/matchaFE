@@ -30,14 +30,7 @@ const Layout = () => {
   const [state, setState] = useState({ message: "", name: "" });
   const [chat, setChat] = useState([]);
 
-  //  jwt 토큰이 있으면 search, 없으면 로그인 페이지로 이동
-  const isRootPath: boolean = location.pathname === "/";
-  const isLoginPage: boolean = location.pathname === "/login";
-  const isFindPasswordPage: boolean = location.pathname === "/findPW";
-  const isTwoFactorPage: boolean = location.pathname === "/twoFactor";
-  const isRegisterPage: boolean = location.pathname === "/signup";
-  // const isMainPage: boolean = location.pathname === "/main";
-
+  //  jwt 토큰이 있으면 main, 없으면 로그인 페이지로 이동
   // useEffect(() => {
   //   if (!loginToken && !isMainPage) navigate("/main");
   //   else if (!loginToken && !isMainPage) navigate("/login");
@@ -47,11 +40,11 @@ const Layout = () => {
   // }, []);
 
   const directOutletPaths = [
+    "/twoFactor",
     "/login",
     "/signup",
     "/signup/detail",
-    "/findPW",
-    "/twofactor",
+    "/resetPW",
   ];
 
   // 현재 경로가 directOutletPaths에 포함되어 있는지 확인
