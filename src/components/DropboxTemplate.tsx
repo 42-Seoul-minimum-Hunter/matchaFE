@@ -64,7 +64,7 @@ const DropboxTemplate = ({
 
 const DropboxContainer = styled.div`
   position: relative;
-  width: 350px;
+  width: 100%;
   /* height: 56px; */
   border-radius: 4px;
 `;

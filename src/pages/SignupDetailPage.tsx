@@ -110,7 +110,7 @@ const SignupDetailPage = () => {
   }, [selectedTags]);
 
   return (
-    <Wrapper>
+    <Container>
       <MainTitleStyled>
         MEET<span>CHA</span>
       </MainTitleStyled>
@@ -199,7 +199,7 @@ const SignupDetailPage = () => {
         />
       </HashTagContainer>
       <ButtonStyled>가입하기</ButtonStyled>
-    </Wrapper>
+    </Container>
   );
 };
 
@@ -221,16 +221,32 @@ const InputContainer = styled.div`
   flex-wrap: wrap;
   gap: 10px;
   width: 740px;
+
+  & > div {
+    max-width: 350px;
+  }
+
+  @media screen and (max-width: 768px) {
+    width: 100%;
+    & > div {
+      max-width: none;
+    }
+  }
 `;
 
 const HashTagContainer = styled.div`
   width: 740px;
   margin-bottom: 60px;
+  @media screen and (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 const RowContainer = styled.div`
-  /* width: 100%; */
   margin-bottom: 40px;
+  @media screen and (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 const TitleStyled = styled.div`
@@ -242,7 +258,7 @@ const TitleStyled = styled.div`
   margin-bottom: 20px;
 `;
 
-const Wrapper = styled.div`
+const Container = styled.div`
   display: flex;
   padding-top: 6vh;
 
@@ -252,7 +268,9 @@ const Wrapper = styled.div`
   border-radius: 10px;
 
   @media screen and (max-width: 768px) {
-    padding: 10vh;
+    padding-top: 10vh;
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
   }
 `;
 

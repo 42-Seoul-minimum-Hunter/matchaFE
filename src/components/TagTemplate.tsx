@@ -80,6 +80,9 @@ const TagContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  @media screen and (max-width: 768px) {
+    justify-content: center;
+  }
 `;
 
 const TagItem = styled.div<{ $selected: boolean; $selectable: boolean }>`
