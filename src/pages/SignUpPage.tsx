@@ -33,18 +33,6 @@ export interface tagItem {
   label: string;
 }
 
-// const genderTagList: tagItem[] = Object.entries(GenderLableMap).map(
-//   ([key, name]) => ({ key, name })
-// );
-
-// const preferenceTagList: tagItem[] = Object.entries(PreferenceLableMap).map(
-//   ([key, name]) => ({ key, name })
-// );
-
-// const interestTagList: tagItem[] = Object.entries(InterestLableMap).map(
-//   ([key, name]) => ({ key, name })
-// );
-
 const SignUpPage = () => {
   const [step, setStep] = useState(0);
   const [genderType, setGenderType] = useState<GenderType>();
@@ -156,29 +144,6 @@ const SignUpPage = () => {
       alert("회원가입 백엔드 실패");
       console.log("register error", error);
     }
-  };
-
-  const saveFirstName = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFirstName(e.target.value);
-  };
-  const saveLastName = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLastName(e.target.value);
-  };
-  const saveUserName = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUserName(e.target.value);
-  };
-  const saveBio = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setBio(e.target.value);
-  };
-  const saveShcekPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCheckPassword(e.target.value);
-  };
-
-  const saveLocation = () => {
-    setIsLocation(!location);
-  };
-  const saveAge = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAge(Number(e.target.value));
   };
 
   const onClickStepOne = (email: string, password: string) => {

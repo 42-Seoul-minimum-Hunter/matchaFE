@@ -478,7 +478,8 @@ export const useInputValidation = (
       return !validatePassword(value)
         ? "패스워드는 알파벳 8-15자여야 합니다."
         : null;
-    case "name":
+    case "firstname":
+    case "lastname":
       return !validateName(value) ? "이름은 알파벳 1~10글자여야 합니다." : null;
     case "checkPassword":
       return !validateCheckPassword(value, checkPW)

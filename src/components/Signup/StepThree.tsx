@@ -13,7 +13,8 @@ const StepThree = () => {
   const [signUpTextData, setSignUpTextData] = useState({
     firstname: "",
     lastname: "",
-    checkPassword: "",
+    username: "",
+    password: "",
   });
 
   const [signUpDropboxData, setSignUpDropboxData] = useState({
@@ -25,7 +26,7 @@ const StepThree = () => {
 
   const handleInputChange = (e: any) => {
     const { name, value } = e.target;
-    console.log("name, value", name, value);
+    console.log("e.target.name", e.target.name);
     setSignUpTextData({ ...signUpTextData, [name]: value });
     // setError(false);
   };
@@ -65,22 +66,22 @@ const StepThree = () => {
     ([value, label]) => ({ value, label })
   );
 
-  console.log("LocationData", LocationData);
-  console.log("genderTagList", genderTagList);
+  // console.log("LocationData", LocationData);
+  // console.log("genderTagList", genderTagList);
   const locationSiTagList: tagItem[] = LocationData.map((area) => ({
     value: area.name,
     label: area.name,
   }));
   // const subAreas =
   //   LocationData.find((area) => area.name === selectedArea)?.subArea || [];
-  console.log("locationSiTagList", locationSiTagList);
+  // console.log("locationSiTagList", locationSiTagList);
   return (
     <>
       <RowContainer>
         <TitleStyled>User Profile</TitleStyled>
         <InputContainer>
           <InputTemplate
-            type="name"
+            type="firstname"
             label="First Name"
             value={signUpTextData.firstname}
             // onChange={savePassword}
@@ -88,7 +89,7 @@ const StepThree = () => {
             // setErrorr={setError}
           />
           <InputTemplate
-            type="name"
+            type="lastname"
             label="last Name"
             value={signUpTextData.lastname}
             // onChange={savePassword}
@@ -96,21 +97,21 @@ const StepThree = () => {
             // setErrorr={setError}
           />
           <InputTemplate
+            type="username"
+            label="유저네임"
+            value={signUpTextData.username}
+            // onChange={savePassword}
+            onChange={handleInputChange}
+            // setErrorr={setError}
+          />
+          {/* <InputTemplate
             type="email"
             label="이메일"
             value={signUpTextData.firstname}
             // onChange={savePassword}
             onChange={handleInputChange}
             // setErrorr={setError}
-          />
-          <InputTemplate
-            type="password"
-            label="password"
-            value={signUpTextData.lastname}
-            // onChange={savePassword}
-            onChange={handleInputChange}
-            // setErrorr={setError}
-          />
+          /> */}
         </InputContainer>
       </RowContainer>
 

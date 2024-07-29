@@ -65,16 +65,21 @@ const DropboxTemplate = ({
 const DropboxContainer = styled.div`
   position: relative;
   width: 350px;
+  /* height: 56px; */
+  border-radius: 4px;
 `;
 
 const DropboxHeader = styled.div`
   padding: 10px;
-  background-color: #f0f0f0;
-  border: 1px solid #ccc;
+  background-color: var(--white);
+  border-radius: 4px;
+  border: 1px solid var(--line-gray-3);
+  color: var(--line-gray-1);
   cursor: pointer;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  height: 56px;
 `;
 
 const ChevronIcon = styled.div<{ $isOpen: boolean }>`
@@ -123,7 +128,7 @@ const Option = styled.li`
   letter-spacing: -0.025em;
 
   &:hover {
-    background-color: #f0f0f0;
+    background-color: var(--brand-sub-2);
   }
 `;
 

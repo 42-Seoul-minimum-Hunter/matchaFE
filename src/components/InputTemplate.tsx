@@ -32,6 +32,7 @@ const InputTemplate = (props: InputTemplateProps) => {
     // 에러 유무를 boolean으로 전달
     <InputContainer data-error={!!error}>
       <InputStyled
+        id={props.type}
         placeholder={""}
         value={props.value}
         onChange={props.onChange}
@@ -43,7 +44,7 @@ const InputTemplate = (props: InputTemplateProps) => {
         }
         name={props.type}
       />
-      <LabelStyled>{props.label}</LabelStyled>
+      <LabelStyled htmlFor={props.type}>{props.label}</LabelStyled>
       {error && <ErrorStyled>{error}</ErrorStyled>}
     </InputContainer>
   );

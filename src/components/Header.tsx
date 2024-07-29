@@ -57,7 +57,7 @@ const Header = () => {
     navigate("/message");
   };
   const onClickAlarm = () => {
-    navigate("/alarm");
+    navigate("/signup");
   };
 
   const tryProfileMe = async () => {
@@ -70,21 +70,21 @@ const Header = () => {
       throw error;
     }
   };
-  const navItems = [
-    { icon: <ProfileIcon />, label: "Profile", onClick: tryProfileMe },
-    {
-      icon: <SearchIcon />,
-      label: "Search",
-      onClick: onClickSearch,
-    },
-    {
-      icon: <MessageIcon />,
-      label: "Message",
-      onClick: onClickMessage,
-    },
-    { icon: <AlarmIcon />, label: "Alarm", onClick: onClickAlarm },
-    { icon: <LogoutIcon />, label: "Logout", onClick: onClickLogout },
-  ];
+  // const navItems = [
+  //   { icon: <ProfileIcon />, label: "Profile", onClick: tryProfileMe },
+  //   {
+  //     icon: <SearchIcon />,
+  //     label: "Search",
+  //     onClick: onClickSearch,
+  //   },
+  //   {
+  //     icon: <MessageIcon />,
+  //     label: "Message",
+  //     onClick: onClickMessage,
+  //   },
+  //   { icon: <AlarmIcon />, label: "Alarm", onClick: onClickAlarm },
+  //   { icon: <LogoutIcon />, label: "Logout", onClick: onClickLogout },
+  // ];
 
   return (
     <Wrapper>
@@ -98,7 +98,7 @@ const Header = () => {
       </TitleStyled>
       <HeaderContainer>
         <NavStyled>Log In</NavStyled>
-        <NavStyled>Sign Up</NavStyled>
+        <NavStyled onClick={onClickAlarm}>Sign Up</NavStyled>
       </HeaderContainer>
     </Wrapper>
   );
