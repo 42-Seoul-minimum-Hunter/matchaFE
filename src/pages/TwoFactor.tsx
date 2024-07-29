@@ -9,60 +9,12 @@ import React, {
 import styled from "styled-components";
 
 const TwoFactor = () => {
-  const [code, setCode] = useState(["", "", "", ""]);
+  const [code, setCode] = useState(["", "", "", "", "", ""]);
   const [error, setError] = useState<boolean>(true);
   const inputs = useRef<(HTMLInputElement | null)[]>([]);
 
-  //   const onCLickTwoFactorVerify = async (password: string) => {
-  //     try {
-  //       // 이메일 인증 절차 -> 통과하면 바로 search로 이동
-  //       console.log("ps", password);
-  //       const res = await axiosVerifyTwoFactor(password);
-  //       console.log("twofactor res", res);
-  //       if (res.status === 200) {
-  //         navigator("/search");
-  //       }
-  //       // navigate("/search");
-  //     } catch (error: any) {
-  //       setIsEmail(false);
-  //       alert(error.response.data);
-  //       navigator("/login");
-  //       // Resend 버튼 만들기 -> create로 url 재전송
-  //       // removeCookie("jwt");
-  //       // 이메일 인증 실패해도 login이동
-  //       console.log("verify error", error);
-  //     }
-  //   };
-
-  //   // const onClickSubmit = async () => {
-  //   //   try {
-  //   //     console.log("password", password);
-  //   //     const res = await axiosVerifyTwoFactor(password);
-  //   //     console.log("res", res);
-  //   //   } catch (error: any) {
-  //   //     console.log("error", error);
-  //   //     alert("인증번호가 일치하지 않습니다.");
-  //   //     throw error;
-  //   //   }
-  //   //   // navigator("/search");
-  //   // };
-
   //   TODO : 1단계 이메일 인증을 통과하면 2단계때 2fa받을수 있게 BE고치기
   const tryVerifyTwoFactor = () => {};
-
-  // 페이지 들어와서 시작
-  // useEffect(() => {
-  //   try {
-  //     // 여기서 email을 보내줘야 하나? -> 지금은 jwt가 적용 안되어있으니까 지금만 이메일 보내기
-  //     const res = axiosCreateTwoFactor();
-  //     console.log("res", res);
-  //     // setIsEmail(true);
-  //   } catch (error: any) {
-  //     // setIsEmail(false);
-  //     console.log("error", error);
-  //     throw error;
-  //   }
-  // }, []);
 
   const handleSubmit = () => {
     console.log("인증하기~!");
@@ -71,15 +23,12 @@ const TwoFactor = () => {
 
   const handleChange = (index: number, value: string) => {
     if (!/^[0-9]*$/.test(value)) return; // 숫자만 허용
-
     const newCode = [...code];
     newCode[index] = value;
     setCode(newCode);
-
-    if (value !== "" && index < 3) {
+    if (value !== "" && index < 6) {
       inputs.current[index + 1]?.focus();
     }
-
     // 여기서 바로 값이 들어오자마자 onClick을 해버릴수 있음
     if (newCode.every((digit) => digit !== "")) {
       //   onComplete(newCode.join(""));
@@ -95,50 +44,69 @@ const TwoFactor = () => {
 
   const handlePaste = (e: React.ClipboardEvent) => {
     e.preventDefault();
-    const pastedData = e.clipboardData.getData("text").slice(0, 4).split("");
+    const pastedData = e.clipboardData.getData("text").slice(0, 6).split("");
     const newCode = [...code];
     pastedData.forEach((digit, index) => {
-      if (index < 4 && /^[0-9]$/.test(digit)) {
+      if (index < 6 && /^[0-9]$/.test(digit)) {
         newCode[index] = digit;
       }
     });
     setCode(newCode);
-    inputs.current[Math.min(pastedData.length, 3)]?.focus();
+    inputs.current[Math.min(pastedData.length, 5)]?.focus();
   };
 
   return (
-    <Wrapper>
-      <Test>
+    <Container>
+      <>
         <TitleStyled>
           MEET<span>CHA</span>
         </TitleStyled>
-        <InputContainer>
-          {code.map((digit, index) => (
-            <InputStyled
-              key={index}
-              ref={(el) => (inputs.current[index] = el)}
-              type="text"
-              maxLength={1}
-              value={digit}
-              onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                handleChange(index, e.target.value)
-              }
-              onKeyDown={(e: KeyboardEvent<HTMLInputElement>) =>
-                handleKeyDown(index, e)
-              }
-              // NOTE : 클립보드에 있는 값을 복사해서 붙여넣기
-              onPaste={handlePaste}
-            />
+        <InfoTextStyled>
+          가입해주신 이메일의 메일함을 확인해주세요!
+        </InfoTextStyled>
+        <CodeContainer>
+          {[0, 1].map((groupIndex) => (
+            <CodeGroupStyled key={groupIndex}>
+              {code
+                .slice(groupIndex * 3, (groupIndex + 1) * 3)
+                .map((digit, index) => {
+                  const actualIndex = groupIndex * 3 + index;
+                  return (
+                    <CodeStyled
+                      key={actualIndex}
+                      ref={(el) => (inputs.current[actualIndex] = el)}
+                      type="text"
+                      maxLength={1}
+                      value={digit}
+                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                        handleChange(actualIndex, e.target.value)
+                      }
+                      onKeyDown={(e: KeyboardEvent<HTMLInputElement>) =>
+                        handleKeyDown(actualIndex, e)
+                      }
+                      onPaste={handlePaste}
+                    />
+                  );
+                })}
+            </CodeGroupStyled>
           ))}
-        </InputContainer>
-        {error && <ErrorStyled>인증번호가 일치하지 않습니다.</ErrorStyled>}
+        </CodeContainer>
+        <ErrorContainer>
+          {error && <ErrorStyled>인증번호가 일치하지 않습니다.</ErrorStyled>}
+        </ErrorContainer>
         <ButtonStyled onClick={handleSubmit}>인증하기</ButtonStyled>
-      </Test>
-    </Wrapper>
+      </>
+    </Container>
   );
 };
 
-const Wrapper = styled.div`
+const ErrorContainer = styled.div`
+  height: 80px; // ButtonStyled와의 간격
+  display: flex;
+  align-items: flex-start;
+`;
+
+const Container = styled.div`
   display: flex;
   padding-top: 15vh;
 
@@ -152,18 +120,17 @@ const Wrapper = styled.div`
   }
 `;
 
-const Test = styled.div`
-  display: flex;
-  width: 100%;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
+const InfoTextStyled = styled.div`
+  font-size: 0.9rem;
+  line-height: 1.4;
+  font-weight: 400;
+  margin-bottom: 65px;
 `;
 
 const TitleStyled = styled.div`
   font-size: 3rem;
   font-family: var(--main-font);
+  margin-bottom: 25px;
   /* margin-bottom: 20px; */
   & > span {
     color: var(--brand-main-1);
@@ -174,35 +141,32 @@ const ErrorStyled = styled.div`
   margin-left: 20px;
   font-weight: 400;
   line-height: 1.4;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   letter-spacing: -0.025em;
-  color: var(--status-error-1);
+  color: var(--status-error-2);
 `;
 
-const InputContainer = styled.div`
+const CodeContainer = styled.div`
   display: flex;
   justify-content: center;
-  gap: 10px;
+  gap: 40px;
+  margin-bottom: 10px;
 `;
 
-const InputStyled = styled.input`
-  width: 40px;
-  height: 40px;
+const CodeStyled = styled.input`
+  outline: none;
   text-align: center;
-  font-size: 20px;
-  /* border: 1px solid #ccc; */
   color: var(--black);
-  border-radius: 10px;
   font-size: 2rem;
   font-weight: 400;
   line-height: 1.4;
-
-  outline: none;
   background-color: var(--white);
-  /* border-color: var(--line-gray-2); */
   border: 2px solid var(--line-gray-2);
-  width: 96px;
-  height: 100px;
+  border-radius: 10px;
+  /* width: 96px;
+  height: 100px; */
+  width: 80px;
+  height: 96px;
 
   &:focus {
     border-color: var(--brand-main-1);
@@ -217,22 +181,15 @@ const ButtonStyled = styled.button`
   padding: 12px 0px;
 
   box-shadow: 4px 4px 3px 0px var(--black);
-  margin-top: 30px;
   margin-bottom: 50px;
 `;
 
-export default TwoFactor;
+const CodeGroupStyled = styled.div`
+  display: flex;
+  gap: 10px; // 각 입력 필드 사이의 간격
+`;
 
-// import {
-//   axiosCreateTwoFactor,
-//   axiosEmailVerify,
-//   axiosVerifyTwoFactor,
-// } from "@/api/axios.custom";
-// import { removeCookie } from "@/api/cookie";
-// import InputTemplate from "@/components/InputTemplate";
-// import { useEffect, useState } from "react";
-// import { useNavigate } from "react-router-dom";
-// import styled from "styled-components";
+export default TwoFactor;
 
 // const TwoFactor = () => {
 //   const [password, setPassword] = useState("");

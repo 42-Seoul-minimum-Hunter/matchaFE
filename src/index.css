@@ -14,6 +14,7 @@ body,
   --line-gray-3: #c5c5c5;
 
   --status-error-1: #d72442;
+  --status-error-2: #ff4040;
 
   color-scheme: light dark;
   /* color: rgba(255, 255, 255, 0.87); */
