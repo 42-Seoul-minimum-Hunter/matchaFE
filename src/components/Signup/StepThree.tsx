@@ -1,11 +1,30 @@
 import styled from "styled-components";
 import InputTemplate from "../InputTemplate";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ImageUpload from "../ImageUpload";
 import DropboxTemplate from "../DropboxTemplate";
-import { GenderLableMap, PreferenceLableMap } from "@/types/maps";
+import {
+  GenderLableMap,
+  InterestLableMap,
+  PreferenceLableMap,
+} from "@/types/maps";
 import { tagItem } from "@/pages/SignUpPage";
 import { LocationData } from "@/assets/mock/mock";
+import TagList, { TagProps } from "../TagTemplate";
+
+// TODO : 다른 곳으로 정리
+interface AgeTagItem {
+  value: string;
+  label: string;
+}
+
+const ageTagList: AgeTagItem[] = Array.from({ length: 81 }, (_, index) => {
+  const age = index + 20;
+  return {
+    value: age.toString(),
+    label: `${age}세`,
+  };
+});
 
 const StepThree = () => {
   const [showImages, setShowImages] = useState<string[]>([]);
@@ -30,14 +49,6 @@ const StepThree = () => {
     setSignUpTextData({ ...signUpTextData, [name]: value });
     // setError(false);
   };
-
-  // const handleDropboxChange = (option: tagItem) => {
-  //   // const { name, value } = e.target;
-  //   console.log("option", option);
-  //   // setSignUpDropboxData({ ...signUpDropboxData, [name]: value });
-  //   setSignUpDropboxData((prev) => ({ ...prev, gender: option.value }));
-  //   // setError(false);
-  // };
 
   const handleDropboxChange = (name: string, option: tagItem) => {
     // console.log("option", option);
@@ -66,15 +77,38 @@ const StepThree = () => {
     ([value, label]) => ({ value, label })
   );
 
-  // console.log("LocationData", LocationData);
-  // console.log("genderTagList", genderTagList);
   const locationSiTagList: tagItem[] = LocationData.map((area) => ({
     value: area.name,
     label: area.name,
   }));
-  // const subAreas =
-  //   LocationData.find((area) => area.name === selectedArea)?.subArea || [];
-  // console.log("locationSiTagList", locationSiTagList);
+
+  const tags = [
+    { id: "1", label: "React" },
+    { id: "2", label: "JavaScript" },
+    { id: "3", label: "TypeScript" },
+  ];
+
+  const HashTagsList: tagItem[] = Object.entries(InterestLableMap).map(
+    ([value, label]) => ({ value, label })
+  );
+  // console.log("HashTagsList", HashTagsList);
+
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  //
+  const onClickTags = (tag: TagProps) => {
+    setSelectedTags((prev) => {
+      if (prev.includes(tag.value)) {
+        return prev.filter((value) => value !== tag.value);
+      } else {
+        return [...prev, tag.value];
+      }
+    });
+  };
+
+  useEffect(() => {
+    console.log("selectedTags", selectedTags);
+  }, [selectedTags]);
+
   return (
     <>
       <RowContainer>
@@ -125,6 +159,16 @@ const StepThree = () => {
         <TitleStyled>User Detail</TitleStyled>
         <InputContainer>
           <DropboxTemplate
+            options={locationSiTagList}
+            type="location_si"
+            onSelect={(option) => handleDropboxChange("location_si", option)}
+          />
+          <DropboxTemplate
+            options={locationGuTagList}
+            type="location_gu"
+            onSelect={(option) => handleDropboxChange("location_gu", option)}
+          />
+          <DropboxTemplate
             options={genderTagList}
             type="gender"
             onSelect={(option) => handleDropboxChange("gender", option)}
@@ -135,29 +179,38 @@ const StepThree = () => {
             onSelect={(option) => handleDropboxChange("preference", option)}
           />
           <DropboxTemplate
-            options={locationSiTagList}
-            type="location_si"
-            onSelect={(option) => handleDropboxChange("location_si", option)}
-          />
-          <DropboxTemplate
-            options={locationGuTagList}
-            type="location_gu"
-            onSelect={(option) => handleDropboxChange("location_gu", option)}
+            options={ageTagList}
+            type="age"
+            onSelect={(option) => handleDropboxChange("age", option)}
           />
         </InputContainer>
       </RowContainer>
+
+      <HashTagContainer>
+        <TitleStyled>HashTags</TitleStyled>
+        <TagList
+          tags={HashTagsList}
+          onTagSelect={onClickTags}
+          selectedTags={selectedTags}
+          // onTagSelect={(tag) => onClickTags(tag)}
+        />
+      </HashTagContainer>
+      <ButtonStyled>가입하기</ButtonStyled>
     </>
   );
 };
 
 export default StepThree;
 
-const StepThreeContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  align-items: center;
-  justify-content: center;
+const ButtonStyled = styled.button`
+  width: 350px;
+  font-size: 1.1rem;
+  background-color: var(--brand-main-1);
+  padding: 12px 0px;
+
+  box-shadow: 4px 4px 3px 0px var(--black);
+  margin-top: 30px;
+  margin-bottom: 50px;
 `;
 
 const InputContainer = styled.div`
@@ -165,6 +218,11 @@ const InputContainer = styled.div`
   flex-wrap: wrap;
   gap: 10px;
   width: 740px;
+`;
+
+const HashTagContainer = styled.div`
+  width: 740px;
+  margin-bottom: 60px;
 `;
 
 const RowContainer = styled.div`

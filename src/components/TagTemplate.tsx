@@ -1,160 +1,115 @@
+import React, { useState } from "react";
 import styled from "styled-components";
 
-import { useEffect, useRef, useState } from "react";
-import { tagItem } from "@/pages/SignUpPage";
-
-export interface ITagTemplateProps<T> {
-  title?: string;
-  tagList: tagItem[];
-  setState: React.Dispatch<React.SetStateAction<T>>;
-  initialState?: T;
-  isModify?: boolean;
-  selectedTag?: string[];
+export interface TagProps {
+  value: string;
+  label: string;
 }
 
-const TagTemplate = <T,>({
-  title,
-  tagList,
-  initialState,
-  setState,
-  isModify,
-  selectedTag,
-}: ITagTemplateProps<T>) => {
-  const wrapperRef = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    const buttons = wrapperRef.current?.querySelectorAll("button");
-    // console.log("selectedTag", selectedTag);
-    // console.log("tagList", tagList);
-    if (isModify) {
-      buttons?.forEach((button) => {
-        if (
-          selectedTag &&
-          selectedTag.includes(button.classList[0].toLowerCase())
-        ) {
-          button.classList.add("selected");
-        }
-      });
-    } else {
-      if (title === "Interest") {
-        let temp: any[] = initialState ? [...(initialState as any[])] : [];
-        buttons?.forEach((button) => {
-          const buttonClassName = button.className;
-          // if (button.classList.contains(`${initialState}`)) {
-          if (temp.some((item) => buttonClassName.includes(item))) {
-            button.classList.add("selected");
-          }
-        });
-      } else {
-        buttons?.forEach((button) => {
-          if (button.classList.contains(`${initialState}`)) {
-            button.classList.add("selected");
-          }
-        });
-      }
-    }
-  }, [initialState]);
+interface TagListProps {
+  tags: TagProps[];
+  onTagSelect: (tag: TagProps) => void;
+  onTagRemove?: (tag: TagProps) => void;
+  showRemoveIcon?: boolean;
+  selectable?: boolean;
+  showSelectedOnly?: boolean;
+  selectedTags: string[];
+}
 
-  const clickToggle = (e: any) => {
-    const target = e.target as HTMLButtonElement;
-    if (isModify && target === e.currentTarget) return;
+const TagList: React.FC<TagListProps> = ({
+  tags,
+  onTagSelect,
+  onTagRemove,
+  selectedTags,
+  showRemoveIcon = false,
+  selectable = true,
+  showSelectedOnly = false,
+}) => {
+  // const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
-    if (title === "Interest") {
-      const selectedKey = target.className.split(" ")[0];
-      const buttons = wrapperRef.current?.querySelectorAll("button");
+  const handleTagClick = (tag: TagProps) => {
+    if (!selectable) return;
+    onTagSelect(tag);
 
-      let temp: any[] = initialState ? [...(initialState as any[])] : [];
-      if (target.classList.contains("selected")) {
-        // setState(temp?.filter((item: any) => item !== selectedKey));
-        setState(
-          temp.filter((item) => item !== selectedKey) as React.SetStateAction<T>
-        );
-        target.classList.remove("selected");
-        return;
-      } else {
-        setState([...temp, selectedKey] as React.SetStateAction<T>);
-      }
-    } else {
-      const selectedKey = target.className.split(" ")[0];
-      const buttons = wrapperRef.current?.querySelectorAll("button");
-      if (target.classList.contains("selected")) {
-        target.classList.remove("selected");
-        setState(null as React.SetStateAction<T>);
-        return;
-      }
-      buttons?.forEach((button) => {
-        if (button.classList.contains("selected")) {
-          button.classList.remove("selected");
-        }
-      });
-      // target.classList.add("selected");
-      setState(selectedKey as React.SetStateAction<T>);
+    // setSelectedTags((prev) => {
+    //   const newSelected = prev.includes(tag.id)
+    //     ? prev.filter((id) => id !== tag.id)
+    //     : [...prev, tag.id];
+
+    //   if (onTagSelect) {
+    //     onTagSelect(tag);
+    //   }
+
+    //   return newSelected;
+    // });
+  };
+
+  const handleRemoveClick = (e: React.MouseEvent, tag: TagProps) => {
+    e.stopPropagation();
+    if (onTagRemove) {
+      onTagRemove(tag);
     }
   };
 
+  const displayTags = showSelectedOnly
+    ? tags.filter((tag) => selectedTags.includes(tag.value))
+    : tags;
+
   return (
-    <Wrapper>
-      {title && <h2>{title}</h2>}
-      <TagWrapper ref={wrapperRef}>
-        {tagList.map((item, index) => (
-          <button key={index} className={item.key} onClick={clickToggle}>
-            {item.name}
-          </button>
-        ))}
-      </TagWrapper>
-    </Wrapper>
+    <TagContainer>
+      {displayTags.map((tag) => (
+        <TagItem
+          key={tag.value}
+          onClick={() => handleTagClick(tag)}
+          $selected={selectedTags.includes(tag.value)}
+          $selectable={selectable}
+        >
+          {tag.label}
+          {showRemoveIcon && (
+            <RemoveIcon onClick={(e) => handleRemoveClick(e, tag)}>
+              x
+            </RemoveIcon>
+          )}
+        </TagItem>
+      ))}
+    </TagContainer>
   );
 };
 
-export default TagTemplate;
-
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  h2 {
-    margin-bottom: 25px;
-  }
-`;
-
-const TagWrapper = styled.div`
+const TagContainer = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  button {
-    padding: 12px 15px;
-    border-radius: 10px;
-    width: fit-content;
-    display: flex;
-    /* border: 1px solid var(--tag-stroke); */
-    flex-direction: column;
+  gap: 8px;
+`;
 
-    color: var(--black);
-    background-color: var(--white);
-    border: 1px solid var(--tag-stroke);
-  }
+const TagItem = styled.div<{ $selected: boolean; $selectable: boolean }>`
+  padding: 6px 24px;
+  border-radius: 2px;
+  background-color: ${(props) =>
+    props.$selected ? "var(--brand-main-1)" : "#f0f0f0"};
+  color: ${(props) => (props.$selected ? "var(--white)" : "var(--black)")};
+  cursor: ${(props) => (props.$selectable ? "pointer" : "default")};
+  display: flex;
+  align-items: center;
+  transition: all 0.1s ease;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  height: 36px;
 
-  /* button.categoryButton {
-    color: var(--normal-text-color);
-    background-color: var(--card-content-bg-color);
-  } */
-
-  button.selected {
-    /* target.style.color = "var(--white)";
-        target.style.backgroundColor = "var(--vermilion)"; */
-    color: var(--white);
-    background-color: var(--vermilion);
+  &:hover {
+    /* background-color: ${(props) =>
+      props.$selectable ? "var(--brand-sub-1)" : "#f0f0f0"}; */
+    /* color: ${(props) =>
+      props.$selectable ? "var(--white)" : "var(--black)"}; */
+    background-color: var(--brand-sub-1);
+    color: #f0f0f0;
   }
 `;
 
-// button.not-selected {
-//   /* target.style.color = "var(--white)";
-//       target.style.backgroundColor = "var(--vermilion)"; */
-//   color: var(--white);
-//   background-color: var(--vermilion);
-// }
+const RemoveIcon = styled.span`
+  margin-left: 6px;
+  font-weight: bold;
+  cursor: pointer;
+`;
 
-// const Button = styled.div`
-//   width: fit-content;
-//   display: flex;
-//   flex-direction: column;
-//   background-color: var(--vermilion);
-// `;
+export default TagList;
