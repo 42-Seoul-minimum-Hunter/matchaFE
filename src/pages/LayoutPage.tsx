@@ -25,15 +25,6 @@ export const SocketContext = createContext<null>(null);
 
 // export const SocketContext = createContext(null);
 
-const COLORS = [
-  "#27F122",
-  "#EE26FF",
-  "#BDFF00",
-  "#7553FF",
-  "#FF000F",
-  "#00FFE0",
-];
-
 const Layout = () => {
   const location = useLocation();
   const [state, setState] = useState({ message: "", name: "" });
@@ -55,13 +46,20 @@ const Layout = () => {
   //   }
   // }, []);
 
-  // console.log("isLoginPage,isRegisterPage", isoginPage, isRegisterPage);
-  // console.log("isLoginPage || isRegisterPage", isLoginPage || isRegisterPage);
+  const directOutletPaths = [
+    "/login",
+    "/signup",
+    "/signup/detail",
+    "/findPW",
+    "/twofactor",
+  ];
 
-  return isLoginPage ||
-    isRegisterPage ||
-    isFindPasswordPage ||
-    isTwoFactorPage ? (
+  // 현재 경로가 directOutletPaths에 포함되어 있는지 확인
+  const isDirectOutletPath = directOutletPaths.some((path) =>
+    location.pathname.startsWith(path)
+  );
+
+  return isDirectOutletPath ? (
     <Outlet />
   ) : (
     // <SocketContext.Provider value={socket}>

@@ -10,6 +10,7 @@ import ProfilePage from "@/pages/ProfilePage";
 import FindPwPage from "@/pages/FindPwPage";
 import TwoFactor from "@/pages/TwoFactor";
 import EmailPage from "./pages/EmailPage";
+import SignupDetailPage from "./pages/SignupDetailPage";
 // import Layout from "@/pages/Layout";
 // import Home from "@/pages/Home";
 // import GamePreview from "@/pages/GamePreview";
@@ -22,6 +23,7 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route path="login" element={<LoginPage />} />
           <Route path="signup" element={<SignUpPage />} />
+          <Route path="signup/detail" element={<SignupDetailPage />} />
           {/* <Route path="main" element={<MainPage />} /> */}
           <Route path="search" element={<SearchPage />} />
           <Route path="message" element={<MessagePage />} />
