@@ -139,11 +139,59 @@ const ErrorStyled = styled.div`
   color: var(--status-error-2);
 `;
 
+// const CodeContainer = styled.div`
+//   display: flex;
+//   justify-content: center;
+//   gap: 40px;
+//   margin-bottom: 10px;
+// `;
+
+// const CodeStyled = styled.input`
+//   outline: none;
+//   text-align: center;
+//   color: var(--black);
+//   font-size: 2rem;
+//   font-weight: 400;
+//   line-height: 1.4;
+//   background-color: var(--white);
+//   border: 2px solid var(--line-gray-2);
+//   border-radius: 10px;
+//   /* width: 96px;
+//   height: 100px; */
+//   width: 80px;
+//   height: 96px;
+
+//   &:focus {
+//     border-color: var(--brand-main-1);
+//     background-color: var(--brand-sub-2);
+//   }
+// `;
+// const CodeGroupStyled = styled.div`
+//   display: flex;
+//   gap: 10px; // 각 입력 필드 사이의 간격
+// `;
+
 const CodeContainer = styled.div`
   display: flex;
   justify-content: center;
   gap: 40px;
   margin-bottom: 10px;
+  width: 100%;
+  max-width: 600px;
+
+  @media screen and (max-width: 768px) {
+    gap: 3%;
+  }
+`;
+
+const CodeGroupStyled = styled.div`
+  display: flex;
+  gap: 10px;
+
+  @media screen and (max-width: 768px) {
+    gap: 3%;
+    /* flex: 1; */
+  }
 `;
 
 const CodeStyled = styled.input`
@@ -156,8 +204,6 @@ const CodeStyled = styled.input`
   background-color: var(--white);
   border: 2px solid var(--line-gray-2);
   border-radius: 10px;
-  /* width: 96px;
-  height: 100px; */
   width: 80px;
   height: 96px;
 
@@ -165,9 +211,25 @@ const CodeStyled = styled.input`
     border-color: var(--brand-main-1);
     background-color: var(--brand-sub-2);
   }
+
+  /* TODO : 나중에 해상도 320px일때 크기 따로 맞추기 */
+  @media screen and (max-width: 768px) {
+    width: 33%;
+    height: auto;
+    aspect-ratio: 1 / 1.2; // 가로:세로 비율을 1:1.2로 설정
+    font-size: 1.5rem;
+    padding: 0;
+  }
+
+  @media screen and (max-width: 480px) {
+    font-size: 1.2rem;
+  }
 `;
 
 const ButtonStyled = styled.button`
+  @media screen and (max-width: 768px) {
+    width: 100%;
+  }
   width: 350px;
   font-size: 1.1rem;
   background-color: var(--brand-main-1);
@@ -175,11 +237,6 @@ const ButtonStyled = styled.button`
 
   box-shadow: 4px 4px 3px 0px var(--black);
   margin-bottom: 50px;
-`;
-
-const CodeGroupStyled = styled.div`
-  display: flex;
-  gap: 10px; // 각 입력 필드 사이의 간격
 `;
 
 export default TwoFactorPage;

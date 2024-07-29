@@ -73,13 +73,28 @@ const LoginPage = () => {
 
 export default LoginPage;
 
+const Container = styled.div`
+  display: flex;
+  padding-top: 15vh;
+
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+
+  @media screen and (max-width: 768px) {
+    padding-top: 10vh;
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+`;
+
 const InfoTextStyled = styled.div`
   font-size: 0.9rem;
   font-weight: 300;
   line-height: 1.4;
   text-align: start;
-  width: 350px;
-
+  width: 100%;
   & > span {
     color: var(--status-error-1);
     cursor: pointer;
@@ -90,11 +105,16 @@ const InfoTextStyled = styled.div`
 
 const InputContainer = styled.div`
   display: flex;
-  width: 100%;
+  /* width: 100%; */
+  max-width: 350px;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 20px;
+  @media screen and (max-width: 768px) {
+    width: 100%;
+    max-width: none;
+  }
 `;
 
 const OauthContainer = styled.div`
@@ -104,6 +124,9 @@ const OauthContainer = styled.div`
   font-size: 1.1rem;
   font-weight: 400;
   line-height: 1.4;
+  @media screen and (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 const OauthLabelStyled = styled.div`
@@ -127,6 +150,10 @@ const OauthButtonStyled = styled.div`
 `;
 
 const ButtonStyled = styled.button`
+  @media screen and (max-width: 768px) {
+    width: 100%;
+    max-width: none;
+  }
   width: 350px;
   font-size: 1.1rem;
   background-color: var(--brand-main-1);
@@ -145,20 +172,6 @@ const TitleStyled = styled.div`
     color: var(--brand-main-1);
   }
   margin-bottom: 40px;
-`;
-
-const Container = styled.div`
-  display: flex;
-  padding-top: 15vh;
-
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-
-  @media screen and (max-width: 768px) {
-    padding: 10vh;
-  }
 `;
 
 // import styled from "styled-components";

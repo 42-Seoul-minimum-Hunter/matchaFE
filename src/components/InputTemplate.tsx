@@ -60,7 +60,7 @@ const ErrorStyled = styled.div`
 `;
 
 const InputContainer = styled.div`
-  max-width: 350px;
+  /* max-width: 350px; */
   width: 100%;
   display: flex;
   flex-direction: column;

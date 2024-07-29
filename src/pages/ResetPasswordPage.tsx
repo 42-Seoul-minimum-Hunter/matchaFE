@@ -112,14 +112,21 @@ const InfoTextStyled = styled.div`
 
 const InputContainer = styled.div`
   display: flex;
-  width: 100%;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 20px;
+  max-width: 350px;
+  @media screen and (max-width: 768px) {
+    width: 100%;
+    max-width: none;
+  }
 `;
 
 const ButtonStyled = styled.button`
+  @media screen and (max-width: 768px) {
+    width: 100%;
+  }
   width: 350px;
   font-size: 1.1rem;
   background-color: var(--brand-main-1);

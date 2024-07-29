@@ -91,7 +91,7 @@ const SignUpPage = () => {
   };
 
   return (
-    <Wrapper>
+    <Container>
       <InputContainer>
         <TitleStyled>
           MEET<span>CHA</span>
@@ -125,19 +125,40 @@ const SignUpPage = () => {
           <OauthButtonStyled>42 login</OauthButtonStyled>
         </OauthContainer>
       </InputContainer>
-    </Wrapper>
+    </Container>
   );
 };
 
 export default SignUpPage;
 
+const Container = styled.div`
+  display: flex;
+  padding-top: 15vh;
+
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+
+  @media screen and (max-width: 768px) {
+    padding-top: 10vh;
+    padding-left: 2.5rem;
+    padding-right: 2.5rem;
+  }
+`;
+
 const InputContainer = styled.div`
   display: flex;
-  width: 100%;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 20px;
+
+  max-width: 350px;
+  @media screen and (max-width: 768px) {
+    width: 100%;
+    max-width: none;
+  }
 `;
 
 const OauthContainer = styled.div`
@@ -147,6 +168,10 @@ const OauthContainer = styled.div`
   font-size: 1.1rem;
   font-weight: 400;
   line-height: 1.4;
+
+  @media screen and (max-width: 768px) {
+    width: 100%;
+  }
 `;
 
 const OauthLabelStyled = styled.div`
@@ -170,7 +195,8 @@ const OauthButtonStyled = styled.div`
 `;
 
 const ButtonStyled = styled.button`
-  width: 350px;
+  /* width: 350px; */
+  width: 100%;
   font-size: 1.1rem;
   background-color: var(--brand-main-1);
   padding: 12px 0px;
@@ -188,18 +214,4 @@ const TitleStyled = styled.div`
     color: var(--brand-main-1);
   }
   margin-bottom: 40px;
-`;
-
-const Wrapper = styled.div`
-  display: flex;
-  padding-top: 15vh;
-
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  border-radius: 10px;
-
-  @media screen and (max-width: 768px) {
-    padding: 10vh;
-  }
 `;
