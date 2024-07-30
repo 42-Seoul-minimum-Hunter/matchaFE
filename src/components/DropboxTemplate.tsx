@@ -1,6 +1,6 @@
 import { tagItem } from "@/pages/SignUpPage";
 import React, { useEffect, useRef, useState } from "react";
-// import { ReactComponent as ChevronIcon } from "@/assets/icons/chevron-icon.svg";
+import { ReactComponent as ChevronIcon } from "@/assets/icons/chevron-icon.svg";
 import styled from "styled-components";
 
 const DropboxTemplate = ({
@@ -44,7 +44,10 @@ const DropboxTemplate = ({
     <DropboxContainer ref={dropdownRef}>
       <DropboxHeader onClick={toggleDropbox}>
         {selectedOption ? selectedOption.label : type}
-        <ChevronIcon $isOpen={isOpen} />
+        {/* <ChevronIcon $isOpen={isOpen} /> */}
+        <ChevronIconStyled $isOpen={isOpen}>
+          <ChevronIcon />
+        </ChevronIconStyled>
       </DropboxHeader>
       {isOpen && (
         <OptionsList>
@@ -82,12 +85,7 @@ const DropboxHeader = styled.div`
   height: 56px;
 `;
 
-const ChevronIcon = styled.div<{ $isOpen: boolean }>`
-  width: 0;
-  height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-top: 5px solid #333;
+const ChevronIconStyled = styled.div<{ $isOpen: boolean }>`
   transform: ${({ $isOpen }) => ($isOpen ? "rotate(180deg)" : "rotate(0)")};
   transition: transform 0.3s ease;
 `;
@@ -118,6 +116,16 @@ const OptionsList = styled.ul`
       transform: translateY(0);
     }
   }
+
+  /* 오버레이 스크롤바 사용 */
+  overflow-y: overlay;
+
+  /* 스크롤바 영역에 패딩 추가 */
+  /* padding-right: 15px; */
+
+  /* 스크롤바 트랙과 핸들에 대한 기본 스타일 */
+  scrollbar-width: thin;
+  scrollbar-color: var(--brand-main-1) var(--brand-sub-2);
 `;
 
 const Option = styled.li`
