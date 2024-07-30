@@ -7,13 +7,10 @@ import MessagePage from "@/pages/MessagePage";
 import SearchPage from "@/pages/SearchPage";
 import SignUpPage from "@/pages/SignUpPage";
 import ProfilePage from "@/pages/ProfilePage";
-import FindPwPage from "@/pages/FindPwPage";
-import TwoFactor from "@/pages/TwoFactor";
 import EmailPage from "./pages/EmailPage";
-// import Layout from "@/pages/Layout";
-// import Home from "@/pages/Home";
-// import GamePreview from "@/pages/GamePreview";
-// import Login from "./pages/Login";
+import SignupDetailPage from "@/pages/SignupDetailPage";
+import TwoFactorPage from "@/pages/TwoFactor";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 function App() {
   return (
@@ -22,18 +19,15 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route path="login" element={<LoginPage />} />
           <Route path="signup" element={<SignUpPage />} />
+          <Route path="signup/detail" element={<SignupDetailPage />} />
           {/* <Route path="main" element={<MainPage />} /> */}
           <Route path="search" element={<SearchPage />} />
           <Route path="message" element={<MessagePage />} />
           <Route path="alarm" element={<AlarmPage />} />
           <Route path="profile" element={<ProfilePage />} />
-          <Route path="findPW" element={<FindPwPage />} />
-          <Route path="twoFactor" element={<TwoFactor />} />
+          <Route path="resetPW" element={<ResetPasswordPage />} />
+          <Route path="twofactor" element={<TwoFactorPage />} />
           <Route path="email" element={<EmailPage />} />
-
-          {/* <Route path="home" element={<Home />}></Route>
-          <Route path="login" element={<Login />}></Route>
-          <Route path="game" element={<GamePreview />}></Route> */}
         </Route>
       </Routes>
     </BrowserRouter>

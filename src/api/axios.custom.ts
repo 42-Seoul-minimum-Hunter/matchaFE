@@ -1,4 +1,4 @@
-import { RegisterDto } from "@/types/tag.dto";
+import { RegisterDto, SignupDto } from "@/types/tag.dto";
 import axios, { AxiosRequestConfig } from "axios";
 import { getCookie } from "./cookie";
 
@@ -56,7 +56,7 @@ export const axiosRegister = async (register: RegisterDto): Promise<any> => {
 };
 
 const axiosUserCreateURL = "/user/create/";
-export const axiosUserCreate = async (data: RegisterDto): Promise<any> => {
+export const axiosUserCreate = async (data: SignupDto): Promise<any> => {
   try {
     console.log("data : ", data);
     const response = await instance.post(axiosUserCreateURL, data);

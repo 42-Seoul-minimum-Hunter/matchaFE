@@ -1,21 +1,17 @@
 import styled from "styled-components";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { createContext, useEffect, useState } from "react";
-import CircleContainer from "@/components/BackgroundColor";
 import Header from "@/components/Header";
 import { getCookie } from "@/api/cookie";
 import { io, Socket } from "socket.io-client";
 
 const token = getCookie("jwt");
 
-// interface SocketContextType {
-//   socket: Socket<any, any>;
-// }
-const socket = io("http://localhost:3001", {
-  auth: {
-    authorization: token,
-  },
-});
+// const socket = io("http://localhost:3001", {
+//   auth: {
+//     authorization: token,
+//   },
+// });
 
 export const SocketContext = createContext<null>(null);
 
@@ -29,28 +25,12 @@ export const SocketContext = createContext<null>(null);
 
 // export const SocketContext = createContext(null);
 
-const COLORS = [
-  "#27F122",
-  "#EE26FF",
-  "#BDFF00",
-  "#7553FF",
-  "#FF000F",
-  "#00FFE0",
-];
-
 const Layout = () => {
   const location = useLocation();
   const [state, setState] = useState({ message: "", name: "" });
   const [chat, setChat] = useState([]);
 
-  //  jwt 토큰이 있으면 search, 없으면 로그인 페이지로 이동
-  const isRootPath: boolean = location.pathname === "/";
-  const isLoginPage: boolean = location.pathname === "/login";
-  const isFindPasswordPage: boolean = location.pathname === "/findPW";
-  const isTwoFactorPage: boolean = location.pathname === "/twoFactor";
-  const isRegisterPage: boolean = location.pathname === "/signup";
-  // const isMainPage: boolean = location.pathname === "/main";
-
+  //  jwt 토큰이 있으면 main, 없으면 로그인 페이지로 이동
   // useEffect(() => {
   //   if (!loginToken && !isMainPage) navigate("/main");
   //   else if (!loginToken && !isMainPage) navigate("/login");
@@ -59,55 +39,41 @@ const Layout = () => {
   //   }
   // }, []);
 
-  // console.log("isLoginPage,isRegisterPage", isoginPage, isRegisterPage);
-  // console.log("isLoginPage || isRegisterPage", isLoginPage || isRegisterPage);
+  const directOutletPaths = [
+    "/twoFactor",
+    "/login",
+    "/signup",
+    "/signup/detail",
+    "/resetPW",
+  ];
 
-  return isLoginPage ||
-    isRegisterPage ||
-    isFindPasswordPage ||
-    isTwoFactorPage ? (
+  // 현재 경로가 directOutletPaths에 포함되어 있는지 확인
+  const isDirectOutletPath = directOutletPaths.some((path) =>
+    location.pathname.startsWith(path)
+  );
+
+  return isDirectOutletPath ? (
     <Outlet />
   ) : (
-    <SocketContext.Provider value={socket}>
-      <Wrapper>
-        {/* <CircleContainer circleCount={12} circleColors={COLORS} /> */}
-        <Header />
-        <MainStyled>
-          <Outlet />
-        </MainStyled>
-      </Wrapper>
-    </SocketContext.Provider>
+    // <SocketContext.Provider value={socket}>
+    <Wrapper>
+      <Header />
+      <MainStyled>
+        <Outlet />
+      </MainStyled>
+    </Wrapper>
+    // </SocketContext.Provider>
   );
 };
 
 export default Layout;
 
-const BackgroundCircleStyled = styled.div`
-  &::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    /* width: 100%;
-    height: 100%; */
-    background-color: rgba(22, 15, 15, 0.5);
-    z-index: -1;
-    width: 100%;
-    height: 100%;
-  }
-`;
-
-const TestCircle = styled.div`
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background-color: #27f122;
-  filter: blur(50px);
-`;
-
 const Wrapper = styled.div`
-  /* position: relative; */
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* width: 1440px; */
   height: 100%;
   overflow: scroll;
 `;
