@@ -11,6 +11,7 @@ import EmailPage from "./pages/EmailPage";
 import SignupDetailPage from "@/pages/SignupDetailPage";
 import TwoFactorPage from "@/pages/TwoFactor";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import SettingPage from "./pages/SettingPage";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
           <Route path="message" element={<MessagePage />} />
           <Route path="alarm" element={<AlarmPage />} />
           <Route path="profile" element={<ProfilePage />} />
+          <Route path="setting" element={<SettingPage />} />
           <Route path="resetPW" element={<ResetPasswordPage />} />
           <Route path="twofactor" element={<TwoFactorPage />} />
           <Route path="email" element={<EmailPage />} />

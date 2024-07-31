@@ -53,13 +53,13 @@ export const images = [
   TestImage5,
 ];
 
-const genderTagList: tagItem[] = Object.entries(GenderLableMap).map(
-  ([key, name]) => ({ key, name })
-);
+// const genderTagList: tagItem[] = Object.entries(GenderLableMap).map(
+//   ([key, name]) => ({ key, name })
+// );
 
-const preferenceTagList: tagItem[] = Object.entries(PreferenceLableMap).map(
-  ([key, name]) => ({ key, name })
-);
+// const preferenceTagList: tagItem[] = Object.entries(PreferenceLableMap).map(
+//   ([key, name]) => ({ key, name })
+// );
 
 const ProfilePage = () => {
   const [profileData, setProfileData] = useState<RegisterDto | null>();
@@ -83,7 +83,6 @@ const ProfilePage = () => {
   // 실제 있는 값들이 모두 있어야 하니까
   const [hashtagList, setHashtagList] = useState<tagItem[]>([]);
 
-  // userID는 나중에 jwt로 대체
   const tryToGetProfile = async (username: any) => {
     try {
       const res = await (!username ? axiosProfileMe() : axiosProfile(username));
@@ -115,6 +114,10 @@ const ProfilePage = () => {
   //     console.log("message");
   //   });
   // }, []);
+
+  const HashTagsList: tagItem[] = Object.entries(InterestLableMap).map(
+    ([value, label]) => ({ value, label })
+  );
 
   return (
     <Wrapper>

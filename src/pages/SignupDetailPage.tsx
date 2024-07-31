@@ -13,7 +13,7 @@ import ImageUpload from "@/components/ImageUpload";
 import DropboxTemplate from "@/components/DropboxTemplate";
 
 // TODO : 다른 곳으로 정리
-interface AgeTagItem {
+export interface AgeTagItem {
   value: string;
   label: string;
 }
@@ -27,7 +27,7 @@ const ageTagList: AgeTagItem[] = Array.from({ length: 81 }, (_, index) => {
 });
 
 const SignupDetailPage = () => {
-  const [showImages, setShowImages] = useState<string[]>([]);
+  const [images, setImages] = useState<string[]>([]);
   const [locationGuTagList, setLocationGuTagList] = useState<tagItem[]>([]);
   const [signUpTextData, setSignUpTextData] = useState({
     firstname: "",
@@ -82,19 +82,12 @@ const SignupDetailPage = () => {
     label: area.name,
   }));
 
-  const tags = [
-    { id: "1", label: "React" },
-    { id: "2", label: "JavaScript" },
-    { id: "3", label: "TypeScript" },
-  ];
-
   const HashTagsList: tagItem[] = Object.entries(InterestLableMap).map(
     ([value, label]) => ({ value, label })
   );
-  // console.log("HashTagsList", HashTagsList);
 
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  //
+
   const onClickTags = (tag: TagProps) => {
     setSelectedTags((prev) => {
       if (prev.includes(tag.value)) {
@@ -141,21 +134,13 @@ const SignupDetailPage = () => {
             onChange={handleInputChange}
             // setErrorr={setError}
           />
-          {/* <InputTemplate
-            type="email"
-            label="이메일"
-            value={signUpTextData.firstname}
-            // onChange={savePassword}
-            onChange={handleInputChange}
-            // setErrorr={setError}
-          /> */}
         </InputContainer>
       </RowContainer>
 
       <RowContainer>
         <TitleStyled>User Photo</TitleStyled>
         {/* <ImageUpload /> */}
-        <ImageUpload showImages={showImages} setShowImages={setShowImages} />
+        <ImageUpload images={images} setImages={setImages} />
       </RowContainer>
 
       <RowContainer>

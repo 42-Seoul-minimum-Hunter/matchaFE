@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom";
 const useRouter = () => {
   const navigate = useNavigate();
 
-  const goToProfile = () => {
-    navigate("/profile");
-  };
+  // const goToProfile = () => {
+  //   navigate("/profile");
+  // };
   const goToSearch = () => {
     navigate("/search");
   };
@@ -25,14 +25,24 @@ const useRouter = () => {
     navigate("/resetPW");
   };
 
+  const goToProfileMe = () => {
+    navigate("/profile");
+  };
+
+  const goToProfileUserClick = (nickname: string) => {
+    navigate(`/profile?username=${nickname}`);
+  };
+
   return {
-    goToProfile,
+    // goToProfile,
     goToSearch,
     goToMessage,
     goToAlarm,
     goToSignup,
     goTologin,
     goToResetPW,
+    goToProfileMe,
+    goToProfileUserClick,
   };
 };
 

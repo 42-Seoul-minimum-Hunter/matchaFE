@@ -1,3 +1,5 @@
+import { ISearchDateDto } from "@/pages/SearchPage";
+
 export const LocationData = [
   {
     name: "서울",
@@ -293,3 +295,51 @@ export const LocationData = [
     subArea: ["서귀포시", "제주시"],
   },
 ];
+
+export function generateDummyData(count: number): ISearchDateDto[] {
+  const firstNames = [
+    "Emma",
+    "Liam",
+    "Olivia",
+    "Noah",
+    "Ava",
+    "Ethan",
+    "Sophia",
+    "Mason",
+    "Isabella",
+    "William",
+  ];
+  const lastNames = [
+    "Smith",
+    "Johnson",
+    "Brown",
+    "Taylor",
+    "Miller",
+    "Wilson",
+    "Moore",
+    "Anderson",
+    "Jackson",
+    "Martin",
+  ];
+
+  function getRandomElement<T>(arr: T[]): T {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  function getRandomNumber(min: number, max: number): number {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function getRandomFloat(min: number, max: number, decimals: number): number {
+    const str = (Math.random() * (max - min) + min).toFixed(decimals);
+    return parseFloat(str);
+  }
+
+  return Array.from({ length: count }, (_, index) => ({
+    profileImages: `https://example.com/avatar${index + 1}.jpg`,
+    username: `${getRandomElement(firstNames)} ${getRandomElement(lastNames)}`,
+    age: getRandomNumber(18, 60),
+    rate: getRandomFloat(1, 5, 1),
+    commonHashtags: getRandomNumber(0, 10),
+  }));
+}

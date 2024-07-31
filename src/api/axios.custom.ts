@@ -137,12 +137,12 @@ export const axiosEmailVerify = async (): Promise<any> => {
 
 const axiosFindUserURL = "/user/find";
 export const axiosFindUser = async (
+  si?: string | undefined,
+  gu?: string | undefined,
   minAge?: number,
   maxAge?: number,
   minRate?: number,
   maxRate?: number,
-  si?: string,
-  gu?: string,
   hashtags?: string[]
 ): Promise<any> => {
   try {
@@ -154,13 +154,12 @@ export const axiosFindUser = async (
     if (si) params.si = si;
     if (gu) params.gu = gu;
     if (hashtags && hashtags.length > 0) params.hashtags = hashtags.join(",");
-    // params.hashtags = hashtags;
 
     const queryString = new URLSearchParams(params).toString();
     const url = queryString
       ? `${axiosFindUserURL}?${queryString}`
       : axiosFindUserURL;
-    console.log("search user rul", url);
+    console.log("search user url", url);
     const response = await instance.get(url);
     return response;
   } catch (error) {

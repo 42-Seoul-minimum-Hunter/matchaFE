@@ -8,7 +8,7 @@ export interface TagProps {
 
 interface TagListProps {
   tags: TagProps[];
-  onTagSelect: (tag: TagProps) => void;
+  onTagSelect: (tag: TagProps) => void; // 빈 함수로 설정하여 선택 기능 비활성화
   onTagRemove?: (tag: TagProps) => void;
   showRemoveIcon?: boolean;
   selectable?: boolean;
@@ -55,22 +55,24 @@ const TagList: React.FC<TagListProps> = ({
     ? tags.filter((tag) => selectedTags.includes(tag.value))
     : tags;
 
+  console.log("selectedTags", selectedTags);
+
   return (
     <TagContainer>
       {displayTags.map((tag) => (
-        <TagItem
+        <TagStyled
           key={tag.value}
           onClick={() => handleTagClick(tag)}
           $selected={selectedTags.includes(tag.value)}
           $selectable={selectable}
         >
           {tag.label}
-          {showRemoveIcon && (
+          {showRemoveIcon && selectedTags.includes(tag.value) && (
             <RemoveIcon onClick={(e) => handleRemoveClick(e, tag)}>
               x
             </RemoveIcon>
           )}
-        </TagItem>
+        </TagStyled>
       ))}
     </TagContainer>
   );
@@ -85,7 +87,10 @@ const TagContainer = styled.div`
   }
 `;
 
-const TagItem = styled.div<{ $selected: boolean; $selectable: boolean }>`
+export const TagStyled = styled.div<{
+  $selected: boolean;
+  $selectable: boolean;
+}>`
   padding: 6px 24px;
   border-radius: 2px;
   background-color: ${(props) =>

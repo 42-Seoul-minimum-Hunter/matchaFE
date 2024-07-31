@@ -42,7 +42,7 @@ const LoginPage = () => {
         </TitleStyled>
         <InputTemplate
           type="username"
-          label="이메일"
+          label="유저네임"
           value={signUpTextData.username}
           onChange={handleInputChange}
           // TODO : 에러 발생시 true로 변경 -> 나중에..
@@ -55,7 +55,7 @@ const LoginPage = () => {
           onChange={handleInputChange}
           setErrorr={setError}
         />
-        <ButtonStyled onClick={handleSubmit}>가입하기</ButtonStyled>
+        <ButtonStyled onClick={handleSubmit}>로그인</ButtonStyled>
         <OauthContainer>
           <OauthLabelStyled>간편 회원가입</OauthLabelStyled>
           <OauthButtonStyled>42 login</OauthButtonStyled>

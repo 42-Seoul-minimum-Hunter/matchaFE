@@ -12,7 +12,7 @@ import useRouter from "@/hooks/useRouter";
 
 // TODO: Router 테이블 만들어서 해당 라우터에서 색상 표현
 const Header = () => {
-  const { goToSignup, goToProfile, goTologin } = useRouter();
+  const { goToSignup, goTologin, goToSearch, goToProfileMe } = useRouter();
   const socket = useContext(SocketContext);
 
   // socket.on("getAlarms", (data: any) => {
@@ -53,7 +53,7 @@ const Header = () => {
     try {
       const res = await axiosProfileMe();
       console.log("res", res);
-      onClickProfile();
+      // onClickProfile();
     } catch (error: any) {
       console.log("error", error);
       throw error;
@@ -63,8 +63,8 @@ const Header = () => {
   return (
     <Wrapper>
       <HeaderContainer>
-        <NavStyled>Profile</NavStyled>
-        <NavStyled>Search</NavStyled>
+        <NavStyled onClick={goToProfileMe}>Profile</NavStyled>
+        <NavStyled onClick={goToSearch}>Search</NavStyled>
         <NavStyled>Chat</NavStyled>
       </HeaderContainer>
       <TitleStyled>
