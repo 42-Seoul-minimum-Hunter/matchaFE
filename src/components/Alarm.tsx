@@ -12,37 +12,43 @@ export interface IAlarmProps {
 const Alarm = ({ type, lastTime, isViewed, username }: IAlarmProps) => {
   const content = AlarmLableMap[type];
   return (
-    <Wrapper $isViewed={isViewed}>
+    <Container $isViewed={isViewed}>
       <AlarmContentStyled>
         {content} {username}
       </AlarmContentStyled>
       <AlarmWrapper>{lastTime}</AlarmWrapper>
-    </Wrapper>
+    </Container>
   );
 };
 
 export default Alarm;
 
-const Wrapper = styled.div<{ $isViewed: boolean }>`
+const Container = styled.div<{ $isViewed: boolean }>`
   display: flex;
   flex-direction: column;
   justify-content: center;
   /* align-items: center; */
-  padding-left: 40px;
+  padding: 15px 40px;
   border-radius: 10px;
-  height: 100px;
+  /* height: 100px; */
   width: 100%;
-  gap: 15px;
-  box-shadow: 0 0 5px;
+  max-width: 792px;
+  gap: 14px;
+  border: 1px solid var(--black);
+
   background-color: ${(props) =>
     props.$isViewed ? "var(--msg-view)" : "var(--white)"};
 `;
 
 const AlarmContentStyled = styled.div`
-  font-size: 1.5rem;
-  font-weight: 500;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.4;
 `;
 
 const AlarmWrapper = styled.div`
+  font-size: 0.8rem;
+  font-weight: 400;
+
   color: #696969;
 `;
