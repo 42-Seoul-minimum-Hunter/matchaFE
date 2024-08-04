@@ -1,12 +1,14 @@
 import { axiosFindUser } from "@/api/axios.custom";
-import SearchCard from "@/components/SearchCard";
+
 import { ageLableMap, InterestLableMap, rateLableMap } from "@/types/maps";
 import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import { tagItem } from "./SignUpPage";
 import { ReactComponent as FilterIcon } from "@/assets/icons/filter-icon.svg";
-import FilterModal from "@/components/FilterModal";
+
 import TagList from "@/components/TagTemplate";
+import FilterModal from "@/components/search/FilterModal";
+import SearchCard from "@/components/search/SearchCard";
 
 export interface ISearchDateDto {
   profileImages: string;
@@ -188,9 +190,6 @@ const SearchPage = () => {
       </SelectTagStyled>
 
       <SearchCardContainer>
-        {/* {searchData.map((data) => (
-          <SearchCard key={data.username} {...data} />
-        ))} */}
         {currentCards.map((data) => (
           <SearchCard key={data.username} {...data} />
         ))}

@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import styled from "styled-components";
-import DropboxTemplate from "./DropboxTemplate";
-import TagList from "./TagTemplate";
+import DropboxTemplate from "../DropboxTemplate";
+import TagList from "../TagTemplate";
 import RangeSlider from "./Slider";
 import { LocationData } from "@/assets/mock/mock";
 import { tagItem } from "@/pages/LoginPage";

@@ -45,6 +45,23 @@ instance.interceptors.request.use(async (config: any) => {
   return config;
 });
 
+interface ClaudeResponse {
+  reply: string;
+}
+const axiosClaudeURL = "/claude";
+export const sendMessageToClaude = async (message: string): Promise<string> => {
+  console.log("sendMessageToClaude", message);
+  try {
+    const response = await instance.post<ClaudeResponse>(axiosClaudeURL, {
+      message,
+    });
+    return response.data.reply;
+  } catch (error) {
+    console.error("Error calling Claude API:", error);
+    throw error;
+  }
+};
+
 const axiosResgisterURL = "";
 export const axiosRegister = async (register: RegisterDto): Promise<any> => {
   try {

@@ -9,8 +9,8 @@ const useRouter = () => {
   const goToSearch = () => {
     navigate("/search");
   };
-  const goToMessage = () => {
-    navigate("/message");
+  const goToChat = () => {
+    navigate("/chat");
   };
   const goToAlarm = () => {
     navigate("/alarm");
@@ -36,7 +36,7 @@ const useRouter = () => {
   return {
     // goToProfile,
     goToSearch,
-    goToMessage,
+    goToChat,
     goToAlarm,
     goToSignup,
     goTologin,

@@ -1,21 +1,30 @@
 import styled from "styled-components";
 import TestImage1 from "@/assets/mock/test1.png";
-import TestImage2 from "@/assets/mock/test2.png";
+import TestImage2 from "@/assets/icons/gpt-icon.svg";
 import TestImage3 from "@/assets/mock/test3.png";
-import ChatList, { IChatRoomDto } from "@/components/ChatList";
-import ChatRoom, { IChatContentDto } from "@/components/ChatRoom";
+import ChatList, { IChatRoomDto } from "@/components/chat/ChatList";
+import ChatRoom, { IChatContentDto } from "@/components/chat/ChatRoom";
 import { useContext, useEffect, useState } from "react";
 import { SocketContext } from "./LayoutPage";
 import { axiosChatroom } from "@/api/axios.custom";
-import Chatgpt from "@/components/Chatgpt";
+// import Chatgpt from "@/components/Chatgpt";
 import { mockChatContentDto, mockIChatProps } from "@/assets/mock/mock";
+
+import { ReactComponent as ChatGptIcon } from "@/assets/icons/gpt-icon.svg";
+import GptChat from "@/components/chat/GptChat";
 
 // 이미지 경로 어떻게 받을지 생각해두기
 
-const MessagePage = () => {
+const gptChatList: IChatRoomDto = {
+  username: "Chatgpt",
+  profileImage: TestImage2,
+  lastContent: "Hello, I'm Chatgpt",
+};
+
+const ChatPage = () => {
   const [selectUser, setSelectUser] = useState<string>("");
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const [chatRoom, setChatRoom] = useState<IChatRoomDto[]>([]);
+  const [chatRoom, setChatRoom] = useState<IChatRoomDto[]>([gptChatList]);
   const [chatHistory, setChatHistory] = useState<IChatContentDto[]>([]);
   // const socket = useContext(SocketContext);
   const socket = useContext(SocketContext);
@@ -76,9 +85,22 @@ const MessagePage = () => {
     // clickChatRoom();
   };
 
+  const updateChatRoom = (newChatRooms: IChatRoomDto[]) => {
+    setChatRoom((prevChatRoom) => {
+      // 기존의 gptChatList를 제외한 새로운 채팅방 목록 생성
+      const filteredNewChatRooms = newChatRooms.filter(
+        (room) => room.username !== gptChatList.username
+      );
+
+      // gptChatList를 첫 번째로, 그 뒤에 새로운 채팅방 목록 추가
+      return [gptChatList, ...filteredNewChatRooms];
+    });
+  };
+
   useEffect(() => {
     // TODO : 처음 message페이지 들어왔을때 chatroom 정보 받아오기
-    setChatRoom(mockIChatProps);
+    // setChatRoom(mockIChatProps);
+    updateChatRoom(mockIChatProps);
   }, []);
   const selectUserImg = mockIChatProps[selectedIndex]?.profileImage;
   // const selectUserImg =
@@ -103,18 +125,25 @@ const MessagePage = () => {
           ))}
       </ChatLobbyWrapper>
       <ChatRoomWrapper>
-        <ChatRoom
-          chatHistory={chatHistory}
-          selectUserImg={selectUserImg}
-          username={selectUser}
-        />
+        {selectUser === "Chatgpt" ? (
+          <>
+            <GptChat />
+          </>
+        ) : (
+          <ChatRoom
+            chatHistory={chatHistory}
+            selectUserImg={selectUserImg}
+            username={selectUser}
+          />
+        )}
+
         {/* <Chatgpt /> */}
       </ChatRoomWrapper>
     </Container>
   );
 };
 
-export default MessagePage;
+export default ChatPage;
 
 const Container = styled.div`
   display: flex;

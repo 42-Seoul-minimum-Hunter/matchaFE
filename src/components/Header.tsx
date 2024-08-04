@@ -1,18 +1,15 @@
 import styled from "styled-components";
-import { ReactComponent as ProfileIcon } from "@/assets/icons/profile-icon.svg";
-import { ReactComponent as SearchIcon } from "@/assets/icons/search-icon.svg";
-import { ReactComponent as MessageIcon } from "@/assets/icons/message-icon.svg";
-import { ReactComponent as AlarmIcon } from "@/assets/icons/alarm-icon.svg";
-import { ReactComponent as LogoutIcon } from "@/assets/icons/logout-icon.svg";
 import { useNavigate } from "react-router-dom";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import { axiosLogout, axiosProfileMe } from "@/api/axios.custom";
 import { SocketContext } from "@/pages/LayoutPage";
 import useRouter from "@/hooks/useRouter";
 
 // TODO: Router 테이블 만들어서 해당 라우터에서 색상 표현
 const Header = () => {
-  const { goToSignup, goTologin, goToSearch, goToProfileMe } = useRouter();
+  const { goToSignup, goTologin, goToSearch, goToProfileMe, goToChat } =
+    useRouter();
+  const [disable, setDisable] = useState<boolean>(false);
   const socket = useContext(SocketContext);
 
   // socket.on("getAlarms", (data: any) => {
@@ -59,13 +56,22 @@ const Header = () => {
       throw error;
     }
   };
+  const handleNavClick = (action: () => void) => {
+    if (disable) {
+      alert("로그인 해주세요");
+    } else {
+      action();
+    }
+  };
 
   return (
     <Wrapper>
       <HeaderContainer>
-        <NavStyled onClick={goToProfileMe}>Profile</NavStyled>
-        <NavStyled onClick={goToSearch}>Search</NavStyled>
-        <NavStyled>Chat</NavStyled>
+        <NavStyled onClick={() => handleNavClick(goToProfileMe)}>
+          Profile
+        </NavStyled>
+        <NavStyled onClick={() => handleNavClick(goToSearch)}>Search</NavStyled>
+        <NavStyled onClick={() => handleNavClick(goToChat)}>Chat</NavStyled>
       </HeaderContainer>
       <TitleStyled>
         MEET<span>CHA</span>

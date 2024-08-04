@@ -1,13 +1,48 @@
+import React, { useState } from "react";
 import styled from "styled-components";
 import { ReactComponent as StarIcon } from "@/assets/icons/star-icon.svg";
 import { ReactComponent as EmptyStarIcon } from "@/assets/icons/empty-star-icon.svg";
 
-const Stars = ({ rating }: { rating: number }) => {
-  const filledWidth = `${(rating / 5) * 100}%`;
+interface StarsProps {
+  initialRating: number;
+  onRatingChange: (rating: number) => void;
+}
+
+const StarsSubmit: React.FC<StarsProps> = ({
+  initialRating,
+  onRatingChange,
+}) => {
+  const [rating, setRating] = useState(initialRating);
+  const [hoverRating, setHoverRating] = useState(0);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const { left, width } = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - left;
+    const newRating = Math.min(
+      5,
+      Math.max(0, Math.round((x / width) * 50) / 10)
+    );
+    setHoverRating(newRating);
+  };
+
+  const handleMouseLeave = () => {
+    setHoverRating(0);
+  };
+
+  const handleClick = () => {
+    setRating(hoverRating);
+    onRatingChange(hoverRating);
+  };
+
+  const filledWidth = `${((hoverRating || rating) / 5) * 100}%`;
 
   return (
     <Wrapper>
-      <StarsContainer>
+      <StarsContainer
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        onClick={handleClick}
+      >
         <EmptyStars>
           {[...Array(5)].map((_, i) => (
             <StarWrapper key={`empty-${i}`}>
@@ -23,12 +58,12 @@ const Stars = ({ rating }: { rating: number }) => {
           ))}
         </FilledStars>
       </StarsContainer>
-      <StarsRatingTextStyled>{rating}</StarsRatingTextStyled>
+      <StarsRatingTextStyled>{hoverRating || rating}</StarsRatingTextStyled>
     </Wrapper>
   );
 };
 
-export default Stars;
+export default StarsSubmit;
 
 const Wrapper = styled.div`
   display: inline-block;
@@ -38,9 +73,6 @@ const Wrapper = styled.div`
   display: flex;
   /* width: 140px; */
   width: 100%;
-  /* & > :firsts-child {
-    margin-left: 40px;
-  } */
 `;
 
 const StarsRatingTextStyled = styled.div`
@@ -51,6 +83,7 @@ const StarsRatingTextStyled = styled.div`
 const StarsContainer = styled.div`
   position: relative;
   display: inline-block;
+  cursor: pointer;
 `;
 
 const EmptyStars = styled.div`

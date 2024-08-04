@@ -1,7 +1,6 @@
 import styled from "styled-components";
-import { ReactComponent as SendIcon } from "@/assets/icons/send-icon.svg";
-import { useContext, useEffect } from "react";
-import { SocketContext } from "@/pages/LayoutPage";
+import Loading from "./Loading";
+import { useState } from "react";
 
 // TODO:
 // 나에 대한 정보를 불러오는 곳이 없음
@@ -27,26 +26,15 @@ const ChatRoom = ({
   selectUserImg: string;
   username: string;
 }) => {
+  // TODO : 웹소켓 대기하는 곳에다가 두기
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
   return (
     <Container>
       {chatHistory.length === 0 ? (
         <div>채팅방을 선택해 주세요</div>
       ) : (
         <>
-          {/* {chatHistory.map((message, index) => (
-            <MessageContainer key={index}>
-              {message.username === username ? (
-                <MyMessageWrapper>
-                  <ContentStyled>{message.message}</ContentStyled>
-                </MyMessageWrapper>
-              ) : (
-                <PartnerMessageWrapper>
-                  <img src={selectUserImg} />
-                  <ContentStyled>{message.message}</ContentStyled>
-                </PartnerMessageWrapper>
-              )}
-            </MessageContainer>
-          ))} */}
           <MessageContainer>
             {chatHistory.map((message, index) =>
               message.username === username ? (
@@ -60,12 +48,16 @@ const ChatRoom = ({
                 </PartnerMessageWrapper>
               )
             )}
+            {isLoading && <Loading />}
           </MessageContainer>
           <ChatInputWrapper>
-            <ChatInput placeholder="write your message" />
-            {/* <IconContainer>
-              <SendIcon />
-            </IconContainer> */}
+            <ChatInput
+              placeholder="write your message ..."
+              disabled={isLoading}
+            />
+            <SendButton type="submit" disabled={isLoading}>
+              Send
+            </SendButton>
           </ChatInputWrapper>
         </>
       )}
@@ -90,6 +82,21 @@ const Container = styled.div`
   /* overflow-y: auto; */
   position: relative;
   overflow-y: hidden;
+`;
+
+const SendButton = styled.button`
+  padding: 10px 20px;
+  background-color: var(--brand-main-1);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: opacity 0.3s;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 `;
 
 const MessageContainer = styled.div`
@@ -173,7 +180,7 @@ const ChatInput = styled.textarea`
   line-height: 20px; // 줄 간격 설정 (선택사항)
 `;
 
-const ChatInputWrapper = styled.div`
+const ChatInputWrapper = styled.form`
   width: 100%;
   border-radius: 4px;
   position: relative;

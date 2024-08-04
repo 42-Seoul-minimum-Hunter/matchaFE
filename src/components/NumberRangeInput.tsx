@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 // import { useEffect, useState } from "react";
-import { RangeState } from "./FilterModal";
+import { RangeState } from "./search/FilterModal";
 
 // const NumberRangeInput = ({ type }: { type: string }) => {
 //   // console.log("type", type);

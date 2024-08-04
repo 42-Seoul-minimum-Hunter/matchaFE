@@ -1,6 +1,12 @@
-import { IChatRoomDto } from "@/components/ChatList";
-import { IChatContentDto } from "@/components/ChatRoom";
+import { IChatRoomDto } from "@/components/chat/ChatList";
+import { IChatContentDto } from "@/components/chat/ChatRoom";
 import { ISearchDateDto } from "@/pages/SearchPage";
+import { ProfileDto } from "@/types/tag.dto";
+import TestImage1 from "@/assets/mock/test1.png";
+import TestImage2 from "@/assets/mock/test2.png";
+import TestImage3 from "@/assets/mock/test3.png";
+import TestImage4 from "@/assets/mock/test4.png";
+import TestImage5 from "@/assets/mock/test5.png";
 
 export const LocationData = [
   {
@@ -490,3 +496,24 @@ export const mockChatContentDto: IChatContentDto[] = [
     time: "2023-07-15T18:00:00Z",
   },
 ];
+
+export const mockProfileData: ProfileDto = {
+  username: "johndoe123",
+  firstName: "John",
+  lastName: "Doe",
+  gender: "MALE", // GenderType에 따라 적절한 값을 사용해야 합니다.
+  preference: "BOTH", // PreferenceType에 따라 적절한 값을 사용해야 합니다.
+  age: 28,
+  biography:
+    "Officiis quasi esse deleniti dignissimos qui. Voluptates eos tempora. Earum aperiam tempore totam sequi ab consequatur voluptatem dolorem aliquam. Maxime amet enim beatae aperiam eum placeat.",
+  hashtags: ["MUSIC", "TRAVEL", "FOOD"], // InterestType 배열에 맞는 값들을 사용해야 합니다.
+  si: "서울특별시",
+  gu: "강남구",
+  rate: 4.5,
+  profileImages: [TestImage1, TestImage2, TestImage3],
+  // profileImages: [
+  //   "https://example.com/profile1.jpg",
+  //   "https://example.com/profile2.jpg",
+  //   "https://example.com/profile3.jpg",
+  // ],
+};

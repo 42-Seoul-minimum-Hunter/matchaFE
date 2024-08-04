@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ISearchDateDto } from "@/pages/SearchPage";
 import styled from "styled-components";
-import Stars from "./Stars"; // Stars 컴포넌트를 import 합니다.
+import Stars from "../Stars"; // Stars 컴포넌트를 import 합니다.
 import { ReactComponent as StarIcon } from "@/assets/icons/star-icon.svg";
 import useRouter from "@/hooks/useRouter";
 
