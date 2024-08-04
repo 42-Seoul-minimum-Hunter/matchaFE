@@ -51,6 +51,9 @@ export default AlarmPage;
 const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 15px;
   padding: 50px;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
 `;

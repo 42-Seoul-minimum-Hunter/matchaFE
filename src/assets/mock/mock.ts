@@ -1,3 +1,13 @@
+import { IChatRoomDto } from "@/components/chat/ChatList";
+import { IChatContentDto } from "@/components/chat/ChatRoom";
+import { ISearchDateDto } from "@/pages/SearchPage";
+import { ProfileDto } from "@/types/tag.dto";
+import TestImage1 from "@/assets/mock/test1.png";
+import TestImage2 from "@/assets/mock/test2.png";
+import TestImage3 from "@/assets/mock/test3.png";
+import TestImage4 from "@/assets/mock/test4.png";
+import TestImage5 from "@/assets/mock/test5.png";
+
 export const LocationData = [
   {
     name: "서울",
@@ -293,3 +303,217 @@ export const LocationData = [
     subArea: ["서귀포시", "제주시"],
   },
 ];
+
+export function generateDummyData(count: number): ISearchDateDto[] {
+  const firstNames = [
+    "Emma",
+    "Liam",
+    "Olivia",
+    "Noah",
+    "Ava",
+    "Ethan",
+    "Sophia",
+    "Mason",
+    "Isabella",
+    "William",
+  ];
+  const lastNames = [
+    "Smith",
+    "Johnson",
+    "Brown",
+    "Taylor",
+    "Miller",
+    "Wilson",
+    "Moore",
+    "Anderson",
+    "Jackson",
+    "Martin",
+  ];
+
+  function getRandomElement<T>(arr: T[]): T {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  function getRandomNumber(min: number, max: number): number {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function getRandomFloat(min: number, max: number, decimals: number): number {
+    const str = (Math.random() * (max - min) + min).toFixed(decimals);
+    return parseFloat(str);
+  }
+
+  return Array.from({ length: count }, (_, index) => ({
+    profileImages: `https://example.com/avatar${index + 1}.jpg`,
+    username: `${getRandomElement(firstNames)} ${getRandomElement(lastNames)}`,
+    age: getRandomNumber(18, 60),
+    rate: getRandomFloat(1, 5, 1),
+    commonHashtags: getRandomNumber(0, 10),
+  }));
+}
+
+export const mockIChatProps: IChatRoomDto[] = [
+  {
+    username: "Alice Smith",
+    profileImage: "https://example.com/profiles/alice.jpg",
+    createdAt: "2023-07-15T10:30:00Z",
+    lastContent: "안녕하세요! 오늘 날씨가 정말 좋네요.",
+  },
+  {
+    username: "Bob Johnson",
+    profileImage: "https://example.com/profiles/bob.jpg",
+    createdAt: "2023-07-15T10:35:00Z",
+    lastContent: "네, 정말 그렇네요. 나들이 가기 좋은 날씨예요.",
+  },
+  {
+    username: "Test 1",
+    profileImage: "https://example.com/profiles/bob.jpg",
+    createdAt: "2023-07-15T10:35:00Z",
+    lastContent: "집 가고 싶네요",
+  },
+];
+
+// ChatContentDto 목데이터
+export const mockChatContentDto: IChatContentDto[] = [
+  {
+    message: "오늘 저녁에 뭐 먹을까요?",
+    username: "Alice Smith",
+    // userId: 1001,
+    time: "2023-07-15T18:00:00Z",
+  },
+  {
+    message: "피자 어떠세요?",
+    username: "Bob Johnson",
+    // userId: 1002,
+    time: "2023-07-15T18:05:00Z",
+  },
+  {
+    message: "아님 치킨이라도?",
+    username: "Bob Johnson",
+    // userId: 1002,
+    time: "2023-07-15T18:05:00Z",
+  },
+  {
+    message: "둘다 싫은데요..//",
+    username: "Alice Smith",
+    // userId: 1001,
+    time: "2023-07-15T18:00:00Z",
+  },
+  {
+    message: "아 집가고 싶다",
+    username: "Alice Smith",
+    // userId: 1001,
+    time: "2023-07-15T18:00:00Z",
+  },
+  {
+    message: "그럼 밥먹지 마",
+    username: "Bob Johnson",
+    // userId: 1002,
+    time: "2023-07-15T18:05:00Z",
+  },
+  {
+    message: "아니 왜 화면 너무 길잖아",
+    username: "Bob Johnson",
+    // userId: 1002,
+    time: "2023-07-15T18:05:00Z",
+  },
+  {
+    message: "언제까지 써야해",
+    username: "Bob Johnson",
+    // userId: 1002,
+    time: "2023-07-15T18:05:00Z",
+  },
+  {
+    message: "살려줘",
+    username: "Bob Johnson",
+    // userId: 1002,
+    time: "2023-07-15T18:05:00Z",
+  },
+  {
+    message: "아 집가고 싶다",
+    username: "Alice Smith",
+    // userId: 1001,
+    time: "2023-07-15T18:00:00Z",
+  },
+  {
+    message: "아 집가고 싶다",
+    username: "Alice Smith",
+    // userId: 1001,
+    time: "2023-07-15T18:00:00Z",
+  },
+  {
+    message: "아 집가고 싶다",
+    username: "Alice Smith",
+    // userId: 1001,
+    time: "2023-07-15T18:00:00Z",
+  },
+  {
+    message: "아 집가고 싶다",
+    username: "Bob Johnson",
+    // userId: 1001,
+    time: "2023-07-15T18:00:00Z",
+  },
+  {
+    message: "아 집가고 싶다",
+    username: "Bob Johnson",
+    // userId: 1001,
+    time: "2023-07-15T18:00:00Z",
+  },
+  {
+    message: "아 집가고 싶다",
+    username: "Bob Johnson",
+    // userId: 1001,
+    time: "2023-07-15T18:00:00Z",
+  },
+  {
+    message: "아 집가고 싶다",
+    username: "Bob Johnson",
+    // userId: 1001,
+    time: "2023-07-15T18:00:00Z",
+  },
+  {
+    message: "아 집가고 싶다",
+    username: "Bob Johnson",
+    // userId: 1001,
+    time: "2023-07-15T18:00:00Z",
+  },
+  {
+    message: "아 집가고 싶다",
+    username: "Bob Johnson",
+    // userId: 1001,
+    time: "2023-07-15T18:00:00Z",
+  },
+  {
+    message: "아 집가고 싶다",
+    username: "Bob Johnson",
+    // userId: 1001,
+    time: "2023-07-15T18:00:00Z",
+  },
+  {
+    message: "아 집가고 싶다",
+    username: "Bob Johnson",
+    // userId: 1001,
+    time: "2023-07-15T18:00:00Z",
+  },
+];
+
+export const mockProfileData: ProfileDto = {
+  username: "johndoe123",
+  firstName: "John",
+  lastName: "Doe",
+  gender: "MALE", // GenderType에 따라 적절한 값을 사용해야 합니다.
+  preference: "BOTH", // PreferenceType에 따라 적절한 값을 사용해야 합니다.
+  age: 28,
+  biography:
+    "Officiis quasi esse deleniti dignissimos qui. Voluptates eos tempora. Earum aperiam tempore totam sequi ab consequatur voluptatem dolorem aliquam. Maxime amet enim beatae aperiam eum placeat.",
+  hashtags: ["MUSIC", "TRAVEL", "FOOD"], // InterestType 배열에 맞는 값들을 사용해야 합니다.
+  si: "서울특별시",
+  gu: "강남구",
+  rate: 4.5,
+  profileImages: [TestImage1, TestImage2, TestImage3],
+  // profileImages: [
+  //   "https://example.com/profile1.jpg",
+  //   "https://example.com/profile2.jpg",
+  //   "https://example.com/profile3.jpg",
+  // ],
+};

@@ -9,17 +9,17 @@ const Image: React.FC<Props> = ({ imageSource }) => {
   return <img src={imageSource} />;
 };
 
-export interface IChatRoomProps {
+export interface IChatRoomDto {
   username: string;
   profileImage: string;
   createdAt: string; // date형식
-  // lastTime: string;
-  content: string;
-  // Unread: number;
-  // handler?: (index: number) => void;
+  lastContent: string; // last chat
 }
+// lastTime: string;
+// Unread: number;
+// handler?: (index: number) => void;
 
-interface ChatListProps extends IChatRoomProps {
+interface ChatListProps extends IChatRoomDto {
   isSelected: boolean;
   index: number;
   handler: (index: number) => void;
@@ -29,7 +29,7 @@ const ChatList = ({
   username,
   profileImage,
   createdAt,
-  content,
+  lastContent,
   // Unread,
   isSelected,
   index,
@@ -37,7 +37,7 @@ const ChatList = ({
 }: // handler,
 ChatListProps) => {
   return (
-    <Wrapper $isSelected={isSelected} onClick={() => handler(index)}>
+    <Container $isSelected={isSelected} onClick={() => handler(index)}>
       <ImageWrapper>
         {/* <Image imageSource={img} /> */}
         <img src={profileImage} />
@@ -48,33 +48,34 @@ ChatListProps) => {
           <LastTimeStyled>{formatTimeRemaining(createdAt)}</LastTimeStyled>
         </RowWrapper>
         <RowWrapper>
-          <LastChatStyled>{content}</LastChatStyled>
-
-        //   <LastTimeStyled>{createdAt}</LastTimeStyled>
-        // </RowWrapper>
-        // <RowWrapper>
-        //   <LastChatStyled>{content}</LastChatStyled>
-        //   {/* <UnreadStyled>{Unread}</UnreadStyled> */}
-
+          <LastChatStyled>{lastContent}</LastChatStyled>
         </RowWrapper>
       </ColumnWrapper>
-    </Wrapper>
+    </Container>
   );
 };
 
 export default ChatList;
 
-const Wrapper = styled.div<{ $isSelected: boolean }>`
+const Container = styled.div<{ $isSelected: boolean }>`
   padding: 10px 10px;
   display: flex;
   align-items: center;
-  width: 400px;
+  width: 100%;
 
   /* background-color: ${(props) =>
     props.$isSelected ? "var(--light-gray)" : "white"}; */
-  box-shadow: ${(props) =>
-    props.$isSelected ? "0 0 10px var(--light-gray)" : "none"};
+  /* box-shadow: ${(props) =>
+    props.$isSelected ? "0 0 10px var(--light-gray)" : "none"}; */
+
+  background-color: ${(props) =>
+    props.$isSelected ? "var(--brand-sub-2)" : "#f3f3f3"};
   /* cursor: pointer; */
+  /* background-color: #f3f3f3; */
+  border-bottom: 1px solid var(--line-gray-3);
+  &:hover {
+    background-color: var(--brand-sub-2);
+  }
 `;
 
 const ImageWrapper = styled.div`
@@ -84,27 +85,34 @@ const ImageWrapper = styled.div`
     border-radius: 100px;
   }
   margin-right: 10px;
+  object-fit: cover;
 `;
 
 const NicknameStyled = styled.div`
   font-weight: 600;
-  font-size: 1.2rem;
+  font-size: 1rem;
+  line-height: 1.4;
 `;
 
 const LastChatStyled = styled.div`
   /* width: 80%; */
   width: 250px;
+  margin-top: 4px;
   color: var(--light-gray);
+  font-size: 0.8rem;
+  font-weight: 300;
+  line-height: 1.4;
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
   word-break: break-all;
 `;
 
-const UnreadStyled = styled.div``;
-
 const LastTimeStyled = styled.div`
   color: var(--light-gray);
+  font-size: 0.8rem;
+  font-weight: 300;
+  line-height: 1.4;
 `;
 
 const RowWrapper = styled.div`
@@ -117,4 +125,8 @@ const ColumnWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
+
+  /* &:first-child {
+    margin-bottom: 4px;
+  } */
 `;

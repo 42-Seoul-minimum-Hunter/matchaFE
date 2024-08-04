@@ -45,6 +45,23 @@ instance.interceptors.request.use(async (config: any) => {
   return config;
 });
 
+interface ClaudeResponse {
+  reply: string;
+}
+const axiosClaudeURL = "/claude";
+export const sendMessageToClaude = async (message: string): Promise<string> => {
+  console.log("sendMessageToClaude", message);
+  try {
+    const response = await instance.post<ClaudeResponse>(axiosClaudeURL, {
+      message,
+    });
+    return response.data.reply;
+  } catch (error) {
+    console.error("Error calling Claude API:", error);
+    throw error;
+  }
+};
+
 const axiosResgisterURL = "";
 export const axiosRegister = async (register: RegisterDto): Promise<any> => {
   try {
@@ -137,12 +154,12 @@ export const axiosEmailVerify = async (): Promise<any> => {
 
 const axiosFindUserURL = "/user/find";
 export const axiosFindUser = async (
+  si?: string | undefined,
+  gu?: string | undefined,
   minAge?: number,
   maxAge?: number,
   minRate?: number,
   maxRate?: number,
-  si?: string,
-  gu?: string,
   hashtags?: string[]
 ): Promise<any> => {
   try {
@@ -153,20 +170,51 @@ export const axiosFindUser = async (
     if (maxRate !== undefined) params.maxRate = maxRate.toString();
     if (si) params.si = si;
     if (gu) params.gu = gu;
-    if (hashtags && hashtags.length > 0) params.hashtags = hashtags.join(",");
-    // params.hashtags = hashtags;
+
+    // hashtags 처리: undefined나 빈 배열일 경우 빈 문자열 할당
+    params.hashtags = hashtags && hashtags.length > 0 ? hashtags.join(",") : "";
 
     const queryString = new URLSearchParams(params).toString();
     const url = queryString
       ? `${axiosFindUserURL}?${queryString}`
       : axiosFindUserURL;
-    console.log("search user rul", url);
+    console.log("search user url", url);
     const response = await instance.get(url);
     return response;
   } catch (error) {
     throw error;
   }
 };
+// export const axiosFindUser = async (
+//   si?: string | undefined,
+//   gu?: string | undefined,
+//   minAge?: number,
+//   maxAge?: number,
+//   minRate?: number,
+//   maxRate?: number,
+//   hashtags?: string[]
+// ): Promise<any> => {
+//   try {
+//     const params: Record<string, string> = {};
+//     if (minAge !== undefined) params.minAge = minAge.toString();
+//     if (maxAge !== undefined) params.maxAge = maxAge.toString();
+//     if (minRate !== undefined) params.minRate = minRate.toString();
+//     if (maxRate !== undefined) params.maxRate = maxRate.toString();
+//     if (si) params.si = si;
+//     if (gu) params.gu = gu;
+//     if (hashtags && hashtags.length > 0) params.hashtags = hashtags.join(",");
+
+//     const queryString = new URLSearchParams(params).toString();
+//     const url = queryString
+//       ? `${axiosFindUserURL}?${queryString}`
+//       : axiosFindUserURL;
+//     console.log("search user url", url);
+//     const response = await instance.get(url);
+//     return response;
+//   } catch (error) {
+//     throw error;
+//   }
+// };
 
 const axiosAuthLoginURL = "/auth/login";
 export const axiosAuthLogin = async (

@@ -80,25 +80,18 @@ const Wrapper = styled.div`
 
 const MainStyled = styled.div`
   /* position: relative; */
-  max-width: 1200px;
-  margin: 0 auto;
+  max-width: 1440px;
+  width: 100%;
+  /* margin: 0 auto; */
   margin-bottom: 30px;
   height: 100%;
-  border-radius: 10px;
-  box-shadow: 0 0 10px;
-  overflow: hidden;
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: -1;
-    overflow: auto;
-    height: auto;
-    margin: 40px auto;
-  }
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* border-radius: 10px; */
+  /* box-shadow: 0 0 10px; */
+  /* overflow: hidden; */
 `;
 
 const LoginWrapper = styled.div`

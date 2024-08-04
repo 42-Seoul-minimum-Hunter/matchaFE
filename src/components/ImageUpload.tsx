@@ -4,8 +4,20 @@ import { ReactComponent as RightArrowIcon } from "@/assets/icons/right-arrow-ico
 import { ReactComponent as LeftArrowIcon } from "@/assets/icons/left-arrow-icon.svg";
 import styled from "styled-components";
 
-const ImageUploader: React.FC = () => {
-  const [images, setImages] = useState<string[]>([]);
+const ImageUploader = ({
+  images,
+  setImages,
+  isReadOnly,
+}: {
+  images: string[];
+  setImages: React.Dispatch<React.SetStateAction<string[]>>;
+  isReadOnly?: boolean;
+}) => {
+  // const [images, setImages] = useState<string[]>([]);
+
+  const useParams = location.pathname.includes("signup");
+
+  console.log("useParams", useParams);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -45,26 +57,31 @@ const ImageUploader: React.FC = () => {
   }, [currentIndex]);
 
   return (
-    <Container>
-      <UploadButton onClick={() => fileInputRef.current?.click()}>
-        <PlusIcon />
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileChange}
-          multiple
-          accept="image/*"
-        />
-      </UploadButton>
+    <Container $useParams={useParams}>
+      {!isReadOnly && (
+        <UploadButton onClick={() => fileInputRef.current?.click()}>
+          <PlusIcon />
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            multiple
+            accept="image/*"
+          />
+        </UploadButton>
+      )}
 
       <ImageContainer>
         <ImageWrapper $translateX={-currentIndex * 143}>
           {images.map((image, index) => (
             <ImageItem key={index}>
               <Image src={image} alt={`Uploaded ${index}`} />
-              <DeleteButton onClick={() => handleDelete(index)}>
-                삭제
-              </DeleteButton>
+
+              {!isReadOnly && (
+                <DeleteButton onClick={() => handleDelete(index)}>
+                  삭제
+                </DeleteButton>
+              )}
             </ImageItem>
           ))}
         </ImageWrapper>
@@ -88,15 +105,18 @@ const ImageUploader: React.FC = () => {
   );
 };
 
-const Container = styled.div`
+const Container = styled.div<{ $useParams: boolean }>`
   display: flex;
   align-items: center;
   gap: 10px;
   position: relative;
   width: 740px;
-  @media screen and (max-width: 768px) {
-    width: 100%;
-  }
+
+  ${({ $useParams }) => `
+    @media screen and (max-width: ${$useParams ? "768px" : "876px"}) {
+      width: 100%;
+    }
+  `}
 `;
 
 const ImageContainer = styled.div`
