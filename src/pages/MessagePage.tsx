@@ -2,19 +2,21 @@ import styled from "styled-components";
 import TestImage1 from "@/assets/mock/test1.png";
 import TestImage2 from "@/assets/mock/test2.png";
 import TestImage3 from "@/assets/mock/test3.png";
-import ChatList, { IChatRoomProps } from "@/components/ChatList";
-import ChatRoom, { CharMessageDto } from "@/components/ChatRoom";
+import ChatList, { IChatRoomDto } from "@/components/ChatList";
+import ChatRoom, { IChatContentDto } from "@/components/ChatRoom";
 import { useContext, useEffect, useState } from "react";
 import { SocketContext } from "./LayoutPage";
 import { axiosChatroom } from "@/api/axios.custom";
+import Chatgpt from "@/components/Chatgpt";
+import { mockChatContentDto, mockIChatProps } from "@/assets/mock/mock";
 
 // 이미지 경로 어떻게 받을지 생각해두기
 
 const MessagePage = () => {
   const [selectUser, setSelectUser] = useState<string>("");
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-  const [chatRoom, setChatRoom] = useState<IChatRoomProps[]>([]);
-  const [chatHistory, setChatHistory] = useState<CharMessageDto[]>([]);
+  const [chatRoom, setChatRoom] = useState<IChatRoomDto[]>([]);
+  const [chatHistory, setChatHistory] = useState<IChatContentDto[]>([]);
   // const socket = useContext(SocketContext);
   const socket = useContext(SocketContext);
 
@@ -37,39 +39,48 @@ const MessagePage = () => {
   //   CheckChatList();
   // }, []);
 
-  useEffect(() => {
-    clickChatRoom();
-  }, [selectUser]);
+  // useEffect(() => {
+  //   clickChatRoom();
+  // }, [selectUser]);
 
-  const clickChatRoom = () => {
-    socket.emit("joinChatRoom", {
-      username: selectUser,
-    });
-  };
+  // const clickChatRoom = () => {
+  //   socket.emit("joinChatRoom", {
+  //     username: selectUser,
+  //   });
+  // };
 
-  useEffect(() => {
-    socket.on("sendHistories", (data) => {
-      console.log("onlineStatus On", data);
-      setChatHistory(data);
-    });
+  // useEffect(() => {
+  //   socket.on("sendHistories", (data) => {
+  //     console.log("onlineStatus On", data);
+  //     setChatHistory(data);
+  //   });
 
-    // return () => {
-    //   socket.off("sendHistories");
-    // };
+  // return () => {
+  //   socket.off("sendHistories");
+  // };
 
-    // clickChatRoom();
-    // socket.emit("joinChatRoom", {
-    //   username: selectUser,
-    // });
-  }, []);
+  // clickChatRoom();
+  // socket.emit("joinChatRoom", {
+  //   username: selectUser,
+  // });
+  // }, []);
 
   const onClickChatRoom = (index: number) => {
     setSelectedIndex(index);
+    // TODO : 선택한 채팅방의 정보를 서버에 보내서 채팅방의 메시지를 받아옴
+    // 이게 맞나
     setSelectUser(chatRoom[index].username);
-    clickChatRoom();
+    setChatHistory(mockChatContentDto);
+    console.log(chatRoom[index]);
+
+    // clickChatRoom();
   };
 
-  // const selectUserImg = mockChatListData[selectedIndex]?.profileImage;
+  useEffect(() => {
+    // TODO : 처음 message페이지 들어왔을때 chatroom 정보 받아오기
+    setChatRoom(mockIChatProps);
+  }, []);
+  const selectUserImg = mockIChatProps[selectedIndex]?.profileImage;
   // const selectUserImg =
   //   selectedIndex !== null ? chatRoom[selectedIndex]?.profileImage : null;
 
@@ -78,7 +89,7 @@ const MessagePage = () => {
   //   selectedIndex !== null ? chatRoom[selectedIndex]?.profileImage : null;
 
   return (
-    <Wrapper>
+    <Container>
       <ChatLobbyWrapper>
         {chatRoom &&
           chatRoom.map((chatList, index) => (
@@ -92,39 +103,49 @@ const MessagePage = () => {
           ))}
       </ChatLobbyWrapper>
       <ChatRoomWrapper>
-        <ChatRoom chatHistory={chatHistory} selectUserImg={selectUserImg} />
+        <ChatRoom
+          chatHistory={chatHistory}
+          selectUserImg={selectUserImg}
+          username={selectUser}
+        />
+        {/* <Chatgpt /> */}
       </ChatRoomWrapper>
-    </Wrapper>
+    </Container>
   );
 };
 
 export default MessagePage;
 
-const Wrapper = styled.div`
+const Container = styled.div`
   display: flex;
   padding: 20px 30px;
-  gap: 30px;
+  gap: 24px;
   height: 100%;
+  width: 1200px;
 `;
 
 const ChatRoomWrapper = styled.div`
   background-color: rgba(255, 255, 255, 0.5);
-  border-radius: 8px;
-  box-shadow: 0 0 10px;
-  width: 700px;
+  border-radius: 4px;
+
+  border: 1px solid var(--black);
+  max-width: 792px;
+  width: 100%;
+
   height: 100%;
 `;
 
 const ChatLobbyWrapper = styled.div`
-  width: 420px;
+  max-width: 384px;
+  width: 100%;
   height: 100%;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  /* gap: 10px; */
   align-items: center;
-  border-radius: 8px;
-  padding: 20px 0;
-  box-shadow: 0 0 10px;
-  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+  /* padding: 20px 0; */
+  padding: 10px 10px;
+  border: 1px solid var(--black);
 `;

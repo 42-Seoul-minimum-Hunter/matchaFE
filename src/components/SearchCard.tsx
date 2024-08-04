@@ -76,11 +76,23 @@ const Container = styled.div`
 
 const CardContainer = styled.div`
   position: relative;
-  width: 252px;
-  height: 300px;
+  /* max-width: 250px;
+  max-height: 300px; */
+  width: 100%;
+  height: 100%;
+  /* width: min(250px, calc(17.5vw - 0.694vw)); // 252px is 17.5% of 1440px
+  height: min(300px, calc((17.5vw - 0.694vw) * 1.19)); // maintain aspect ratio */
   border-radius: 15px;
   overflow: hidden;
 `;
+
+// const CardContainer = styled.div`
+//   position: relative;
+//   width: 252px;
+//   height: 300px;
+//   border-radius: 15px;
+//   overflow: hidden;
+// `;
 
 const ImageStyled = styled.img`
   width: 100%;

@@ -1,3 +1,5 @@
+import { IChatRoomDto } from "@/components/ChatList";
+import { IChatContentDto } from "@/components/ChatRoom";
 import { ISearchDateDto } from "@/pages/SearchPage";
 
 export const LocationData = [
@@ -343,3 +345,148 @@ export function generateDummyData(count: number): ISearchDateDto[] {
     commonHashtags: getRandomNumber(0, 10),
   }));
 }
+
+export const mockIChatProps: IChatRoomDto[] = [
+  {
+    username: "Alice Smith",
+    profileImage: "https://example.com/profiles/alice.jpg",
+    createdAt: "2023-07-15T10:30:00Z",
+    lastContent: "안녕하세요! 오늘 날씨가 정말 좋네요.",
+  },
+  {
+    username: "Bob Johnson",
+    profileImage: "https://example.com/profiles/bob.jpg",
+    createdAt: "2023-07-15T10:35:00Z",
+    lastContent: "네, 정말 그렇네요. 나들이 가기 좋은 날씨예요.",
+  },
+  {
+    username: "Test 1",
+    profileImage: "https://example.com/profiles/bob.jpg",
+    createdAt: "2023-07-15T10:35:00Z",
+    lastContent: "집 가고 싶네요",
+  },
+];
+
+// ChatContentDto 목데이터
+export const mockChatContentDto: IChatContentDto[] = [
+  {
+    message: "오늘 저녁에 뭐 먹을까요?",
+    username: "Alice Smith",
+    // userId: 1001,
+    time: "2023-07-15T18:00:00Z",
+  },
+  {
+    message: "피자 어떠세요?",
+    username: "Bob Johnson",
+    // userId: 1002,
+    time: "2023-07-15T18:05:00Z",
+  },
+  {
+    message: "아님 치킨이라도?",
+    username: "Bob Johnson",
+    // userId: 1002,
+    time: "2023-07-15T18:05:00Z",
+  },
+  {
+    message: "둘다 싫은데요..//",
+    username: "Alice Smith",
+    // userId: 1001,
+    time: "2023-07-15T18:00:00Z",
+  },
+  {
+    message: "아 집가고 싶다",
+    username: "Alice Smith",
+    // userId: 1001,
+    time: "2023-07-15T18:00:00Z",
+  },
+  {
+    message: "그럼 밥먹지 마",
+    username: "Bob Johnson",
+    // userId: 1002,
+    time: "2023-07-15T18:05:00Z",
+  },
+  {
+    message: "아니 왜 화면 너무 길잖아",
+    username: "Bob Johnson",
+    // userId: 1002,
+    time: "2023-07-15T18:05:00Z",
+  },
+  {
+    message: "언제까지 써야해",
+    username: "Bob Johnson",
+    // userId: 1002,
+    time: "2023-07-15T18:05:00Z",
+  },
+  {
+    message: "살려줘",
+    username: "Bob Johnson",
+    // userId: 1002,
+    time: "2023-07-15T18:05:00Z",
+  },
+  {
+    message: "아 집가고 싶다",
+    username: "Alice Smith",
+    // userId: 1001,
+    time: "2023-07-15T18:00:00Z",
+  },
+  {
+    message: "아 집가고 싶다",
+    username: "Alice Smith",
+    // userId: 1001,
+    time: "2023-07-15T18:00:00Z",
+  },
+  {
+    message: "아 집가고 싶다",
+    username: "Alice Smith",
+    // userId: 1001,
+    time: "2023-07-15T18:00:00Z",
+  },
+  {
+    message: "아 집가고 싶다",
+    username: "Bob Johnson",
+    // userId: 1001,
+    time: "2023-07-15T18:00:00Z",
+  },
+  {
+    message: "아 집가고 싶다",
+    username: "Bob Johnson",
+    // userId: 1001,
+    time: "2023-07-15T18:00:00Z",
+  },
+  {
+    message: "아 집가고 싶다",
+    username: "Bob Johnson",
+    // userId: 1001,
+    time: "2023-07-15T18:00:00Z",
+  },
+  {
+    message: "아 집가고 싶다",
+    username: "Bob Johnson",
+    // userId: 1001,
+    time: "2023-07-15T18:00:00Z",
+  },
+  {
+    message: "아 집가고 싶다",
+    username: "Bob Johnson",
+    // userId: 1001,
+    time: "2023-07-15T18:00:00Z",
+  },
+  {
+    message: "아 집가고 싶다",
+    username: "Bob Johnson",
+    // userId: 1001,
+    time: "2023-07-15T18:00:00Z",
+  },
+  {
+    message: "아 집가고 싶다",
+    username: "Bob Johnson",
+    // userId: 1001,
+    time: "2023-07-15T18:00:00Z",
+  },
+  {
+    message: "아 집가고 싶다",
+    username: "Bob Johnson",
+    // userId: 1001,
+    time: "2023-07-15T18:00:00Z",
+  },
+];

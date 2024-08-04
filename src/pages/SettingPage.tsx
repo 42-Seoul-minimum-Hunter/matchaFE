@@ -12,9 +12,6 @@ import {
 import { LocationData } from "@/assets/mock/mock";
 import { AgeTagItem } from "./SignupDetailPage";
 import TagList, { TagProps } from "@/components/TagTemplate";
-import axios from "axios";
-import LocationFromIP from "@/components/location/LocationFromIp";
-import LocationFromCoords from "@/components/location/LocationFromCoords";
 
 const ageTagList: AgeTagItem[] = Array.from({ length: 81 }, (_, index) => {
   const age = index + 20;

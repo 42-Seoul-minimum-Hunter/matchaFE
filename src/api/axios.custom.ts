@@ -153,7 +153,9 @@ export const axiosFindUser = async (
     if (maxRate !== undefined) params.maxRate = maxRate.toString();
     if (si) params.si = si;
     if (gu) params.gu = gu;
-    if (hashtags && hashtags.length > 0) params.hashtags = hashtags.join(",");
+
+    // hashtags 처리: undefined나 빈 배열일 경우 빈 문자열 할당
+    params.hashtags = hashtags && hashtags.length > 0 ? hashtags.join(",") : "";
 
     const queryString = new URLSearchParams(params).toString();
     const url = queryString
@@ -166,6 +168,36 @@ export const axiosFindUser = async (
     throw error;
   }
 };
+// export const axiosFindUser = async (
+//   si?: string | undefined,
+//   gu?: string | undefined,
+//   minAge?: number,
+//   maxAge?: number,
+//   minRate?: number,
+//   maxRate?: number,
+//   hashtags?: string[]
+// ): Promise<any> => {
+//   try {
+//     const params: Record<string, string> = {};
+//     if (minAge !== undefined) params.minAge = minAge.toString();
+//     if (maxAge !== undefined) params.maxAge = maxAge.toString();
+//     if (minRate !== undefined) params.minRate = minRate.toString();
+//     if (maxRate !== undefined) params.maxRate = maxRate.toString();
+//     if (si) params.si = si;
+//     if (gu) params.gu = gu;
+//     if (hashtags && hashtags.length > 0) params.hashtags = hashtags.join(",");
+
+//     const queryString = new URLSearchParams(params).toString();
+//     const url = queryString
+//       ? `${axiosFindUserURL}?${queryString}`
+//       : axiosFindUserURL;
+//     console.log("search user url", url);
+//     const response = await instance.get(url);
+//     return response;
+//   } catch (error) {
+//     throw error;
+//   }
+// };
 
 const axiosAuthLoginURL = "/auth/login";
 export const axiosAuthLogin = async (

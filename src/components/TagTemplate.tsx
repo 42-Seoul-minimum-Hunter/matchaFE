@@ -55,7 +55,7 @@ const TagList: React.FC<TagListProps> = ({
     ? tags.filter((tag) => selectedTags.includes(tag.value))
     : tags;
 
-  console.log("selectedTags", selectedTags);
+  // console.log("selectedTags", selectedTags);
 
   return (
     <TagContainer>

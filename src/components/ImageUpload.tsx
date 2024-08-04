@@ -7,11 +7,14 @@ import styled from "styled-components";
 const ImageUploader = ({
   images,
   setImages,
+  isReadOnly,
 }: {
   images: string[];
   setImages: React.Dispatch<React.SetStateAction<string[]>>;
+  isReadOnly?: boolean;
 }) => {
   // const [images, setImages] = useState<string[]>([]);
+
   const useParams = location.pathname.includes("signup");
 
   console.log("useParams", useParams);
@@ -55,25 +58,30 @@ const ImageUploader = ({
 
   return (
     <Container $useParams={useParams}>
-      <UploadButton onClick={() => fileInputRef.current?.click()}>
-        <PlusIcon />
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileChange}
-          multiple
-          accept="image/*"
-        />
-      </UploadButton>
+      {!isReadOnly && (
+        <UploadButton onClick={() => fileInputRef.current?.click()}>
+          <PlusIcon />
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileChange}
+            multiple
+            accept="image/*"
+          />
+        </UploadButton>
+      )}
 
       <ImageContainer>
         <ImageWrapper $translateX={-currentIndex * 143}>
           {images.map((image, index) => (
             <ImageItem key={index}>
               <Image src={image} alt={`Uploaded ${index}`} />
-              <DeleteButton onClick={() => handleDelete(index)}>
-                삭제
-              </DeleteButton>
+
+              {!isReadOnly && (
+                <DeleteButton onClick={() => handleDelete(index)}>
+                  삭제
+                </DeleteButton>
+              )}
             </ImageItem>
           ))}
         </ImageWrapper>

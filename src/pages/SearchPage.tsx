@@ -1,10 +1,7 @@
 import { axiosFindUser } from "@/api/axios.custom";
-import LocationDropdown from "@/components/LocationDropdown";
-import Modal, { IModalOptions } from "@/components/Modal";
 import SearchCard from "@/components/SearchCard";
 import { ageLableMap, InterestLableMap, rateLableMap } from "@/types/maps";
 import { useContext, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
 import styled from "styled-components";
 import { tagItem } from "./SignUpPage";
 import { ReactComponent as FilterIcon } from "@/assets/icons/filter-icon.svg";
@@ -116,14 +113,18 @@ const SearchPage = () => {
           setValues((prev) => ({ ...prev, hashtag: value }));
           break;
       }
-      tryFindUser();
+      // tryFindUser();
       closeModal();
     }
   };
 
   useEffect(() => {
     tryFindUser();
-  }, []);
+  }, [values]);
+
+  // useEffect(() => {
+  //   tryFindUser();
+  // }, []);
 
   const [currentPage, setCurrentPage] = useState(1);
   // const dummySearchData = generateDummyData(45);
@@ -210,7 +211,7 @@ const SearchPage = () => {
           <PageButton
             key={index}
             onClick={() => paginate(index + 1)}
-            active={currentPage === index + 1}
+            $active={currentPage === index + 1}
           >
             {index + 1}
           </PageButton>
@@ -227,20 +228,20 @@ const Pagination = styled.div`
   margin-top: 20px;
 `;
 
-const PageButton = styled.button<{ active: boolean }>`
+const PageButton = styled.button<{ $active: boolean }>`
   margin: 0 5px;
   padding: 5px 10px;
   border: 1px solid
-    ${(props) => (props.active ? "var(--brand-main-1)" : "var(--line-gray-3)")};
+    ${(props) => (props.$active ? "var(--brand-main-1)" : "var(--line-gray-3)")};
   background-color: ${(props) =>
-    props.active ? "var(--brand-main-1)" : "white"};
-  color: ${(props) => (props.active ? "white" : "var(--black)")};
+    props.$active ? "var(--brand-main-1)" : "white"};
+  color: ${(props) => (props.$active ? "white" : "var(--black)")};
   cursor: pointer;
   border-radius: 5px;
 
   &:hover {
     background-color: ${(props) =>
-      props.active ? "var(--brand-main-1)" : "var(--brand-sub-2)"};
+      props.$active ? "var(--brand-main-1)" : "var(--brand-sub-2)"};
   }
 `;
 
@@ -297,23 +298,55 @@ const FilterValueStyled = styled.div`
   line-height: 1.4;
 `;
 
+// const SearchCardContainer = styled.div`
+//   display: grid;
+//   grid-template-columns: repeat(5, 252px);
+
+//   /* grid-template-rows: 200px 200px; */
+//   /* grid-auto-rows: 250px; */
+//   gap: 26px;
+//   @media (max-width: 1000px) {
+//     grid-template-columns: repeat(4, 1fr);
+//   }
+
+//   /* @media (max-width: 960px) {
+//     grid-template-columns: repeat(3, 1fr);
+//   } */
+
+//   @media (max-width: 720px) {
+//     grid-template-columns: repeat(2, 1fr);
+//   }
+
+//   @media (max-width: 480px) {
+//     grid-template-columns: 1fr;
+//   }
+// `;
+
 const SearchCardContainer = styled.div`
   display: grid;
-  grid-template-columns: repeat(5, 252px);
-
-  /* grid-template-rows: 200px 200px; */
-  /* grid-auto-rows: 250px; */
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(min(252px, calc(17.5vw - 0.694vw)), 1fr)
+  );
+  grid-auto-rows: min(300px, calc((17.5vw - 0.694vw) * 1.19));
   gap: 26px;
+  width: 100%;
+
   @media (max-width: 1000px) {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(min(252px, calc(23.3vw - 0.933vw)), 1fr)
+    );
+    grid-auto-rows: min(300px, calc((23.3vw - 0.933vw) * 1.19));
+    /* grid-auto-rows: min(300px, calc((23.3vw - 0.933vw) * 1.19)); */
   }
 
-  /* @media (max-width: 960px) {
-    grid-template-columns: repeat(3, 1fr);
-  } */
-
   @media (max-width: 720px) {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(
+      auto-fill,
+      minmax(min(252px, calc(35vw - 1.4vw)), 1fr)
+    );
+    grid-auto-rows: min(300px, calc((35vw - 1.4vw) * 1.19));
   }
 
   @media (max-width: 480px) {

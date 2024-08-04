@@ -16,7 +16,7 @@ export interface RegisterDto {
   // region: string;
   si: string;
   gu: string;
-  rate?: number; // 0 ~ 5
+  rate: number; // 0 ~ 5
   profileImages: string[];
 }
 
@@ -29,18 +29,18 @@ export interface SearchUserDto {
 }
 
 export interface ProfileDto {
-  age: number;
-  biography: string;
+  username: string;
   firstName: string;
   lastName: string;
-  si: string;
-  gu: string;
-  hashtags: InterestType[];
   gender: GenderType;
   preference: PreferenceType;
+  age: number;
+  biography: string;
+
+  hashtags: InterestType[];
+  si: string;
+  gu: string;
   rate: number;
-  isBlocked: boolean;
-  username: string;
   profileImages: string[];
 }
 

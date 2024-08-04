@@ -9,75 +9,106 @@ import { SocketContext } from "@/pages/LayoutPage";
 // 2. 내 이름이 필요한 경우가 이 페이지 밖에 없어서 내 정보에 대한 axios요청을 messagePage에서 보내는 것이 더 효율적일 수 있음
 // 3. 제일 편한것 -> jwt를 쿠키에 저장할때 똑같이 username도 쿠키에 저장해서
 
-export interface CharMessageDto {
+// TODO
+// 내가 받는 정보는 저 형식이고 BE에 넘기는 데이터는 message와 username을 넘김
+export interface IChatContentDto {
   message: string;
   username: string;
-  userId: number;
   time: string;
 }
+// userId: number;
 
 const ChatRoom = ({
   chatHistory,
   selectUserImg,
+  username,
 }: {
-  chatHistory: CharMessageDto[];
-  selectUserImg: string | null;
+  chatHistory: IChatContentDto[];
+  selectUserImg: string;
+  username: string;
 }) => {
-  // console.log("selectUserImg", selectUserImg);
-  // console.log("chatHistory", chatHistory);
   return (
-    <Wrapper>
+    <Container>
       {chatHistory.length === 0 ? (
         <div>채팅방을 선택해 주세요</div>
       ) : (
         <>
-          {chatHistory.map((message, index) => (
-            <MessageWrapper key={index}>
-              {message.userId === 1 ? (
+          {/* {chatHistory.map((message, index) => (
+            <MessageContainer key={index}>
+              {message.username === username ? (
                 <MyMessageWrapper>
-                  <ContentWrapper>{message.message}</ContentWrapper>
+                  <ContentStyled>{message.message}</ContentStyled>
                 </MyMessageWrapper>
               ) : (
                 <PartnerMessageWrapper>
                   <img src={selectUserImg} />
-                  <ContentWrapper>{message.message}</ContentWrapper>
+                  <ContentStyled>{message.message}</ContentStyled>
                 </PartnerMessageWrapper>
               )}
-              {/* <Message isUser={message.userId === 1}>{message.content}</Message> */}
-            </MessageWrapper>
-          ))}
+            </MessageContainer>
+          ))} */}
+          <MessageContainer>
+            {chatHistory.map((message, index) =>
+              message.username === username ? (
+                <MyMessageWrapper key={index}>
+                  <ContentStyled>{message.message}</ContentStyled>
+                </MyMessageWrapper>
+              ) : (
+                <PartnerMessageWrapper key={index}>
+                  <img src={selectUserImg} />
+                  <ContentStyled>{message.message}</ContentStyled>
+                </PartnerMessageWrapper>
+              )
+            )}
+          </MessageContainer>
           <ChatInputWrapper>
             <ChatInput placeholder="write your message" />
-            <IconContainer>
+            {/* <IconContainer>
               <SendIcon />
-            </IconContainer>
+            </IconContainer> */}
           </ChatInputWrapper>
         </>
       )}
-    </Wrapper>
+    </Container>
   );
 };
 
 export default ChatRoom;
 
-const Wrapper = styled.div`
+const Container = styled.div`
   /* max-width: px; */
-  padding: 20px 20px;
+  /* padding: 20px 20px; */
+  padding-left: 35px;
+  padding-right: 40px;
+  padding-top: 40px;
 
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   gap: 20px;
   height: 100%;
-  overflow-y: auto;
+  /* overflow-y: auto; */
   position: relative;
+  overflow-y: hidden;
 `;
 
-const MessageWrapper = styled.div`
+const MessageContainer = styled.div`
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  /* flex-grow: 1; */
+  height: 90%;
 
-  /* & > div {
-    max-width: 50%;
-  } */
+  overflow-y: auto; // 세로 스크롤 추가
+  /* padding-bottom: 20px; // ChatInputWrapper 위 20px 여백 */
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  /* IE, Edge, Firefox의 스크롤바 숨기기 */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 `;
 
 const MyMessageWrapper = styled.div`
@@ -86,7 +117,7 @@ const MyMessageWrapper = styled.div`
   justify-content: flex-end;
   & > div {
     border-radius: 10px 0 10px 10px;
-    background-color: var(--blue);
+    background-color: var(--brand-main-1);
     color: var(--white);
   }
 `;
@@ -103,33 +134,49 @@ const PartnerMessageWrapper = styled.div`
   }
 
   & > div {
-    background-color: var(--light-gray);
+    background-color: #eeeeee;
     color: var(--black);
     border-radius: 10px 10px 10px 0px;
   }
 `;
 
-const ContentWrapper = styled.div`
-  max-width: 50%;
+const ContentStyled = styled.div`
+  /* max-width: 50%; */
+  max-width: 347px;
+  /* width: 100%; */
   /* border-radius: 10px 0 10px 10px; */
   background-color: var(--vermilion);
-  padding: 20px 10px;
-  font-size: 1em;
+  padding: 18px 22px;
+  font-size: 0.8rem;
+  font-weight: 300;
+  line-height: 1.4;
+  letter-spacing: -0.025em;
+
   white-space: normal;
   /* text-overflow: ellipsis;
   word-break: break-all; */
 `;
 
-const ChatInput = styled.input`
-  background-color: var(--light-blue);
+const ChatInput = styled.textarea`
+  background-color: var(--brand-sub-2);
   color: var(--black);
   padding: 10px;
-  width: 90%;
+  outline: none;
+  width: 100%;
+  height: 20px; // 원하는 고정 높이 설정
+  /* min-height: 40px; // 최소 높이 설정 */
+  max-height: 40px; // 최대 높이 설정 (스크롤 생성을 위해)
+  border: 1px solid var(--brand-main-1);
+  border-radius: 4px;
+  resize: none; // 사용자가 크기를 조절하지 못하게 함
+  overflow-y: auto; // 세로 스크롤 허용
+  line-height: 20px; // 줄 간격 설정 (선택사항)
 `;
 
 const ChatInputWrapper = styled.div`
   width: 100%;
-  position: absolute;
+  border-radius: 4px;
+  position: relative;
   bottom: 20px;
   display: flex;
   /* flex-direction: column; */
@@ -137,4 +184,6 @@ const ChatInputWrapper = styled.div`
 
 const IconContainer = styled.div`
   position: absolute;
+  top: 4px;
+  right: 10px;
 `;

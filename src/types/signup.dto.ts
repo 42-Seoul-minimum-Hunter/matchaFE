@@ -27,7 +27,7 @@ export interface settingUserDto {
   // User Profile
   firstName: string; // 4 ~ 15 영어
   lastName: string; // 4 ~ 15 영어
-  email: string; //
+
   password: string; // 4 ~ 15, 영어, 숫자, 특수문자
 
   //   User Photos

@@ -80,7 +80,7 @@ const FilterModal: React.FC<ModalProps> = ({
               }))}
               type="Si"
               onSelect={(option) => {
-                setValue((prev) => ({ si: option.value, gu: "" }));
+                setValue((prev: any) => ({ si: option.value, gu: "" }));
               }}
             />
             {value.si && (
@@ -92,7 +92,7 @@ const FilterModal: React.FC<ModalProps> = ({
                 }
                 type="Gu"
                 onSelect={(option) => {
-                  setValue((prev) => ({ ...prev, gu: option.value }));
+                  setValue((prev: any) => ({ ...prev, gu: option.value }));
                 }}
               />
             )}
