@@ -3,20 +3,85 @@ import React, { useEffect, useRef, useState } from "react";
 import { ReactComponent as ChevronIcon } from "@/assets/icons/chevron-icon.svg";
 import styled from "styled-components";
 
+// const DropboxTemplate = ({
+//   options,
+//   type,
+//   onSelect,
+// }: {
+//   options: tagItem[];
+//   type: string;
+//   onSelect: (option: tagItem) => void;
+// }) => {
+//   const [isOpen, setIsOpen] = useState(false);
+//   const dropdownRef = useRef<HTMLDivElement>(null);
+//   const [selectedOption, setSelectedOption] = useState<tagItem | null>(null);
+
+//   const toggleDropbox = () => setIsOpen(!isOpen);
+
+//   useEffect(() => {
+//     const handleClickOutside = (event: MouseEvent) => {
+//       if (
+//         dropdownRef.current &&
+//         !dropdownRef.current.contains(event.target as Node)
+//       ) {
+//         setIsOpen(false);
+//       }
+//     };
+
+//     document.addEventListener("mousedown", handleClickOutside);
+//     return () => {
+//       document.removeEventListener("mousedown", handleClickOutside);
+//     };
+//   }, []);
+
+//   const handleOptionClick = (option: tagItem) => {
+//     setSelectedOption(option);
+//     setIsOpen(false);
+//     onSelect(option);
+//   };
+
+//   return (
+//     <DropboxContainer ref={dropdownRef}>
+//       <DropboxHeader onClick={toggleDropbox}>
+//         {selectedOption ? selectedOption.label : type}
+//         {/* <ChevronIcon $isOpen={isOpen} /> */}
+//         <ChevronIconStyled $isOpen={isOpen}>
+//           <ChevronIcon />
+//         </ChevronIconStyled>
+//       </DropboxHeader>
+//       {isOpen && (
+//         <OptionsList>
+//           {options.map((option) => (
+//             <Option
+//               key={option.value}
+//               onClick={() => handleOptionClick(option)}
+//             >
+//               {option.label}
+//             </Option>
+//           ))}
+//         </OptionsList>
+//       )}
+//     </DropboxContainer>
+//   );
+// };
+
 const DropboxTemplate = ({
   options,
   type,
   onSelect,
+  selectedValue,
+  disabled = false,
 }: {
   options: tagItem[];
   type: string;
   onSelect: (option: tagItem) => void;
+  selectedValue: string;
+  disabled?: boolean;
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const [selectedOption, setSelectedOption] = useState<tagItem | null>(null);
 
-  const toggleDropbox = () => setIsOpen(!isOpen);
+  const toggleDropbox = () => !disabled && setIsOpen(!isOpen);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -35,21 +100,19 @@ const DropboxTemplate = ({
   }, []);
 
   const handleOptionClick = (option: tagItem) => {
-    setSelectedOption(option);
     setIsOpen(false);
     onSelect(option);
   };
 
   return (
     <DropboxContainer ref={dropdownRef}>
-      <DropboxHeader onClick={toggleDropbox}>
-        {selectedOption ? selectedOption.label : type}
-        {/* <ChevronIcon $isOpen={isOpen} /> */}
+      <DropboxHeader onClick={toggleDropbox} $disabled={disabled}>
+        {selectedValue || type}
         <ChevronIconStyled $isOpen={isOpen}>
           <ChevronIcon />
         </ChevronIconStyled>
       </DropboxHeader>
-      {isOpen && (
+      {isOpen && !disabled && (
         <OptionsList>
           {options.map((option) => (
             <Option
@@ -72,18 +135,33 @@ const DropboxContainer = styled.div`
   border-radius: 4px;
 `;
 
-const DropboxHeader = styled.div`
+const DropboxHeader = styled.div<{ $disabled: boolean }>`
   padding: 10px;
   background-color: var(--white);
   border-radius: 4px;
   border: 1px solid var(--line-gray-3);
-  color: var(--line-gray-1);
-  cursor: pointer;
+  color: ${({ $disabled }) =>
+    $disabled ? "var(--line-gray-3)" : "var(--line-gray-1)"};
+  cursor: ${({ $disabled }) => ($disabled ? "not-allowed" : "pointer")};
   display: flex;
   justify-content: space-between;
   align-items: center;
   height: 56px;
+  opacity: ${({ $disabled }) => ($disabled ? 0.7 : 1)};
 `;
+
+// const DropboxHeader = styled.div`
+//   padding: 10px;
+//   background-color: var(--white);
+//   border-radius: 4px;
+//   border: 1px solid var(--line-gray-3);
+//   color: var(--line-gray-1);
+//   cursor: pointer;
+//   display: flex;
+//   justify-content: space-between;
+//   align-items: center;
+//   height: 56px;
+// `;
 
 const ChevronIconStyled = styled.div<{ $isOpen: boolean }>`
   transform: ${({ $isOpen }) => ($isOpen ? "rotate(180deg)" : "rotate(0)")};

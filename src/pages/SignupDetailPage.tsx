@@ -41,6 +41,7 @@ const SignupDetailPage = () => {
     location_gu: "",
     gender: "",
     preference: "",
+    age: "",
   });
 
   const handleInputChange = (e: any) => {
@@ -49,9 +50,7 @@ const SignupDetailPage = () => {
     setSignUpTextData({ ...signUpTextData, [name]: value });
     // setError(false);
   };
-
   const handleDropboxChange = (name: string, option: tagItem) => {
-    // console.log("option", option);
     setSignUpDropboxData((prev) => ({ ...prev, [name]: option.value }));
 
     if (name === "location_si") {
@@ -64,6 +63,8 @@ const SignupDetailPage = () => {
           label: gu,
         }));
         setLocationGuTagList(guList);
+        // 'si'가 변경되면 'gu' 초기화
+        setSignUpDropboxData((prev) => ({ ...prev, location_gu: "" }));
       } else {
         setLocationGuTagList([]);
       }
@@ -150,26 +151,32 @@ const SignupDetailPage = () => {
             options={locationSiTagList}
             type="location_si"
             onSelect={(option) => handleDropboxChange("location_si", option)}
+            selectedValue={signUpDropboxData.location_si}
           />
           <DropboxTemplate
             options={locationGuTagList}
             type="location_gu"
             onSelect={(option) => handleDropboxChange("location_gu", option)}
+            selectedValue={signUpDropboxData.location_gu}
+            disabled={!signUpDropboxData.location_si}
           />
           <DropboxTemplate
             options={genderTagList}
             type="gender"
             onSelect={(option) => handleDropboxChange("gender", option)}
+            selectedValue={signUpDropboxData.gender}
           />
           <DropboxTemplate
             options={preferenceTagList}
             type="preference"
             onSelect={(option) => handleDropboxChange("preference", option)}
+            selectedValue={signUpDropboxData.preference}
           />
           <DropboxTemplate
             options={ageTagList}
             type="age"
             onSelect={(option) => handleDropboxChange("age", option)}
+            selectedValue={signUpDropboxData.age}
           />
         </InputContainer>
       </RowContainer>

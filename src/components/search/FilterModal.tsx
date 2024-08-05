@@ -80,8 +80,9 @@ const FilterModal: React.FC<ModalProps> = ({
               }))}
               type="Si"
               onSelect={(option) => {
-                setValue((prev: any) => ({ si: option.value, gu: "" }));
+                setValue({ si: option.value, gu: "" }); // gu를 초기화
               }}
+              selectedValue={value.si}
             />
             {value.si && (
               <DropboxTemplate
@@ -94,6 +95,7 @@ const FilterModal: React.FC<ModalProps> = ({
                 onSelect={(option) => {
                   setValue((prev: any) => ({ ...prev, gu: option.value }));
                 }}
+                selectedValue={value.gu}
               />
             )}
           </>

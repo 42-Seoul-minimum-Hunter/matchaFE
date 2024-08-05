@@ -69,7 +69,6 @@ const SearchPage = () => {
   };
 
   // 해당 유저 선택할 때
-
   // const socket = useContext(SocketContext);
   // useEffect(() => {
   //   socket.on("connect", () => {
