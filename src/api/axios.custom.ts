@@ -84,20 +84,23 @@ export const axiosUserCreate = async (data: SignupDto): Promise<any> => {
   }
 };
 
-const axiosFindPWURL = "/auth/reset/email/create";
+/**
+ * 비밀번호 찾기 요청
+ */
+const axiosResetCreateURL = "/auth/reset/email/create";
 export const axiosFindPW = async (email: string): Promise<any> => {
   try {
-    const response = await instance.post(axiosFindPWURL, { email: email });
+    const response = await instance.post(axiosResetCreateURL, { email: email });
     return response;
   } catch (error) {
     throw error;
   }
 };
 
-const axiosChangePasswordURL = "/auth/reset/email/verify";
+const axiosResetVerifyURL = "/auth/reset/email/verify";
 export const axiosChangePassword = async (password: string): Promise<any> => {
   try {
-    const response = await instance.post(axiosChangePasswordURL, {
+    const response = await instance.post(axiosResetVerifyURL, {
       password: password,
     });
     return response;
@@ -105,16 +108,6 @@ export const axiosChangePassword = async (password: string): Promise<any> => {
     throw error;
   }
 };
-
-// const axiosSearchProfileURL = "/user/find";
-// export const axiosSearchProfile = async (email: string): Promise<any> => {
-//   try {
-//     const response = await instance.post(axiosSearchProfileURL);
-//     return response;
-//   } catch (error) {
-//     throw error;
-//   }
-// };
 
 const axiosVerifyTwoFactorURL = "/auth/twofactor/verify";
 export const axiosVerifyTwoFactor = async (code: string): Promise<any> => {
@@ -152,6 +145,7 @@ export const axiosEmailVerify = async (): Promise<any> => {
   }
 };
 
+// 유저 쿼리 검색 -> SEARCH
 const axiosFindUserURL = "/user/find";
 export const axiosFindUser = async (
   si?: string | undefined,
@@ -185,36 +179,6 @@ export const axiosFindUser = async (
     throw error;
   }
 };
-// export const axiosFindUser = async (
-//   si?: string | undefined,
-//   gu?: string | undefined,
-//   minAge?: number,
-//   maxAge?: number,
-//   minRate?: number,
-//   maxRate?: number,
-//   hashtags?: string[]
-// ): Promise<any> => {
-//   try {
-//     const params: Record<string, string> = {};
-//     if (minAge !== undefined) params.minAge = minAge.toString();
-//     if (maxAge !== undefined) params.maxAge = maxAge.toString();
-//     if (minRate !== undefined) params.minRate = minRate.toString();
-//     if (maxRate !== undefined) params.maxRate = maxRate.toString();
-//     if (si) params.si = si;
-//     if (gu) params.gu = gu;
-//     if (hashtags && hashtags.length > 0) params.hashtags = hashtags.join(",");
-
-//     const queryString = new URLSearchParams(params).toString();
-//     const url = queryString
-//       ? `${axiosFindUserURL}?${queryString}`
-//       : axiosFindUserURL;
-//     console.log("search user url", url);
-//     const response = await instance.get(url);
-//     return response;
-//   } catch (error) {
-//     throw error;
-//   }
-// };
 
 const axiosAuthLoginURL = "/auth/login";
 export const axiosAuthLogin = async (
@@ -232,7 +196,7 @@ export const axiosAuthLogin = async (
   }
 };
 
-// localhost:3000/user/profile/me
+// PROFILE 유저 페이지
 const axiosProfileMeURL = "/user/profile/me";
 export const axiosProfileMe = async (): Promise<any> => {
   try {
@@ -243,12 +207,8 @@ export const axiosProfileMe = async (): Promise<any> => {
   }
 };
 
-// useriD 나중에 jwt 대체
 const axiosProfileURL = "/user/profile";
-export const axiosProfile = async (
-  username: string
-  // userID: number
-): Promise<any> => {
+export const axiosProfile = async (username: string): Promise<any> => {
   try {
     const response = await instance.get(
       `${axiosProfileURL}?username=${username}`
@@ -259,20 +219,15 @@ export const axiosProfile = async (
   }
 };
 
-// // chatroom id로 채팅방 정보 가져오기
-// const axiosChatroomURL = "/user/chat";
-// export const axiosChatroom = async (
-//   // username: string,
-//   userID: number
-// ): Promise<any> => {
-//   try {
-//     console.log("back url : ", `${axiosChatroomURL}?id=${userID}`);
-//     const response = await instance.get(`${axiosChatroomURL}?id=${userID}`);
-//     return response;
-//   } catch (error) {
-//     throw error;
-//   }
-// };
+const axiosUserRateURL = "/rateUser";
+export const axiosUserRate = async (rate: number): Promise<any> => {
+  try {
+    const response = await instance.post(axiosUserRateURL, { rate: rate });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
 
 const axiosLogoutURL = "/auth/logout";
 export const axiosLogout = async (): Promise<any> => {
@@ -295,26 +250,6 @@ export const axiosUserBlock = async (username: string): Promise<any> => {
     throw error;
   }
 };
-
-// useriD 나중에 jwt 대체
-// const axiosProfileURL = "/user/profile";
-// export const axiosProfile = async (
-//   username: string,
-//   userID: number
-// ): Promise<any> => {
-//   try {
-//     console.log(
-//       "back url : ",
-//       `${axiosProfileURL}?username=${username}&id=${userID}`
-//     );
-//     const response = await instance.get(
-//       `${axiosProfileURL}?username=${username}&id=${userID}`
-//     );
-//     return response;
-//   } catch (error) {
-//     throw error;
-//   }
-// };
 
 // chatroom id로 채팅방 정보 가져오기
 const axiosChatroomURL = "/user/chat";

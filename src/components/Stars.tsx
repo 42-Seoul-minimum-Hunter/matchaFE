@@ -2,8 +2,8 @@ import styled from "styled-components";
 import { ReactComponent as StarIcon } from "@/assets/icons/star-icon.svg";
 import { ReactComponent as EmptyStarIcon } from "@/assets/icons/empty-star-icon.svg";
 
-const Stars = ({ rating }: { rating: number }) => {
-  const filledWidth = `${(rating / 5) * 100}%`;
+const Stars = ({ rating }: { rating: number | undefined }) => {
+  const filledWidth = rating ? `${(rating / 5) * 100}%` : "0%";
 
   return (
     <Wrapper>
@@ -23,7 +23,7 @@ const Stars = ({ rating }: { rating: number }) => {
           ))}
         </FilledStars>
       </StarsContainer>
-      <StarsRatingTextStyled>{rating}</StarsRatingTextStyled>
+      <StarsRatingTextStyled>{rating ?? "N/A"}</StarsRatingTextStyled>
     </Wrapper>
   );
 };
