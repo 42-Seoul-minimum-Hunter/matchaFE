@@ -24,7 +24,9 @@ const useRouter = () => {
   const goToResetPW = () => {
     navigate("/resetPW");
   };
-
+  const goToSetting = () => {
+    navigate("/setting");
+  };
   const goToProfileMe = () => {
     navigate("/profile");
   };
@@ -43,6 +45,7 @@ const useRouter = () => {
     goToResetPW,
     goToProfileMe,
     goToProfileUserClick,
+    goToSetting,
   };
 };
 

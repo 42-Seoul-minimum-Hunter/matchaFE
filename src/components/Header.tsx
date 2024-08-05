@@ -7,9 +7,17 @@ import useRouter from "@/hooks/useRouter";
 
 // TODO: Router 테이블 만들어서 해당 라우터에서 색상 표현
 const Header = () => {
-  const { goToSignup, goTologin, goToSearch, goToProfileMe, goToChat } =
-    useRouter();
+  const {
+    goToSignup,
+    goTologin,
+    goToSearch,
+    goToProfileMe,
+    goToChat,
+    goToAlarm,
+    goToSetting,
+  } = useRouter();
   const [disable, setDisable] = useState<boolean>(false);
+  const [isAlarm, setIsAlarm] = useState<boolean>(false);
   const socket = useContext(SocketContext);
 
   // socket.on("getAlarms", (data: any) => {
@@ -64,6 +72,14 @@ const Header = () => {
     }
   };
 
+  // jwt로 인증
+  const onClickLogout = () => {
+    setDisable(!disable);
+  };
+  const test = () => {
+    setIsAlarm(!isAlarm);
+  };
+
   return (
     <Wrapper>
       <HeaderContainer>
@@ -77,8 +93,26 @@ const Header = () => {
         MEET<span>CHA</span>
       </TitleStyled>
       <HeaderContainer>
-        <NavStyled onClick={goTologin}>Log In</NavStyled>
-        <NavStyled onClick={goToSignup}>Sign Up</NavStyled>
+        {disable ? (
+          <>
+            <NavStyled onClick={goTologin}>Log In</NavStyled>
+            <NavStyled onClick={goToSignup}>Sign Up</NavStyled>
+          </>
+        ) : (
+          <>
+            <NavStyled
+              onClick={() => handleNavClick(goToAlarm)}
+              $isAlarm={isAlarm}
+            >
+              Alarm
+            </NavStyled>
+            <NavStyled onClick={() => handleNavClick(goToSetting)}>
+              Setting
+            </NavStyled>
+            <NavStyled onClick={() => onClickLogout()}>Logout</NavStyled>
+            {/* <NavStyled onClick={() => test()}>Logout</NavStyled> */}
+          </>
+        )}
       </HeaderContainer>
     </Wrapper>
   );
@@ -86,7 +120,7 @@ const Header = () => {
 
 export default Header;
 
-const NavStyled = styled.div`
+const NavStyled = styled.div<{ $isAlarm?: boolean }>`
   border: 1px solid var(--black);
   display: flex;
   justify-content: center;
@@ -94,6 +128,7 @@ const NavStyled = styled.div`
   flex: 1;
   font-size: 1rem;
   font-weight: 400;
+  position: relative;
 
   @media screen and (max-width: 1024px) {
     font-size: 0.8rem;
@@ -101,11 +136,40 @@ const NavStyled = styled.div`
 
   &:hover {
     background-color: var(--brand-sub-2);
-    /* color: var(--white); */
   }
-  /* @media screen and (max-width: 768px) {
-    font-size: 0.6rem;
-  } */
+
+  ${({ $isAlarm }) =>
+    $isAlarm &&
+    `
+    &::after {
+      content: '';
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      width: 10px;
+      height: 10px;
+      background-color: var(--brand-main-1);
+      border-radius: 50%;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(255, 82, 82, 0.7);
+      }
+      
+      70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 10px rgba(255, 82, 82, 0);
+      }
+      
+      100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(255, 82, 82, 0);
+      }
+    }
+  `}
 `;
 
 const HeaderContainer = styled.div`
