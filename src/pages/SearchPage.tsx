@@ -256,6 +256,9 @@ const FilterContainer = styled.div`
   justify-content: flex-start;
   gap: 30px;
   width: 100%;
+  @media screen and (max-width: 768px) {
+    flex-wrap: wrap;
+  }
 `;
 
 const FilterItemStyled = styled.div`
@@ -266,6 +269,16 @@ const FilterItemStyled = styled.div`
   box-shadow: 5px 5px 5px 0 var(--black);
   padding: 10px 20px;
   align-items: flex-end;
+
+  @media screen and (max-width: 768px) {
+    /* width: 100%; */
+    width: calc(50% - 30px);
+  }
+
+  @media screen and (max-width: 460px) {
+    width: 100%;
+    /* width: calc(50% - 30px); */
+  }
 `;
 
 const FilterTitleStyled = styled.div`

@@ -152,7 +152,10 @@ const ProfilePage = () => {
                 />
               </StarsContainer>
 
-              <StarSubmitButtonStyled onClick={tryToRateUser}>
+              <StarSubmitButtonStyled
+                onClick={tryToRateUser}
+                disabled={!username}
+              >
                 평점주기
               </StarSubmitButtonStyled>
               <TagContainer></TagContainer>
@@ -442,22 +445,46 @@ const FilterValueStyled = styled.div`
   line-height: 1.4;
 `;
 
-const StarSubmitButtonStyled = styled.div`
+const StarSubmitButtonStyled = styled.button<{ disabled: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  color: var(--brand-main-1);
+  color: ${(props) =>
+    props.disabled ? "var(--line-gray-3)" : "var(--brand-main-1)"};
   background-color: var(--white);
-  border: 1px solid var(--brand-main-1);
-  &:hover {
-    background-color: var(--brand-main-1);
-    color: var(--white);
-  }
+  border: 1px solid
+    ${(props) =>
+      props.disabled ? "var(--line-gray-3)" : "var(--brand-main-1)"};
   padding: 10px 20px;
   border-radius: 4px;
   font-weight: 400;
+  cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
+
+  &:hover {
+    background-color: ${(props) =>
+      props.disabled ? "var(--white)" : "var(--brand-main-1)"};
+    color: ${(props) =>
+      props.disabled ? "var(--line-gray-3)" : "var(--white)"};
+  }
 `;
+
+// const StarSubmitButtonStyled = styled.div`
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   width: 100%;
+//   color: var(--brand-main-1);
+//   background-color: var(--white);
+//   border: 1px solid var(--brand-main-1);
+//   &:hover {
+//     background-color: var(--brand-main-1);
+//     color: var(--white);
+//   }
+//   padding: 10px 20px;
+//   border-radius: 4px;
+//   font-weight: 400;
+// `;
 
 const OnlineStatusStyled = styled.div<{ $userStatus: boolean }>`
   background-color: var(--online);
