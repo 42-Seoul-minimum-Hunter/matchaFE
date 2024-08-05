@@ -1,11 +1,9 @@
 import { axiosFindUser } from "@/api/axios.custom";
-
-import { ageLableMap, InterestLableMap, rateLableMap } from "@/types/maps";
+import { InterestLableMap } from "@/types/maps";
 import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import { tagItem } from "./SignUpPage";
 import { ReactComponent as FilterIcon } from "@/assets/icons/filter-icon.svg";
-
 import TagList from "@/components/TagTemplate";
 import FilterModal from "@/components/search/FilterModal";
 import SearchCard from "@/components/search/SearchCard";
@@ -15,23 +13,19 @@ export interface ISearchDateDto {
   username: string;
   age: number;
   rate: number;
-  // 지역도 요청하기
   si?: string;
   gu?: string;
-}
-
-export interface IRangeDto {
-  rate: { min: number; max: number };
-  age: { min: number; max: number };
-  location: { si: string; gu: string };
 }
 
 const HashTagsList: tagItem[] = Object.entries(InterestLableMap).map(
   ([value, label]) => ({ value, label })
 );
 
+type ModalType = "age" | "rate" | "location" | "hashtag";
+
 const SearchPage = () => {
   const [searchData, setSearchData] = useState<ISearchDateDto[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
   const [modalState, setModalState] = useState<{
     isOpen: boolean;
     type: ModalType | null;
@@ -45,10 +39,15 @@ const SearchPage = () => {
     location: { si: "", gu: "" },
     hashtag: [] as string[],
   });
+  const cardsPerPage = 15;
+  const currentCards = searchData.slice(
+    (currentPage - 1) * cardsPerPage,
+    currentPage * cardsPerPage
+  );
 
+  const paginate = setCurrentPage;
   const openModal = (type: ModalType) => setModalState({ isOpen: true, type });
   const closeModal = () => setModalState({ isOpen: false, type: null });
-
   const tryFindUser = async () => {
     try {
       const res = await axiosFindUser(
@@ -60,39 +59,12 @@ const SearchPage = () => {
         values.rate.max,
         values.hashtag.length > 0 ? values.hashtag : undefined
       );
-      console.log("res", res);
-      console.log("res data", res.data.users);
+      console.log("res search", res);
       setSearchData(res.data.users);
     } catch (error: any) {
       console.log("search page error", error);
     }
   };
-
-  // 해당 유저 선택할 때
-  // const socket = useContext(SocketContext);
-  // useEffect(() => {
-  //   socket.on("connect", () => {
-  //     {
-  //       message: "message";
-  //       id: 1;
-  //     }
-  //   });
-  // }, []);
-
-  // const socket = useContext(SocketContext);
-  // socket.on("connect", () => {});
-  // useEffect(() => {
-  //   socket.on("message", () => {
-  //     console.log("message");
-  //   });
-  // }, []);
-  // sendMessage();
-
-  type ModalType = "age" | "rate" | "location" | "hashtag";
-
-  useEffect(() => {
-    console.log("values", values);
-  }, [values]);
 
   const handleSave = (value: any) => {
     if (modalState.type) {
@@ -114,7 +86,6 @@ const SearchPage = () => {
           setValues((prev) => ({ ...prev, hashtag: value }));
           break;
       }
-      // tryFindUser();
       closeModal();
     }
   };
@@ -122,20 +93,6 @@ const SearchPage = () => {
   useEffect(() => {
     tryFindUser();
   }, [values]);
-
-  // useEffect(() => {
-  //   tryFindUser();
-  // }, []);
-
-  const [currentPage, setCurrentPage] = useState(1);
-  // const dummySearchData = generateDummyData(45);
-  const cardsPerPage = 15;
-
-  const indexOfLastCard = currentPage * cardsPerPage;
-  const indexOfFirstCard = indexOfLastCard - cardsPerPage;
-  const currentCards = searchData.slice(indexOfFirstCard, indexOfLastCard);
-
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -150,7 +107,6 @@ const SearchPage = () => {
             onClick={() => openModal(type as ModalType)}
           >
             <FilterTitleStyled>
-              {/* charAt -> 문자열 쿼리 함수 */}
               {type.charAt(0).toUpperCase() + type.slice(1)}
               <FilterIcon />
             </FilterTitleStyled>
@@ -174,7 +130,7 @@ const SearchPage = () => {
       <SelectTagStyled>
         <TagList
           tags={HashTagsList}
-          onTagSelect={() => {}} // 빈 함수로 설정하여 선택 기능 비활성화
+          onTagSelect={() => {}}
           onTagRemove={(tag) => {
             setValues((prev) => ({
               ...prev,
@@ -271,20 +227,17 @@ const FilterItemStyled = styled.div`
   align-items: flex-end;
 
   @media screen and (max-width: 768px) {
-    /* width: 100%; */
     width: calc(50% - 30px);
   }
 
   @media screen and (max-width: 460px) {
     width: 100%;
-    /* width: calc(50% - 30px); */
   }
 `;
 
 const FilterTitleStyled = styled.div`
   display: flex;
   justify-content: space-between;
-  /* align-items: center; */
   font-size: 1.2rem;
   font-weight: 600;
   line-height: 1.4;
@@ -309,30 +262,6 @@ const FilterValueStyled = styled.div`
   line-height: 1.4;
 `;
 
-// const SearchCardContainer = styled.div`
-//   display: grid;
-//   grid-template-columns: repeat(5, 252px);
-
-//   /* grid-template-rows: 200px 200px; */
-//   /* grid-auto-rows: 250px; */
-//   gap: 26px;
-//   @media (max-width: 1000px) {
-//     grid-template-columns: repeat(4, 1fr);
-//   }
-
-//   /* @media (max-width: 960px) {
-//     grid-template-columns: repeat(3, 1fr);
-//   } */
-
-//   @media (max-width: 720px) {
-//     grid-template-columns: repeat(2, 1fr);
-//   }
-
-//   @media (max-width: 480px) {
-//     grid-template-columns: 1fr;
-//   }
-// `;
-
 const SearchCardContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(
@@ -349,7 +278,6 @@ const SearchCardContainer = styled.div`
       minmax(min(252px, calc(23.3vw - 0.933vw)), 1fr)
     );
     grid-auto-rows: min(300px, calc((23.3vw - 0.933vw) * 1.19));
-    /* grid-auto-rows: min(300px, calc((23.3vw - 0.933vw) * 1.19)); */
   }
 
   @media (max-width: 720px) {

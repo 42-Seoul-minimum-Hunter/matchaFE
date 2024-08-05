@@ -145,6 +145,22 @@ export const axiosEmailVerify = async (): Promise<any> => {
   }
 };
 
+const axiosAuthLoginURL = "/auth/login";
+export const axiosAuthLogin = async (
+  username: string,
+  password: string
+): Promise<any> => {
+  try {
+    const response = await instance.post(axiosAuthLoginURL, {
+      username: username,
+      password: password,
+    });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 // 유저 쿼리 검색 -> SEARCH
 const axiosFindUserURL = "/user/find";
 export const axiosFindUser = async (
@@ -174,22 +190,6 @@ export const axiosFindUser = async (
       : axiosFindUserURL;
     console.log("search user url", url);
     const response = await instance.get(url);
-    return response;
-  } catch (error) {
-    throw error;
-  }
-};
-
-const axiosAuthLoginURL = "/auth/login";
-export const axiosAuthLogin = async (
-  username: string,
-  password: string
-): Promise<any> => {
-  try {
-    const response = await instance.post(axiosAuthLoginURL, {
-      username: username,
-      password: password,
-    });
     return response;
   } catch (error) {
     throw error;
