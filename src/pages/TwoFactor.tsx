@@ -1,17 +1,41 @@
+import { axiosVerifyTwoFactor } from "@/api/axios.custom";
+import useRouter from "@/hooks/useRouter";
 import React, { useState, useRef, KeyboardEvent, ChangeEvent } from "react";
 import styled from "styled-components";
 
 const TwoFactorPage = () => {
   const [code, setCode] = useState(["", "", "", "", "", ""]);
-  const [error, setError] = useState<boolean>(true);
+  const { goToMain } = useRouter();
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const inputs = useRef<(HTMLInputElement | null)[]>([]);
 
   //   TODO : 1단계 이메일 인증을 통과하면 2단계때 2fa받을수 있게 BE고치기
-  const tryVerifyTwoFactor = () => {};
+  const tryVerifyTwoFactor = async () => {
+    setIsLoading(true);
+    setError(null);
+    const codeString = code.join("");
+    try {
+      const res = await axiosVerifyTwoFactor(codeString);
+      console.log("2FA 인증 성공:", res);
+      goToMain();
+      // 성공 처리 로직 (예: 다음 페이지로 이동)
+    } catch (err: any) {
+      console.error("2FA 인증 실패:", err);
+      setError(
+        err.response?.data?.message || "인증에 실패했습니다. 다시 시도해주세요."
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleSubmit = () => {
-    console.log("인증하기~!");
-    // 이메일 보내서 return 값으로 에러가 있으면 에러메세지 띄우기
+    if (code.some((digit) => digit === "")) {
+      setError("모든 칸을 입력해주세요.");
+      return;
+    }
+    tryVerifyTwoFactor();
   };
 
   const handleChange = (index: number, value: string) => {
@@ -78,6 +102,7 @@ const TwoFactorPage = () => {
                         handleKeyDown(actualIndex, e)
                       }
                       onPaste={handlePaste}
+                      disabled={isLoading}
                     />
                   );
                 })}
@@ -85,13 +110,34 @@ const TwoFactorPage = () => {
           ))}
         </CodeContainer>
         <ErrorContainer>
-          {error && <ErrorStyled>인증번호가 일치하지 않습니다.</ErrorStyled>}
+          {error && <ErrorStyled>{error}</ErrorStyled>}
         </ErrorContainer>
-        <ButtonStyled onClick={handleSubmit}>인증하기</ButtonStyled>
+        <ButtonStyled onClick={handleSubmit} disabled={isLoading}>
+          {isLoading ? <LoadingSpinner /> : "인증하기"}
+        </ButtonStyled>
       </>
     </Container>
   );
 };
+
+const LoadingSpinner = styled.div`
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #3498db;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+
+  @keyframes spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+`;
 
 const ErrorContainer = styled.div`
   height: 80px; // ButtonStyled와의 간격

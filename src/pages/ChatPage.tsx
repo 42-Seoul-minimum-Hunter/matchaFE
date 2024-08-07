@@ -26,6 +26,7 @@ const ChatPage = () => {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [chatRoom, setChatRoom] = useState<IChatRoomDto[]>([gptChatList]);
   const [chatHistory, setChatHistory] = useState<IChatContentDto[]>([]);
+  const [showChatRoom, setShowChatRoom] = useState(false);
   // const socket = useContext(SocketContext);
   const socket = useContext(SocketContext);
 
@@ -82,6 +83,7 @@ const ChatPage = () => {
     setChatHistory(mockChatContentDto);
     console.log(chatRoom[index]);
 
+    setShowChatRoom(true);
     // clickChatRoom();
   };
 
@@ -103,16 +105,13 @@ const ChatPage = () => {
     updateChatRoom(mockIChatProps);
   }, []);
   const selectUserImg = mockIChatProps[selectedIndex]?.profileImage;
-  // const selectUserImg =
-  //   selectedIndex !== null ? chatRoom[selectedIndex]?.profileImage : null;
 
-  // // const selectUserImg = mockChatListData[selectedIndex]?.profileImage;
-  // const selectUserImg =
-  //   selectedIndex !== null ? chatRoom[selectedIndex]?.profileImage : null;
-
+  const handleBackButton = () => {
+    setShowChatRoom(false);
+  };
   return (
     <Container>
-      <ChatLobbyWrapper>
+      <ChatLobbyWrapper show={!showChatRoom}>
         {chatRoom &&
           chatRoom.map((chatList, index) => (
             <ChatList
@@ -124,7 +123,8 @@ const ChatPage = () => {
             />
           ))}
       </ChatLobbyWrapper>
-      <ChatRoomWrapper>
+      <ChatRoomWrapper show={showChatRoom}>
+        <BackButton onClick={handleBackButton}>Back</BackButton>
         {selectUser === "Chatgpt" ? (
           <>
             <GptChat />
@@ -150,31 +150,92 @@ const Container = styled.div`
   padding: 20px 30px;
   gap: 24px;
   height: 100%;
-  width: 1200px;
-`;
-
-const ChatRoomWrapper = styled.div`
-  background-color: rgba(255, 255, 255, 0.5);
-  border-radius: 4px;
-
-  border: 1px solid var(--black);
-  max-width: 792px;
   width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 
-  height: 100%;
+  @media (max-width: 768px) {
+    flex-direction: column;
+    padding: 10px;
+  }
 `;
 
-const ChatLobbyWrapper = styled.div`
+const ChatLobbyWrapper = styled.div<{ show: boolean }>`
   max-width: 384px;
   width: 100%;
   height: 100%;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  /* gap: 10px; */
   align-items: center;
   border-radius: 4px;
-  /* padding: 20px 0; */
   padding: 10px 10px;
   border: 1px solid var(--black);
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+    display: ${(props) => (props.show ? "flex" : "none")};
+  }
+`;
+
+const ChatRoomWrapper = styled.div<{ show: boolean }>`
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+  border: 1px solid var(--black);
+  max-width: 792px;
+  width: 100%;
+  height: 100%;
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+    display: ${(props) => (props.show ? "block" : "none")};
+  }
+`;
+
+// const Container = styled.div`
+//   display: flex;
+//   padding: 20px 30px;
+//   gap: 24px;
+//   height: 100%;
+//   width: 1200px;
+// `;
+
+// const ChatRoomWrapper = styled.div`
+//   background-color: rgba(255, 255, 255, 0.5);
+//   border-radius: 4px;
+
+//   border: 1px solid var(--black);
+//   max-width: 792px;
+//   width: 100%;
+
+//   height: 100%;
+// `;
+
+// const ChatLobbyWrapper = styled.div`
+//   max-width: 384px;
+//   width: 100%;
+//   height: 100%;
+//   overflow-y: auto;
+//   display: flex;
+//   flex-direction: column;
+//   /* gap: 10px; */
+//   align-items: center;
+//   border-radius: 4px;
+//   /* padding: 20px 0; */
+//   padding: 10px 10px;
+//   border: 1px solid var(--black);
+// `;
+
+const BackButton = styled.button`
+  display: none;
+  padding: 10px;
+  margin: 10px;
+  background-color: #f0f0f0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+
+  @media (max-width: 768px) {
+    display: block;
+  }
 `;

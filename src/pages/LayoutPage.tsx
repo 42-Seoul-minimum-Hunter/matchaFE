@@ -89,9 +89,6 @@ const MainStyled = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* border-radius: 10px; */
-  /* box-shadow: 0 0 10px; */
-  /* overflow: hidden; */
 `;
 
 const LoginWrapper = styled.div`

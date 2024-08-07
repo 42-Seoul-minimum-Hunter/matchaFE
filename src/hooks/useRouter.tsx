@@ -30,6 +30,13 @@ const useRouter = () => {
   const goToProfileMe = () => {
     navigate("/profile");
   };
+  const goToTwofactor = () => {
+    navigate("/twoFactor");
+  };
+
+  const goToMain = () => {
+    navigate("/main");
+  };
 
   const goToProfileUserClick = (nickname: string) => {
     navigate(`/profile?username=${nickname}`);
@@ -46,6 +53,8 @@ const useRouter = () => {
     goToProfileMe,
     goToProfileUserClick,
     goToSetting,
+    goToMain,
+    goToTwofactor,
   };
 };
 

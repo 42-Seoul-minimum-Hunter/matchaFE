@@ -1,3 +1,4 @@
+import { b } from "vite/dist/node/types.d-aGj9QkWt";
 import { GenderType, InterestType, PreferenceType } from "./tag.enum";
 
 export interface RegisterDto {
@@ -44,7 +45,37 @@ export interface ProfileDto {
   profileImages: string[];
 }
 
-export interface SignupDto {
+export interface SettingDto {
+  username: string;
+  firstName: string;
+  lastName: string;
+  gender: string;
+  preference: string;
+  age: number;
+  biography: string;
+
+  hashtags: string[];
+  si: string;
+  gu: string;
+
+  profileImages: string[];
+
+  isGpsAllowed: boolean;
+  isTwofa: boolean;
   email: string;
-  password: string;
+}
+
+export interface SignupDto {
+  username: string;
+  lastName: string;
+  firstName: string;
+  gender: string;
+  preference: string;
+  biography: string;
+  age: number;
+  isGpsAllowed: boolean;
+  hashtags: string[];
+  si: string;
+  gu: string;
+  profileImages: string[];
 }

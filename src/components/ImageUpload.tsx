@@ -13,11 +13,9 @@ const ImageUploader = ({
   setImages: React.Dispatch<React.SetStateAction<string[]>>;
   isReadOnly?: boolean;
 }) => {
-  // const [images, setImages] = useState<string[]>([]);
-
   const useParams = location.pathname.includes("signup");
 
-  console.log("useParams", useParams);
+  // console.log("useParams", useParams);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -113,7 +111,7 @@ const Container = styled.div<{ $useParams: boolean }>`
   width: 740px;
 
   ${({ $useParams }) => `
-    @media screen and (max-width: ${$useParams ? "768px" : "876px"}) {
+    @media screen and (max-width: ${$useParams ? "768px" : "1360px"}) {
       width: 100%;
     }
   `}
@@ -157,7 +155,6 @@ const DeleteButton = styled.button`
   border: 1px solid var(--line-gray-2);
   border-radius: 2px;
   background-color: #f0f0f0;
-
   width: 20px;
   height: 20px;
   cursor: pointer;
@@ -168,6 +165,9 @@ const ScrollButtons = styled.div`
   top: -54px;
   right: 35px;
   display: flex;
+  @media screen and (max-width: 400px) {
+    right: 0px;
+  }
 `;
 
 const ScrollButton = styled.button`

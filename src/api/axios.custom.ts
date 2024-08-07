@@ -1,4 +1,4 @@
-import { RegisterDto, SignupDto } from "@/types/tag.dto";
+import { RegisterDto, SettingDto, SignupDto } from "@/types/tag.dto";
 import axios, { AxiosRequestConfig } from "axios";
 import { getCookie } from "./cookie";
 
@@ -9,17 +9,25 @@ import { getCookie } from "./cookie";
 // ex) 모든 헤더에 Authorization을 추가하거나, 응답에 대한 에러 처리를 추가할 수 있음
 // axios.defaults.withCredentials = true;
 
+// const instance = axios.create({
+//   baseURL: "http://localhost:3000",
+//   withCredentials: true,
+//   headers: {
+//     "Content-type": "application/json",
+//     // "Access-Control-Allow-Origin": "http://localhost:5173", // 허용할 출처 설정
+//     // "Access-Control-Allow-Origin": "*",
+//     "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS", // 허용할 HTTP 메서드 설정
+//     "Access-Control-Allow-Headers": "content-type", // 허용할 헤더 설정
+//     "Access-Control-Allow-Credentials": "true", // 이 부분이 추가되었습니다.
+//     origin: "http://localhost:5173",
+//   },
+// });
+
 const instance = axios.create({
-  baseURL: "http://localhost:3000",
+  baseURL: "/api",
   withCredentials: true,
   headers: {
     "Content-type": "application/json",
-    // "Access-Control-Allow-Origin": "http://localhost:5173", // 허용할 출처 설정
-    // "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS", // 허용할 HTTP 메서드 설정
-    "Access-Control-Allow-Headers": "content-type", // 허용할 헤더 설정
-    "Access-Control-Allow-Credentials": "true", // 이 부분이 추가되었습니다.
-    origin: "http://localhost:5173",
   },
 });
 
@@ -45,6 +53,9 @@ instance.interceptors.request.use(async (config: any) => {
   return config;
 });
 
+/**
+ * AI 챗봇
+ */
 interface ClaudeResponse {
   reply: string;
 }
@@ -62,10 +73,53 @@ export const sendMessageToClaude = async (message: string): Promise<string> => {
   }
 };
 
-const axiosResgisterURL = "";
-export const axiosRegister = async (register: RegisterDto): Promise<any> => {
+/**
+ * 일반 로그인
+ */
+const axiosUserLoginURL = "/auth/login";
+export const axiosUserLogin = async (
+  username: string,
+  password: string
+): Promise<any> => {
   try {
-    const response = await instance.get(axiosResgisterURL);
+    const response = await instance.post(axiosUserLoginURL, {
+      username: username,
+      password: password,
+    });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+/**
+ * 로그아웃
+ */
+const axiosLogoutURL = "/auth/logout";
+export const axiosLogout = async (): Promise<any> => {
+  try {
+    const response = await instance.delete(axiosLogoutURL);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+/**
+ * 회원가입
+ */
+const axiosRegisterURL = "/auth/register";
+export const axiosRegister = async (
+  eamil: string,
+  password: string,
+  confirmedPassword: string
+): Promise<any> => {
+  try {
+    const response = await instance.post(axiosRegisterURL, {
+      email: eamil,
+      password: password,
+      confirmedPassword: confirmedPassword,
+    });
     return response;
   } catch (error) {
     throw error;
@@ -84,11 +138,22 @@ export const axiosUserCreate = async (data: SignupDto): Promise<any> => {
   }
 };
 
+// 회원가입시 이메일 인증
+const axiosEmailSendURL = "/auth/register/email/send";
+export const axiosEmailSend = async (): Promise<any> => {
+  try {
+    const response = await instance.post(axiosEmailSendURL);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 /**
  * 비밀번호 찾기 요청
  */
 const axiosResetCreateURL = "/auth/reset/email/create";
-export const axiosFindPW = async (email: string): Promise<any> => {
+export const axiosResetCreate = async (email: string): Promise<any> => {
   try {
     const response = await instance.post(axiosResetCreateURL, { email: email });
     return response;
@@ -97,11 +162,15 @@ export const axiosFindPW = async (email: string): Promise<any> => {
   }
 };
 
-const axiosResetVerifyURL = "/auth/reset/email/verify";
-export const axiosChangePassword = async (password: string): Promise<any> => {
+const axiosChangePasswordURL = "/user/change/password";
+export const axiosChangePassword = async (
+  password: string,
+  confirmedPassword: string
+): Promise<any> => {
   try {
-    const response = await instance.post(axiosResetVerifyURL, {
+    const response = await instance.post(axiosChangePasswordURL, {
       password: password,
+      confirmedPassword: confirmedPassword,
     });
     return response;
   } catch (error) {
@@ -109,10 +178,13 @@ export const axiosChangePassword = async (password: string): Promise<any> => {
   }
 };
 
+/**
+ * twofactor 인증 과정
+ */
 const axiosVerifyTwoFactorURL = "/auth/twofactor/verify";
 export const axiosVerifyTwoFactor = async (code: string): Promise<any> => {
   try {
-    console.log("co'de : ", code);
+    console.log("code : ", code);
     const response = await instance.post(axiosVerifyTwoFactorURL, {
       code: code,
     });
@@ -132,36 +204,9 @@ export const axiosCreateTwoFactor = async (): Promise<any> => {
   }
 };
 
-// 로그인시 이메일 인증
-const axiosEmailVerifyURL = "/auth/register/email/send";
-export const axiosEmailVerify = async (): Promise<any> => {
-  // console.log("token", token);
-  try {
-    // {}안에 넣어야지 body에 넣어서 보내줌
-    const response = await instance.post(axiosEmailVerifyURL);
-    return response;
-  } catch (error) {
-    throw error;
-  }
-};
-
-const axiosAuthLoginURL = "/auth/login";
-export const axiosAuthLogin = async (
-  username: string,
-  password: string
-): Promise<any> => {
-  try {
-    const response = await instance.post(axiosAuthLoginURL, {
-      username: username,
-      password: password,
-    });
-    return response;
-  } catch (error) {
-    throw error;
-  }
-};
-
-// 유저 쿼리 검색 -> SEARCH
+/**
+ * Search 쿼리 검색
+ */
 const axiosFindUserURL = "/user/find";
 export const axiosFindUser = async (
   si?: string | undefined,
@@ -196,7 +241,9 @@ export const axiosFindUser = async (
   }
 };
 
-// PROFILE 유저 페이지
+/**
+ * PROFILE 유저 페이지
+ */
 const axiosProfileMeURL = "/user/profile/me";
 export const axiosProfileMe = async (): Promise<any> => {
   try {
@@ -219,25 +266,32 @@ export const axiosProfile = async (username: string): Promise<any> => {
   }
 };
 
-const axiosUserRateURL = "/rateUser";
-export const axiosUserRate = async (rate: number): Promise<any> => {
+/**
+ * Setting 페이지
+ */
+const axiosSettingCreateURL = "/user/profile/settings";
+export const axiosSettingCreate = async (): Promise<any> => {
   try {
-    const response = await instance.post(axiosUserRateURL, { rate: rate });
+    const response = await instance.get(axiosSettingCreateURL);
     return response;
   } catch (error) {
     throw error;
   }
 };
 
-const axiosLogoutURL = "/auth/logout";
-export const axiosLogout = async (): Promise<any> => {
+const axiosSettingModifyURL = "/user/profile/update";
+export const axiosSettingModify = async (data: SettingDto): Promise<any> => {
   try {
-    const response = await instance.delete(axiosLogoutURL);
+    const response = await instance.post(axiosSettingModifyURL, data);
     return response;
   } catch (error) {
     throw error;
   }
 };
+
+/**
+ * 웹소켓인지 확인하기 -> 아직 안정해짐
+ */
 
 const axiosUserBlockURL = "/user/block";
 export const axiosUserBlock = async (username: string): Promise<any> => {
@@ -251,17 +305,27 @@ export const axiosUserBlock = async (username: string): Promise<any> => {
   }
 };
 
-// chatroom id로 채팅방 정보 가져오기
-const axiosChatroomURL = "/user/chat";
-export const axiosChatroom = async (
-  // username: string,
-  userID: number
-): Promise<any> => {
+const axiosUserRateURL = "/rateUser";
+export const axiosUserRate = async (rate: number): Promise<any> => {
   try {
-    console.log("back url : ", `${axiosChatroomURL}?id=${userID}`);
-    const response = await instance.get(`${axiosChatroomURL}?id=${userID}`);
+    const response = await instance.post(axiosUserRateURL, { rate: rate });
     return response;
   } catch (error) {
     throw error;
   }
 };
+
+// // chatroom id로 채팅방 정보 가져오기
+// const axiosChatroomURL = "/user/chat";
+// export const axiosChatroom = async (
+//   // username: string,
+//   userID: number
+// ): Promise<any> => {
+//   try {
+//     console.log("back url : ", `${axiosChatroomURL}?id=${userID}`);
+//     const response = await instance.get(`${axiosChatroomURL}?id=${userID}`);
+//     return response;
+//   } catch (error) {
+//     throw error;
+//   }
+// };
