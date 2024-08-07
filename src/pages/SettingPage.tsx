@@ -178,8 +178,6 @@ const SettingPage = () => {
     label: area.name,
   }));
 
-  // hashtags
-
   const onClickTags = (tag: TagProps) => {
     setSelectedTags((prev) => {
       if (prev.includes(tag.value)) {
@@ -199,16 +197,10 @@ const SettingPage = () => {
       setSettingData(res.data);
       console.log("res", res);
     } catch (error) {
-      // alert("error" + error);
       goToMain();
       alert("로그인을 해주세요");
-      // console.log("error", error);
     }
   };
-
-  useEffect(() => {
-    trySettingProfile();
-  }, []);
 
   const updateProfile = async () => {
     if (!isModified) {

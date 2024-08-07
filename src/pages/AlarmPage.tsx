@@ -11,7 +11,6 @@ const AlarmPage = () => {
   const socket = useContext(SocketContext);
   const setHeaderAlarm = useSetRecoilState(userAlarm);
 
-  console.log("start alarm page");
   useEffect(() => {
     setHeaderAlarm(false);
     if (socket) {
@@ -25,9 +24,6 @@ const AlarmPage = () => {
         createdAt: string;
       }) => {
         console.log("Received alarm:", data);
-
-        // setIsAlarm(true);
-        // 필요한 경우 여기에 추가 로직을 구현할 수 있습니다.
       };
 
       socket.on(
@@ -55,7 +51,6 @@ const AlarmPage = () => {
         </>
       ) : (
         <>
-          {" "}
           <div>알람이 없습니다.</div>
         </>
       )}

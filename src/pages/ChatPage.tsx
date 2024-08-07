@@ -1,12 +1,10 @@
 import styled from "styled-components";
 import TestImage1 from "@/assets/mock/test1.png";
 import TestImage2 from "@/assets/icons/gpt-icon.svg";
-import TestImage3 from "@/assets/mock/test3.png";
 import ChatList, { IChatRoomDto } from "@/components/chat/ChatList";
 import ChatRoom, { IChatContentDto } from "@/components/chat/ChatRoom";
 import { useContext, useEffect, useState } from "react";
 import { SocketContext } from "./LayoutPage";
-import { axiosChatroom } from "@/api/axios.custom";
 // import Chatgpt from "@/components/Chatgpt";
 import { mockChatContentDto, mockIChatProps } from "@/assets/mock/mock";
 
@@ -27,7 +25,6 @@ const ChatPage = () => {
   const [chatRoom, setChatRoom] = useState<IChatRoomDto[]>([gptChatList]);
   const [chatHistory, setChatHistory] = useState<IChatContentDto[]>([]);
   const [showChatRoom, setShowChatRoom] = useState(false);
-  // const socket = useContext(SocketContext);
   const socket = useContext(SocketContext);
 
   // const CheckChatList = async () => {
@@ -134,8 +131,6 @@ const ChatPage = () => {
             username={selectUser}
           />
         )}
-
-        {/* <Chatgpt /> */}
       </ChatRoomWrapper>
     </Container>
   );

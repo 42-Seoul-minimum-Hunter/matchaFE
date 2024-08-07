@@ -2,46 +2,15 @@ import styled from "styled-components";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { createContext, useEffect, useState } from "react";
 import Header from "@/components/Header";
-import { getCookie } from "@/api/cookie";
 import { io, Socket } from "socket.io-client";
 import useRouter from "@/hooks/useRouter";
 import useSocket from "@/hooks/useSocket";
 
-const token = getCookie("jwt");
-
-// const socket = io("http://localhost:3001", {
-//   auth: {
-//     authorization: token,
-//   },
-// });
-
-// export const SocketContext = createContext<null>(null);
 export const SocketContext = createContext<Socket | null>(null);
-
-// const socket = io("http://localhost:3001", {
-//   auth: {
-//     //  jwt넣기
-//     userId: 1,
-//     // token: "abc123",
-//   },
-// });
-
-// export const SocketContext = createContext(null);
 
 const Layout = () => {
   const { goToMain } = useRouter();
   const location = useLocation();
-  const [state, setState] = useState({ message: "", name: "" });
-  const [chat, setChat] = useState([]);
-
-  //  jwt 토큰이 있으면 main, 없으면 로그인 페이지로 이동
-  // useEffect(() => {
-  //   if (!loginToken && !isMainPage) navigate("/main");
-  //   else if (!loginToken && !isMainPage) navigate("/login");
-  //   else {
-  //     console.log("로그인 성공");
-  //   }
-  // }, []);
 
   const directOutletPaths = [
     "/twoFactor",
@@ -59,7 +28,6 @@ const Layout = () => {
   const socket = useSocket();
 
   useEffect(() => {
-    // 경로가 정확히 '/'일 때 '/main'으로 리다이렉트
     if (location.pathname === "/" || location.pathname === "") {
       goToMain();
     }

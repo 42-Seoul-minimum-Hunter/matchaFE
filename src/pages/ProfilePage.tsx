@@ -40,14 +40,31 @@ const ProfilePage = () => {
   const socket = useContext(SocketContext);
 
   // TODO -> 좋아요를 누른 상태면 블락 disabled 해놓기
+  // TODO -> username에 따라 axios 구분
   const tryToGetProfile = async (username: any) => {
     try {
-      const res = await (!username ? axiosProfileMe() : axiosProfile(username));
-      console.log("profile page", res);
-      setProfileData(res.data);
-      setIsOnline(res.data.isOnline);
-      setImages(res.data.profileImages);
-      setLastConnected(res.data.connectedAt);
+      if (username) {
+        const res = await axiosProfile(username);
+        console.log("profile page me", res);
+        setProfileData(res.data);
+        setIsOnline(res.data.isOnline);
+        setImages(res.data.profileImages);
+        // 마지막 접속 시간
+        setLastConnected(res.data.connectedAt);
+      } else {
+        const res = await axiosProfileMe();
+        console.log("profile page oppen", res);
+        setProfileData(res.data);
+        setIsOnline(res.data.isOnline);
+        setImages(res.data.profileImages);
+        // setLastConnected(res.data.connectedAt);
+      }
+      // const res = await (!username ? axiosProfileMe() : axiosProfile(username));
+      // console.log("profile page", res);
+      // setProfileData(res.data);
+      // setIsOnline(res.data.isOnline);
+      // setImages(res.data.profileImages);
+      // setLastConnected(res.data.connectedAt);
       // TODO : username있으면 isLikeUser를 받아서 좋아요 상태 글자 변경
     } catch (error) {
       goToMain();
@@ -60,14 +77,13 @@ const ProfilePage = () => {
   // alarm으로 알람
   useEffect(() => {
     tryToGetProfile(username);
-  }, []);
+  }, [username]);
 
   // 여기서 보내는 username은 상대방의 이름
   useEffect(() => {
     if (socket && username) {
       console.log("profileData?.username", username);
       // socket.on("visitUserProfile", (data: { username: string }));
-
       // 컴포넌트 마운트 시 사용자 상태 요청
       socket.emit("visitUserProfile", username);
 
@@ -100,9 +116,6 @@ const ProfilePage = () => {
 
   useEffect(() => {
     if (socket && username) {
-      // console.log("profileData?.username", userName);
-      // socket.on("visitUserProfile", (data: { username: string }));
-
       // 컴포넌트 마운트 시 사용자 상태 요청
       socket.emit("likeUser", username);
 
@@ -118,14 +131,14 @@ const ProfilePage = () => {
 
   // TODO : username 있을떄만 실행
   const tryToRateUser = async () => {
-    try {
-      console.log("rate user", userRating);
-      console.log("rate user", username);
-      const res = await axiosUserRate(userRating, username);
-      console.log("rate user", res);
-    } catch (error) {
-      alert("평점 주기에 실패했습니다.");
-      console.log("rate user error", error);
+    if (username) {
+      try {
+        const res = await axiosUserRate(userRating, username);
+        console.log("rate user", res);
+      } catch (error) {
+        alert("평점 주기에 실패했습니다.");
+        console.log("rate user error", error);
+      }
     }
   };
 
@@ -148,7 +161,9 @@ const ProfilePage = () => {
               <UserLocationStyled>
                 {profileData?.si}, {profileData?.gu}
               </UserLocationStyled>
-              <UserLocationStyled>{lastConnected}</UserLocationStyled>
+              <UserLocationStyled>
+                {profileData?.lastConnectedAt}
+              </UserLocationStyled>
               <UserBioStyled>{profileData?.biography}</UserBioStyled>
               <UserHashtagsStyled>
                 <TagList
@@ -355,9 +370,6 @@ const InputDataContainer = styled.div`
 
   @media screen and (max-width: 768px) {
     padding: 4vh 0;
-    /* padding-top: 4vh; */
-    /* padding-left: 1.5vh;
-    padding-right: 1.5vh; */
   }
 `;
 

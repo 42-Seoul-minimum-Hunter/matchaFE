@@ -280,6 +280,22 @@ export const axiosUserBlock = async (username: string): Promise<any> => {
   }
 };
 
+const axiosUserRateURL = "/user/rate";
+export const axiosUserRate = async (
+  rate: number,
+  username: string
+): Promise<any> => {
+  try {
+    const response = await instance.post(axiosUserRateURL, {
+      rateScore: rate,
+      ratedUsername: username,
+    });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 /**
  * Setting 페이지
  */
@@ -302,3 +318,7 @@ export const axiosSettingModify = async (data: SettingDto): Promise<any> => {
     throw error;
   }
 };
+
+/**
+ * 웹소켓인지 확인하기 -> 아직 안정해짐
+ */

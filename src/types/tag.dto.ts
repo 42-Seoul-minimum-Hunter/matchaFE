@@ -43,6 +43,7 @@ export interface ProfileDto {
   gu: string;
   rate: number;
   profileImages: string[];
+  lastConnectedAt: Date;
 }
 
 export interface SettingDto {
