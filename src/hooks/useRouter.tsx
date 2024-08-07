@@ -33,7 +33,6 @@ const useRouter = () => {
   const goToTwofactor = () => {
     navigate("/twoFactor");
   };
-
   const goToMain = () => {
     navigate("/main");
   };

@@ -79,6 +79,7 @@ const Container = styled.div`
   justify-content: space-between;
   gap: 20px;
   height: 100%;
+  min-height: 100%;
   /* overflow-y: auto; */
   position: relative;
   overflow-y: hidden;

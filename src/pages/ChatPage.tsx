@@ -82,9 +82,7 @@ const ChatPage = () => {
     setSelectUser(chatRoom[index].username);
     setChatHistory(mockChatContentDto);
     console.log(chatRoom[index]);
-
     setShowChatRoom(true);
-    // clickChatRoom();
   };
 
   const updateChatRoom = (newChatRooms: IChatRoomDto[]) => {
@@ -111,7 +109,7 @@ const ChatPage = () => {
   };
   return (
     <Container>
-      <ChatLobbyWrapper show={!showChatRoom}>
+      <ChatLobbyWrapper $show={!showChatRoom}>
         {chatRoom &&
           chatRoom.map((chatList, index) => (
             <ChatList
@@ -123,7 +121,7 @@ const ChatPage = () => {
             />
           ))}
       </ChatLobbyWrapper>
-      <ChatRoomWrapper show={showChatRoom}>
+      <ChatRoomWrapper $show={showChatRoom}>
         <BackButton onClick={handleBackButton}>Back</BackButton>
         {selectUser === "Chatgpt" ? (
           <>
@@ -149,7 +147,8 @@ const Container = styled.div`
   display: flex;
   padding: 20px 30px;
   gap: 24px;
-  height: 100%;
+  /* height: 90%; */
+  height: calc(100% - 120px);
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
@@ -160,9 +159,10 @@ const Container = styled.div`
   }
 `;
 
-const ChatLobbyWrapper = styled.div<{ show: boolean }>`
+const ChatLobbyWrapper = styled.div<{ $show: boolean }>`
   max-width: 384px;
   width: 100%;
+  /* height: 100%; */
   height: 100%;
   overflow-y: auto;
   display: flex;
@@ -174,11 +174,11 @@ const ChatLobbyWrapper = styled.div<{ show: boolean }>`
 
   @media (max-width: 768px) {
     max-width: 100%;
-    display: ${(props) => (props.show ? "flex" : "none")};
+    display: ${(props) => (props.$show ? "flex" : "none")};
   }
 `;
 
-const ChatRoomWrapper = styled.div<{ show: boolean }>`
+const ChatRoomWrapper = styled.div<{ $show: boolean }>`
   background-color: rgba(255, 255, 255, 0.5);
   border-radius: 4px;
   border: 1px solid var(--black);
@@ -186,9 +186,15 @@ const ChatRoomWrapper = styled.div<{ show: boolean }>`
   width: 100%;
   height: 100%;
 
+  /* overflow-y: scroll; */
+  /* 오버레이 스크롤바 사용 */
+  overflow-y: overlay;
+  scrollbar-width: thin;
+  scrollbar-color: var(--brand-main-1) var(--brand-sub-2);
+
   @media (max-width: 768px) {
     max-width: 100%;
-    display: ${(props) => (props.show ? "block" : "none")};
+    display: ${(props) => (props.$show ? "block" : "none")};
   }
 `;
 
@@ -230,12 +236,18 @@ const BackButton = styled.button`
   display: none;
   padding: 10px;
   margin: 10px;
-  background-color: #f0f0f0;
+  /* background-color: #f0f0f0; */
+  background-color: var(--brand-main-1);
+  color: var(--white);
+  font-size: 1rem;
+  letter-spacing: -0.025em;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  z-index: 2;
 
   @media (max-width: 768px) {
     display: block;
+    position: fixed;
   }
 `;

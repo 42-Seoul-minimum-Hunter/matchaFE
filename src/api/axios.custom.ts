@@ -215,7 +215,8 @@ export const axiosFindUser = async (
   maxAge?: number,
   minRate?: number,
   maxRate?: number,
-  hashtags?: string[]
+  hashtags?: string[],
+  page?: number
 ): Promise<any> => {
   try {
     const params: Record<string, string> = {};
@@ -225,6 +226,7 @@ export const axiosFindUser = async (
     if (maxRate !== undefined) params.maxRate = maxRate.toString();
     if (si) params.si = si;
     if (gu) params.gu = gu;
+    if (page) params.page = page.toString();
 
     // hashtags 처리: undefined나 빈 배열일 경우 빈 문자열 할당
     params.hashtags = hashtags && hashtags.length > 0 ? hashtags.join(",") : "";
@@ -266,6 +268,18 @@ export const axiosProfile = async (username: string): Promise<any> => {
   }
 };
 
+const axiosUserBlockURL = "/user/block";
+export const axiosUserBlock = async (username: string): Promise<any> => {
+  try {
+    const response = await instance.post(`${axiosUserBlockURL}`, {
+      blockUsername: username,
+    });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 /**
  * Setting 페이지
  */
@@ -288,44 +302,3 @@ export const axiosSettingModify = async (data: SettingDto): Promise<any> => {
     throw error;
   }
 };
-
-/**
- * 웹소켓인지 확인하기 -> 아직 안정해짐
- */
-
-const axiosUserBlockURL = "/user/block";
-export const axiosUserBlock = async (username: string): Promise<any> => {
-  try {
-    const response = await instance.post(`${axiosUserBlockURL}`, {
-      blockUsername: username,
-    });
-    return response;
-  } catch (error) {
-    throw error;
-  }
-};
-
-const axiosUserRateURL = "/rateUser";
-export const axiosUserRate = async (rate: number): Promise<any> => {
-  try {
-    const response = await instance.post(axiosUserRateURL, { rate: rate });
-    return response;
-  } catch (error) {
-    throw error;
-  }
-};
-
-// // chatroom id로 채팅방 정보 가져오기
-// const axiosChatroomURL = "/user/chat";
-// export const axiosChatroom = async (
-//   // username: string,
-//   userID: number
-// ): Promise<any> => {
-//   try {
-//     console.log("back url : ", `${axiosChatroomURL}?id=${userID}`);
-//     const response = await instance.get(`${axiosChatroomURL}?id=${userID}`);
-//     return response;
-//   } catch (error) {
-//     throw error;
-//   }
-// };

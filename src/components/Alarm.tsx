@@ -1,22 +1,28 @@
+import { SocketContext } from "@/pages/LayoutPage";
+import { userAlarm } from "@/recoil/atoms";
 import { AlarmLableMap } from "@/types/maps";
 import { AlarmType } from "@/types/tag.enum";
+import { useContext, useEffect } from "react";
+import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
 
 export interface IAlarmProps {
-  type: AlarmType;
-  lastTime: string;
+  alarmType: AlarmType;
+  createdAt: string;
   isViewed: boolean;
   username: string;
 }
 
-const Alarm = ({ type, lastTime, isViewed, username }: IAlarmProps) => {
-  const content = AlarmLableMap[type];
+const Alarm = ({ alarmType, createdAt, isViewed, username }: IAlarmProps) => {
+  const content = AlarmLableMap[alarmType];
+
+  console.log("test");
   return (
     <Container $isViewed={isViewed}>
       <AlarmContentStyled>
         {content} {username}
       </AlarmContentStyled>
-      <AlarmWrapper>{lastTime}</AlarmWrapper>
+      <AlarmWrapper>{createdAt}</AlarmWrapper>
     </Container>
   );
 };

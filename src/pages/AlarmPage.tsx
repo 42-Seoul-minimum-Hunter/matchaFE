@@ -1,47 +1,64 @@
 import Alarm, { IAlarmProps } from "@/components/Alarm";
-import { AlarmType } from "@/types/tag.enum";
+import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
+import { SocketContext } from "./LayoutPage";
+import { useSetRecoilState } from "recoil";
+import { userAlarm } from "@/recoil/atoms";
 
-const mockAlarmData: IAlarmProps[] = [
-  {
-    type: AlarmType.LIKED,
-    lastTime: "2024-06-15T12:00:00",
-    isViewed: false,
-    username: "John",
-  },
-  {
-    type: AlarmType.VISITED,
-    lastTime: "2024-06-14T15:30:00",
-    isViewed: true,
-    username: "Emily",
-  },
-  {
-    type: AlarmType.MESSAGED,
-    lastTime: "2024-06-13T09:45:00",
-    isViewed: false,
-    username: "Michael",
-  },
-  {
-    type: AlarmType.MATCHED,
-    lastTime: "2024-06-13T09:45:00",
-    isViewed: false,
-    username: "Test",
-  },
-  {
-    type: AlarmType.DISLIKED,
-    lastTime: "2024-06-13T09:45:00",
-    isViewed: true,
-    username: "Code",
-  },
-  // Add more mock data as needed
-];
-
+// TODO -> 알람 오류 잇음
 const AlarmPage = () => {
+  const [alarms, setAlarms] = useState<IAlarmProps[]>([]);
+  const socket = useContext(SocketContext);
+  const setHeaderAlarm = useSetRecoilState(userAlarm);
+
+  console.log("start alarm page");
+  useEffect(() => {
+    setHeaderAlarm(false);
+    if (socket) {
+      // 알람 요청 보내기 ->
+      socket.emit("getAlarms");
+
+      // 알람 수신 이벤트 리스너
+      const handleAlarms = (data: {
+        username: string;
+        alarmType: string;
+        createdAt: string;
+      }) => {
+        console.log("Received alarm:", data);
+
+        // setIsAlarm(true);
+        // 필요한 경우 여기에 추가 로직을 구현할 수 있습니다.
+      };
+
+      socket.on(
+        "getAlarms",
+        (data: { username: string; alarmType: string; createdAt: string }) => {
+          setAlarms(data);
+          console.log("getAlarms", data);
+        }
+      );
+
+      // 클린업 함수
+      return () => {
+        socket.off("getAlarms", handleAlarms);
+      };
+    }
+  }, [socket]);
+
   return (
     <Wrapper>
-      {mockAlarmData.map((alarm, index) => (
-        <Alarm key={index} {...alarm} />
-      ))}
+      {alarms ? (
+        <>
+          {alarms.map((alarm, index) => (
+            <Alarm key={index} {...alarm} />
+          ))}
+        </>
+      ) : (
+        <>
+          {" "}
+          <div>알람이 없습니다.</div>
+        </>
+      )}
     </Wrapper>
   );
 };

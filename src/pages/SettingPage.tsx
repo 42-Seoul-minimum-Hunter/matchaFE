@@ -14,6 +14,7 @@ import { AgeTagItem } from "./SignupDetailPage";
 import TagList, { TagProps } from "@/components/TagTemplate";
 import { axiosSettingCreate, axiosSettingModify } from "@/api/axios.custom";
 import { SettingDto } from "@/types/tag.dto";
+import useRouter from "@/hooks/useRouter";
 
 const ageTagList: AgeTagItem[] = Array.from({ length: 81 }, (_, index) => {
   const age = index + 20;
@@ -30,6 +31,7 @@ const preferenceTagList: tagItem[] = Object.entries(PreferenceLableMap).map(
 );
 
 const SettingPage = () => {
+  const { goToMain } = useRouter();
   const [settingData, setSettingData] = useState<SettingDto | undefined>(
     undefined
   );
@@ -198,7 +200,9 @@ const SettingPage = () => {
       console.log("res", res);
     } catch (error) {
       // alert("error" + error);
-      console.log("error", error);
+      goToMain();
+      alert("로그인을 해주세요");
+      // console.log("error", error);
     }
   };
 

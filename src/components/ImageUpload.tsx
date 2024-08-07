@@ -13,6 +13,7 @@ const ImageUploader = ({
   setImages: React.Dispatch<React.SetStateAction<string[]>>;
   isReadOnly?: boolean;
 }) => {
+  // console.log("images", images);
   const useParams = location.pathname.includes("signup");
 
   // console.log("useParams", useParams);

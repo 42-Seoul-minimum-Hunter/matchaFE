@@ -7,6 +7,7 @@ import { useContext, useEffect, useState } from "react";
 import {
   axiosProfile,
   axiosProfileMe,
+  axiosUserBlock,
   axiosUserRate,
 } from "@/api/axios.custom";
 import { useSearchParams } from "react-router-dom";
@@ -15,6 +16,7 @@ import ImageUploader from "@/components/ImageUpload";
 import TagList from "@/components/TagTemplate";
 import Stars from "@/components/Stars";
 import StarsSubmit from "@/components/StarsSubmit";
+import useRouter from "@/hooks/useRouter";
 
 const HashTagsList: tagItem[] = Object.entries(InterestLableMap).map(
   ([value, label]) => ({ value, label })
@@ -22,21 +24,34 @@ const HashTagsList: tagItem[] = Object.entries(InterestLableMap).map(
 
 // 웹소켓으로 차단하기, 좋아요 세팅
 const ProfilePage = () => {
+  const { goToMain } = useRouter();
+  const [isOnline, setIsOnline] = useState(false);
+  const [isOwnProfile, setIsOwnProfile] = useState(false);
+  // const [userName, setUserName] = useState<string>();
+  const [lastConnected, setLastConnected] = useState<Date>();
   const [profileData, setProfileData] = useState<ProfileDto>();
   const [images, setImages] = useState<string[]>(
     profileData?.profileImages || []
   );
+  const [isLikeUser, setIsLikeUser] = useState(false);
   const [userRating, setUserRating] = useState(0);
   const [searchParams] = useSearchParams();
   const username = searchParams.get("username");
   const socket = useContext(SocketContext);
 
+  // TODO -> 좋아요를 누른 상태면 블락 disabled 해놓기
   const tryToGetProfile = async (username: any) => {
     try {
       const res = await (!username ? axiosProfileMe() : axiosProfile(username));
       console.log("profile page", res);
       setProfileData(res.data);
+      setIsOnline(res.data.isOnline);
+      setImages(res.data.profileImages);
+      setLastConnected(res.data.connectedAt);
+      // TODO : username있으면 isLikeUser를 받아서 좋아요 상태 글자 변경
     } catch (error) {
+      goToMain();
+      alert("로그인을 해주세요");
       console.log("profile page error", error);
     }
   };
@@ -47,50 +62,66 @@ const ProfilePage = () => {
     tryToGetProfile(username);
   }, []);
 
-  // 현재 유저의 on,offline 상태 불러오기
-  // socket.on("connect", () => {});
-  // useEffect(() => {
-  //   socket.on("connect", () => {
-  //     console.log("message");
-  //   });
-  // }, []);
+  // 여기서 보내는 username은 상대방의 이름
+  useEffect(() => {
+    if (socket && username) {
+      console.log("profileData?.username", username);
+      // socket.on("visitUserProfile", (data: { username: string }));
 
-  // const onClickBanButton = async () => {
-  //   try {
-  //     const res = await axiosUserBlock(userName);
-  //     console.log("block ", res);
-  //     navigate("/search");
-  //   } catch (error) {
-  //     console.log("error", error);
-  //     throw error;
-  //   }
-  // };
+      // 컴포넌트 마운트 시 사용자 상태 요청
+      socket.emit("visitUserProfile", username);
 
-  // // socket.on("connect", () => {});
-  // // me 일때는 userName 으로 안감
-  // // console.log("userName", userName);
-  // const onClickHeartButton = () => {
-  //   console.log("likeUser click", userName);
-  //   setIsLike(!isLike);
-  //   socket.emit("likeUser", {
-  //     username: userName,
-  //   });
-  // };
+      return () => {
+        socket.off("userStatus");
+      };
+    }
+  }, [socket]);
 
-  // // 여기서도 matched확인
-  // useEffect(() => {
-  //   socket.on("likeUser", (data) => {
-  //     console.log("matched", data);
-  //   });
-  // }, []);
+  const onClickLikeUser = () => {
+    alert("좋아요를 눌렀습니다.");
+    if (socket && username) {
+      socket.emit("likeUser", username);
+      console.log(`Liked user: ${username}`);
+    }
+  };
+
+  const onClickBlockUser = async () => {
+    if (username) {
+      try {
+        const res = await axiosUserBlock(username);
+        console.log("block user", res);
+        goToMain();
+      } catch (error) {
+        alert("차단에 실패했습니다.");
+        console.log("block user error", error);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (socket && username) {
+      // console.log("profileData?.username", userName);
+      // socket.on("visitUserProfile", (data: { username: string }));
+
+      // 컴포넌트 마운트 시 사용자 상태 요청
+      socket.emit("likeUser", username);
+
+      return () => {
+        socket.off("likeUser");
+      };
+    }
+  }, [socket]);
 
   const handleRatingChange = (newRating: number) => {
     setUserRating(newRating);
   };
 
+  // TODO : username 있을떄만 실행
   const tryToRateUser = async () => {
     try {
-      const res = await axiosUserRate(userRating);
+      console.log("rate user", userRating);
+      console.log("rate user", username);
+      const res = await axiosUserRate(userRating, username);
       console.log("rate user", res);
     } catch (error) {
       alert("평점 주기에 실패했습니다.");
@@ -112,11 +143,12 @@ const ProfilePage = () => {
                 <p>
                   {profileData?.username}, {profileData?.age}
                 </p>
-                <OnlineStatusStyled $userStatus={true}></OnlineStatusStyled>
+                <OnlineStatusStyled $isOnline={isOnline}></OnlineStatusStyled>
               </UserNameStyled>
               <UserLocationStyled>
                 {profileData?.si}, {profileData?.gu}
               </UserLocationStyled>
+              <UserLocationStyled>{lastConnected}</UserLocationStyled>
               <UserBioStyled>{profileData?.biography}</UserBioStyled>
               <UserHashtagsStyled>
                 <TagList
@@ -188,8 +220,12 @@ const ProfilePage = () => {
             ))}
           </FilterContainer>
           <ButtonContainer>
-            <ButtonStyled>차단하기</ButtonStyled>
-            <ButtonStyled>좋아요</ButtonStyled>
+            <ButtonStyled onClick={onClickBlockUser} disabled={!username}>
+              차단하기
+            </ButtonStyled>
+            <ButtonStyled onClick={onClickLikeUser} disabled={!username}>
+              좋아요
+            </ButtonStyled>
           </ButtonContainer>
         </RightContainer>
       </InputDataContainer>
@@ -269,17 +305,31 @@ const ButtonContainer = styled.div`
   margin-top: 30px;
 `;
 
-const ButtonStyled = styled.button`
+const ButtonStyled = styled.button<{ disabled: boolean }>`
   width: 100%;
   @media screen and (max-width: 768px) {
     width: 100%;
     max-width: none;
   }
 
+  cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
+  color: ${(props) =>
+    props.disabled ? "var(--line-gray-3)" : "var(--brand-main-1)"};
+
+  border: 1px solid
+    ${(props) =>
+      props.disabled ? "var(--line-gray-3)" : "var(--brand-main-1)"};
+  &:hover {
+    background-color: ${(props) =>
+      props.disabled ? "var(--white)" : "var(--brand-main-1)"};
+    color: ${(props) =>
+      props.disabled ? "var(--line-gray-3)" : "var(--white)"};
+  }
+
   font-size: 1.1rem;
-  color: var(--brand-main-1);
+  /* color: var(--brand-main-1); */
   background-color: var(--white);
-  border: 1px solid var(--brand-main-1);
+  /* border: 1px solid var(--brand-main-1); */
   &:hover {
     background-color: var(--brand-main-1);
     color: var(--white);
@@ -450,17 +500,17 @@ const StarSubmitButtonStyled = styled.button<{ disabled: boolean }>`
   justify-content: center;
   align-items: center;
   width: 100%;
-  color: ${(props) =>
-    props.disabled ? "var(--line-gray-3)" : "var(--brand-main-1)"};
   background-color: var(--white);
-  border: 1px solid
-    ${(props) =>
-      props.disabled ? "var(--line-gray-3)" : "var(--brand-main-1)"};
   padding: 10px 20px;
   border-radius: 4px;
   font-weight: 400;
   cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
+  color: ${(props) =>
+    props.disabled ? "var(--line-gray-3)" : "var(--brand-main-1)"};
 
+  border: 1px solid
+    ${(props) =>
+      props.disabled ? "var(--line-gray-3)" : "var(--brand-main-1)"};
   &:hover {
     background-color: ${(props) =>
       props.disabled ? "var(--white)" : "var(--brand-main-1)"};
@@ -469,29 +519,38 @@ const StarSubmitButtonStyled = styled.button<{ disabled: boolean }>`
   }
 `;
 
-// const StarSubmitButtonStyled = styled.div`
-//   display: flex;
-//   justify-content: center;
-//   align-items: center;
-//   width: 100%;
-//   color: var(--brand-main-1);
-//   background-color: var(--white);
-//   border: 1px solid var(--brand-main-1);
-//   &:hover {
-//     background-color: var(--brand-main-1);
-//     color: var(--white);
-//   }
-//   padding: 10px 20px;
-//   border-radius: 4px;
-//   font-weight: 400;
+// const OnlineStatusStyled = styled.div<{ $userStatus: boolean }>`
+//   background-color: var(--online);
+//   width: 20px;
+//   height: 20px;
+//   border-radius: 20px;
+//   box-shadow: 0 0 0.5rem #fff, inset 0 0 0.5rem #fff, 0 0 1rem var(--online),
+//     inset 0 0 1rem var(--online), 0 0 4rem var(--online),
+//     inset 0 0 2rem var(--online);
 // `;
 
-const OnlineStatusStyled = styled.div<{ $userStatus: boolean }>`
-  background-color: var(--online);
+const OnlineStatusStyled = styled.div<{ $isOnline: boolean }>`
+  background-color: ${(props) =>
+    props.$isOnline ? "var(--online)" : "var(--offline)"};
   width: 20px;
   height: 20px;
   border-radius: 20px;
-  box-shadow: 0 0 0.5rem #fff, inset 0 0 0.5rem #fff, 0 0 1rem var(--online),
-    inset 0 0 1rem var(--online), 0 0 4rem var(--online),
-    inset 0 0 2rem var(--online);
+  /* box-shadow: ${(props) =>
+    props.$isOnline
+      ? "0 0 0.5rem #fff, inset 0 0 0.5rem #fff, 0 0 1rem var(--online), inset 0 0 1rem var(--online), 0 0 4rem var(--online), inset 0 0 2rem var(--online)"
+      : "none"}; */
+  box-shadow: ${(props) =>
+    props.$isOnline
+      ? `0 0 0.5rem #fff, 
+       inset 0 0 0.5rem #fff, 
+       0 0 1rem var(--online),
+       inset 0 0 1rem var(--online), 
+       0 0 4rem var(--online),
+       inset 0 0 2rem var(--online)`
+      : `0 0 0.5rem #fff, 
+       inset 0 0 0.5rem #fff, 
+       0 0 1rem var(--offline),
+       inset 0 0 1rem var(--offline), 
+       0 0 4rem var(--offline),
+       inset 0 0 2rem var(--offline)`};
 `;

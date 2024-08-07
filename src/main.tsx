@@ -4,11 +4,14 @@ import App from "./App";
 import "./index.css";
 import "@/assets/css/reset.css";
 import { CookiesProvider } from "react-cookie";
+import { RecoilRoot } from "recoil";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
+  // <React.StrictMode>
+  <RecoilRoot>
     <CookiesProvider>
       <App />
     </CookiesProvider>
-  </React.StrictMode>
+  </RecoilRoot>
+  // </React.StrictMode>
 );
