@@ -175,8 +175,9 @@ const ContentStyled = styled.div`
   letter-spacing: -0.025em;
 
   white-space: normal;
-  /* text-overflow: ellipsis;
-  word-break: break-all; */
+
+  text-overflow: ellipsis;
+  word-break: break-all;
 `;
 
 const ChatInput = styled.textarea`
