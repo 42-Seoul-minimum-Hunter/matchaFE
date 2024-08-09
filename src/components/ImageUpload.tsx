@@ -13,10 +13,8 @@ const ImageUploader = ({
   setImages: React.Dispatch<React.SetStateAction<string[]>>;
   isReadOnly?: boolean;
 }) => {
-  // console.log("images", images);
+  console.log("images", images);
   const useParams = location.pathname.includes("signup");
-
-  // console.log("useParams", useParams);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -31,6 +29,37 @@ const ImageUploader = ({
     }
   };
 
+  // const decodeBase64Url = (base64Url: string): string => {
+  //   try {
+  //     console.log("base64Url", atob(base64Url));
+  //     return atob(base64Url);
+  //   } catch (e) {
+  //     console.error("Invalid base64 string:", e);
+  //     return "";
+  //   }
+  // };
+
+  const decodeBase64Url = (url: string): string => {
+    // URL이 이미 디코딩되어 있거나 일반 URL인 경우 그대로 반환
+    if (url.startsWith("http") || url.startsWith("data:image")) {
+      return url;
+    }
+
+    try {
+      // base64 디코딩 시도
+      const decoded = atob(url);
+      // 디코딩된 문자열이 URL 형식이면 그대로 반환
+      if (decoded.startsWith("http")) {
+        return decoded;
+      }
+      // 디코딩된 문자열이 URL 형식이 아니면 data URL로 변환
+      return `data:image/png;base64,${url}`;
+    } catch (e) {
+      console.error("Invalid base64 string:", e);
+      // 디코딩에 실패하면 원래 URL 반환
+      return url;
+    }
+  };
   const handleDelete = (index: number) => {
     setImages((prevImages) => prevImages.filter((_, i) => i !== index));
     if (currentIndex > 0 && index < currentIndex)
@@ -74,7 +103,11 @@ const ImageUploader = ({
         <ImageWrapper $translateX={-currentIndex * 143}>
           {images.map((image, index) => (
             <ImageItem key={index}>
-              <Image src={image} alt={`Uploaded ${index}`} />
+              <Image
+                // src={image}
+                src={decodeBase64Url(image)}
+                alt={`Uploaded ${index}`}
+              />
 
               {!isReadOnly && (
                 <DeleteButton onClick={() => handleDelete(index)}>
@@ -209,123 +242,3 @@ const UploadButton = styled.button`
 `;
 
 export default ImageUploader;
-
-// import styled from "styled-components";
-// import { ReactComponent as PlusIcon } from "@/assets/icons/plus-icon.svg";
-// const ImageUpload = ({
-//   setShowImages,
-//   showImages,
-// }: {
-//   setShowImages: (value: string[]) => void;
-//   showImages: string[];
-// }) => {
-//   // 이미지 상대경로 저장
-//   const handleAddImages = (event: any) => {
-//     const imageLists = event.target.files;
-//     let imageUrlLists = [...showImages];
-
-//     for (let i = 0; i < imageLists.length; i++) {
-//       const currentImageUrl = URL.createObjectURL(imageLists[i]);
-//       imageUrlLists.push(currentImageUrl);
-//     }
-
-//     if (imageUrlLists.length > 5) {
-//       imageUrlLists = imageUrlLists.slice(0, 5);
-//     }
-//     console.log("imageUrlLists", imageUrlLists);
-
-//     setShowImages(imageUrlLists);
-//   };
-
-//   // X버튼 클릭 시 이미지 삭제
-//   const handleDeleteImage = (id: number) => {
-//     setShowImages(showImages.filter((_, index) => index !== id));
-//   };
-
-//   return (
-//     <Wrapper id="test1">
-//       {/* <ImageLable htmlFor="input-file" onChange={handleAddImages}> */}
-//       <InputImageUpload
-//         type="file"
-//         id="input-file"
-//         multiple
-//         accept="image/*"
-//         onChange={handleAddImages}
-//       />
-
-//       <SelectImageContainer>
-//         {showImages.map((image, id) => (
-//           <ImageContainer key={id}>
-//             <img src={image} />
-//             <DeleteStyled onClick={() => handleDeleteImage(id)}>
-//               삭제
-//             </DeleteStyled>
-//           </ImageContainer>
-//         ))}
-//       </SelectImageContainer>
-//     </Wrapper>
-//   );
-// };
-
-// export default ImageUpload;
-
-// const Wrapper = styled.div`
-//   display: flex;
-//   gap: 20px;
-// `;
-
-// const DeleteStyled = styled.div`
-//   position: absolute;
-//   top: 10px;
-//   right: 10px;
-//   background-color: #646f7c;
-//   border: 1px solid var(--line-gray-1);
-//   color: white;
-//   padding: 5px;
-//   border-radius: 8px;
-// `;
-
-// const InputImageUpload = styled.input`
-//   /* visibility: hidden; */
-//   &::-webkit-file-upload-button {
-//     visibility: hidden;
-//   }
-//   width: 133px;
-//   height: 143px;
-//   border: 1px solid var(--line-gray-1);
-//   border-radius: 10px;
-
-//   &::before {
-//     content: "+";
-//     display: inline-block;
-//     width: 133px;
-//     height: 143px;
-//     /* background-color: #646f7c; */
-//     outline: none;
-//     white-space: nowrap;
-//     /* font-family: ; */
-//     /* -webkit-user-select: none; */
-//     cursor: pointer;
-//     display: flex;
-//     justify-content: center;
-//     align-items: center;
-//     /* text-shadow: 1px 1px #fff; */
-//     font-weight: 700;
-//     font-size: 4rem;
-//   }
-// `;
-
-// const SelectImageContainer = styled.div`
-//   display: flex;
-//   gap: 10px;
-// `;
-
-// const ImageContainer = styled.div`
-//   display: flex;
-//   position: relative;
-//   & img {
-//     width: 130px;
-//     height: 140px;
-//     border-radius: 8px;
-//   }
-// `;

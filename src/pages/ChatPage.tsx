@@ -29,6 +29,11 @@ const ChatPage = () => {
   const socket = useContext(SocketContext);
 
   useEffect(() => {
+    if (selectUser === "Chatgpt") {
+      console.log("selectUser ", selectUser);
+      return;
+    }
+
     if (socket) {
       const fetchChatList = () => {
         return new Promise<void>((resolve) => {
@@ -61,9 +66,16 @@ const ChatPage = () => {
 
   const onClickChatRoom = async (index: number) => {
     setSelectedIndex(index);
+    console.log("chatroom index", index);
     const selectedUser = chatRoom[index].username;
     setSelectUser(selectedUser);
     setShowChatRoom(true);
+    if (selectedUser === "Chatgpt") {
+      console.log("selectUser ", selectedUser);
+      console.log("Chatgpt index", index);
+      return;
+    }
+    console.log("selectUser ", selectedUser);
 
     if (socket) {
       setIsLoading(true);
@@ -144,15 +156,12 @@ const ChatPage = () => {
   );
 };
 
-// export default ChatPage;
-// export default ChatPage;
 export default ChatPage;
 
 const Container = styled.div`
   display: flex;
   padding: 20px 30px;
   gap: 24px;
-  /* height: 90%; */
   height: calc(100% - 120px);
   width: 100%;
   max-width: 1200px;

@@ -15,55 +15,6 @@ export interface IChatContentDto {
   username: string;
   time: Date;
 }
-// userId: number;
-
-// const ChatRoom = ({
-//   chatHistory,
-//   selectUserImg,
-//   username,
-// }: {
-//   chatHistory: IChatContentDto[];
-//   selectUserImg: string;
-//   username: string;
-// }) => {
-//   // TODO : 웹소켓 대기하는 곳에다가 두기
-//   const [isLoading, setIsLoading] = useState<boolean>(false);
-
-//   return (
-//     <Container>
-//       {chatHistory.length === 0 ? (
-//         <div>채팅방을 선택해 주세요</div>
-//       ) : (
-//         <>
-//           <MessageContainer>
-//             {chatHistory.map((message, index) =>
-//               message.username === username ? (
-//                 <MyMessageWrapper key={index}>
-//                   <ContentStyled>{message.message}</ContentStyled>
-//                 </MyMessageWrapper>
-//               ) : (
-//                 <PartnerMessageWrapper key={index}>
-//                   <img src={selectUserImg} />
-//                   <ContentStyled>{message.message}</ContentStyled>
-//                 </PartnerMessageWrapper>
-//               )
-//             )}
-//             {isLoading && <Loading />}
-//           </MessageContainer>
-//           <ChatInputWrapper>
-//             <ChatInput
-//               placeholder="write your message ..."
-//               disabled={isLoading}
-//             />
-//             <SendButton type="submit" disabled={isLoading}>
-//               Send
-//             </SendButton>
-//           </ChatInputWrapper>
-//         </>
-//       )}
-//     </Container>
-//   );
-// };
 
 const ChatRoom = ({
   chatHistory,
@@ -96,7 +47,7 @@ const ChatRoom = ({
       <>
         <MessageContainer>
           {chatHistory.map((message, index) =>
-            message.username === username ? (
+            message.username !== username ? (
               <MyMessageWrapper key={index}>
                 <ContentStyled>{message.message}</ContentStyled>
               </MyMessageWrapper>
