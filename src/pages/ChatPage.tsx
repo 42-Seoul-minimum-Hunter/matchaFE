@@ -98,7 +98,7 @@ const ChatPage = () => {
     if (socket && selectUser) {
       const newMessage: IChatContentDto = {
         message,
-        username: "currentUser", // 실제 사용자 이름으로 교체해야 함
+        username: selectUser,
         time: new Date(),
       };
       socket.emit("sendMessage", newMessage);
