@@ -1,3 +1,4 @@
+import { IAlarmProps } from "@/components/Alarm";
 import { atom } from "recoil";
 import { recoilPersist } from "recoil-persist";
 
@@ -10,4 +11,10 @@ export const userAlarm = atom({
   key: "alarm",
   default: false,
   effects_UNSTABLE: [persistAtom],
+});
+
+export const userAlarmContent = atom({
+  key: "alarmContent",
+  default: <IAlarmProps[]>[],
+  //   effects_UNSTABLE: [persistAtom],
 });

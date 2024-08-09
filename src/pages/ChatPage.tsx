@@ -25,110 +25,118 @@ const ChatPage = () => {
   const [chatRoom, setChatRoom] = useState<IChatRoomDto[]>([gptChatList]);
   const [chatHistory, setChatHistory] = useState<IChatContentDto[]>([]);
   const [showChatRoom, setShowChatRoom] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const socket = useContext(SocketContext);
 
-  // const CheckChatList = async () => {
-  //   try {
-  //     // jwt있으면 userID 없어도 됨
-  //     const res = await axiosChatroom(1);
-  //     console.log("chat list :", res);
-  //     setChatRoom(res.data);
-  //     console.log("chat list data:", res.data);
-  //   } catch (error) {
-  //     // TODO
-  //     // 데이터 불러오는데 실패하거나 서버가 불안정한 경우
-  //     // 걍 터지면 404 페이지로 보내버리기
-  //     console.log(error);
-  //   }
-  // };
+  useEffect(() => {
+    if (socket) {
+      const fetchChatList = () => {
+        return new Promise<void>((resolve) => {
+          socket.emit("getChatList");
+          socket.once("getChatList", (newChatRooms: IChatRoomDto[]) => {
+            console.log("newchatrooms", newChatRooms);
+            updateChatRoom(newChatRooms);
+            resolve();
+          });
+        });
+      };
 
-  // useEffect(() => {
-  //   CheckChatList();
-  // }, []);
+      (async () => {
+        setIsLoading(true);
+        await fetchChatList();
+        setIsLoading(false);
+      })();
 
-  // useEffect(() => {
-  //   clickChatRoom();
-  // }, [selectUser]);
+      // 내가 메세지 보내는 경우 -> sendMessage , username, message
+      socket.on("sendMessage", (newMessage: IChatContentDto) => {
+        setChatHistory((prev) => [...prev, newMessage]);
+      });
 
-  // const clickChatRoom = () => {
-  //   socket.emit("joinChatRoom", {
-  //     username: selectUser,
-  //   });
-  // };
+      return () => {
+        socket.off("getChatList");
+        socket.off("sendMessage");
+      };
+    }
+  }, [socket]);
 
-  // useEffect(() => {
-  //   socket.on("sendHistories", (data) => {
-  //     console.log("onlineStatus On", data);
-  //     setChatHistory(data);
-  //   });
-
-  // return () => {
-  //   socket.off("sendHistories");
-  // };
-
-  // clickChatRoom();
-  // socket.emit("joinChatRoom", {
-  //   username: selectUser,
-  // });
-  // }, []);
-
-  const onClickChatRoom = (index: number) => {
+  const onClickChatRoom = async (index: number) => {
     setSelectedIndex(index);
-    // TODO : 선택한 채팅방의 정보를 서버에 보내서 채팅방의 메시지를 받아옴
-    // 이게 맞나
-    setSelectUser(chatRoom[index].username);
-    setChatHistory(mockChatContentDto);
-    console.log(chatRoom[index]);
+    const selectedUser = chatRoom[index].username;
+    setSelectUser(selectedUser);
     setShowChatRoom(true);
+
+    if (socket) {
+      setIsLoading(true);
+      //
+      socket.emit("joinChatRoom", selectedUser);
+      // socket.emit("getMessages", { username: selectedUser });
+
+      await new Promise<void>((resolve) => {
+        socket.once("getMessages", (messages: IChatContentDto[]) => {
+          console.log("getMessages", messages);
+          setChatHistory(messages);
+          setIsLoading(false);
+          resolve();
+        });
+      });
+    }
+  };
+
+  const sendMessage = (message: string) => {
+    if (socket && selectUser) {
+      const newMessage: IChatContentDto = {
+        message,
+        username: "currentUser", // 실제 사용자 이름으로 교체해야 함
+        time: new Date(),
+      };
+      socket.emit("sendMessage", newMessage);
+      setChatHistory((prev) => [...prev, newMessage]);
+    }
   };
 
   const updateChatRoom = (newChatRooms: IChatRoomDto[]) => {
     setChatRoom((prevChatRoom) => {
-      // 기존의 gptChatList를 제외한 새로운 채팅방 목록 생성
       const filteredNewChatRooms = newChatRooms.filter(
         (room) => room.username !== gptChatList.username
       );
-
-      // gptChatList를 첫 번째로, 그 뒤에 새로운 채팅방 목록 추가
       return [gptChatList, ...filteredNewChatRooms];
     });
   };
 
-  useEffect(() => {
-    // TODO : 처음 message페이지 들어왔을때 chatroom 정보 받아오기
-    // setChatRoom(mockIChatProps);
-    updateChatRoom(mockIChatProps);
-  }, []);
-  const selectUserImg = mockIChatProps[selectedIndex]?.profileImage;
-
   const handleBackButton = () => {
     setShowChatRoom(false);
+    if (socket) {
+      socket.emit("leaveRoom", { username: selectUser });
+    }
   };
+
+  if (isLoading) {
+    return <Container>Loading chat rooms...</Container>;
+  }
+
   return (
     <Container>
       <ChatLobbyWrapper $show={!showChatRoom}>
-        {chatRoom &&
-          chatRoom.map((chatList, index) => (
-            <ChatList
-              key={index}
-              {...chatList}
-              isSelected={selectedIndex === index}
-              index={index}
-              handler={onClickChatRoom}
-            />
-          ))}
+        {chatRoom.map((chatList, index) => (
+          <ChatList
+            key={index}
+            {...chatList}
+            isSelected={selectedIndex === index}
+            index={index}
+            handler={onClickChatRoom}
+          />
+        ))}
       </ChatLobbyWrapper>
       <ChatRoomWrapper $show={showChatRoom}>
         <BackButton onClick={handleBackButton}>Back</BackButton>
         {selectUser === "Chatgpt" ? (
-          <>
-            <GptChat />
-          </>
+          <GptChat />
         ) : (
           <ChatRoom
             chatHistory={chatHistory}
-            selectUserImg={selectUserImg}
+            selectUserImg={chatRoom[selectedIndex]?.profileImage}
             username={selectUser}
+            sendMessage={sendMessage}
           />
         )}
       </ChatRoomWrapper>
@@ -136,6 +144,8 @@ const ChatPage = () => {
   );
 };
 
+// export default ChatPage;
+// export default ChatPage;
 export default ChatPage;
 
 const Container = styled.div`

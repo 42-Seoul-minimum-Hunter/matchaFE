@@ -296,6 +296,20 @@ export const axiosUserRate = async (
   }
 };
 
+const axiosUserReportURL = "/user/report";
+export const axiosUserReport = async (
+  reportedUsername: string
+): Promise<any> => {
+  try {
+    const response = await instance.post(axiosUserReportURL, {
+      reportedUsername: reportedUsername,
+    });
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
 /**
  * Setting 페이지
  */

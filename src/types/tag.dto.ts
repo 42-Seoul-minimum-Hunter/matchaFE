@@ -37,13 +37,17 @@ export interface ProfileDto {
   preference: PreferenceType;
   age: number;
   biography: string;
-
   hashtags: InterestType[];
   si: string;
   gu: string;
   rate: number;
   profileImages: string[];
-  lastConnectedAt: Date;
+
+  // 내 프로필이 아닌 상대방 프로필일 경우
+  connectedAt?: Date;
+  isBlocked: false;
+  isLiked: true;
+  isOnline: false;
 }
 
 export interface SettingDto {

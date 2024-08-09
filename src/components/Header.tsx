@@ -4,8 +4,9 @@ import { axiosLogout } from "@/api/axios.custom";
 import { SocketContext } from "@/pages/LayoutPage";
 import useRouter from "@/hooks/useRouter";
 import { getCookie } from "@/api/cookie";
-import { useRecoilState } from "recoil";
-import { userAlarm } from "@/recoil/atoms";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import { userAlarm, userAlarmContent } from "@/recoil/atoms";
+import { IAlarmProps } from "./Alarm";
 
 // TODO: Router 테이블 만들어서 해당 라우터에서 색상 표현
 const Header = () => {
@@ -38,8 +39,10 @@ const Header = () => {
         setIsAlarm(true);
       });
 
+      socket.emit("getAlarms");
       return () => {
         socket.off("alarm");
+        // socket.off("getAlarms");
       };
     }
   }, [socket]);
@@ -62,12 +65,6 @@ const Header = () => {
     } catch (error) {
       console.log("error", error);
     }
-  };
-
-  // const onClickLogout = () => {
-
-  const test = () => {
-    setIsAlarm(!isAlarm);
   };
 
   return (

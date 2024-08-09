@@ -9,6 +9,7 @@ import {
   axiosProfileMe,
   axiosUserBlock,
   axiosUserRate,
+  axiosUserReport,
 } from "@/api/axios.custom";
 import { useSearchParams } from "react-router-dom";
 import { SocketContext } from "./LayoutPage";
@@ -17,6 +18,7 @@ import TagList from "@/components/TagTemplate";
 import Stars from "@/components/Stars";
 import StarsSubmit from "@/components/StarsSubmit";
 import useRouter from "@/hooks/useRouter";
+import { formatDate } from "@/utils/dataUtils";
 
 const HashTagsList: tagItem[] = Object.entries(InterestLableMap).map(
   ([value, label]) => ({ value, label })
@@ -26,10 +28,10 @@ const HashTagsList: tagItem[] = Object.entries(InterestLableMap).map(
 const ProfilePage = () => {
   const { goToMain } = useRouter();
   const [isOnline, setIsOnline] = useState(false);
-  const [isOwnProfile, setIsOwnProfile] = useState(false);
-  // const [userName, setUserName] = useState<string>();
-  const [lastConnected, setLastConnected] = useState<Date>();
+  // const [isOwnProfile, setIsOwnProfile] = useState(false);
   const [profileData, setProfileData] = useState<ProfileDto>();
+  // TODO
+  // 왜 이렇게 해야하는지 이유를 찾아보기
   const [images, setImages] = useState<string[]>(
     profileData?.profileImages || []
   );
@@ -40,7 +42,7 @@ const ProfilePage = () => {
   const socket = useContext(SocketContext);
 
   // TODO -> 좋아요를 누른 상태면 블락 disabled 해놓기
-  // TODO -> username에 따라 axios 구분
+
   const tryToGetProfile = async (username: any) => {
     try {
       if (username) {
@@ -49,26 +51,32 @@ const ProfilePage = () => {
         setProfileData(res.data);
         setIsOnline(res.data.isOnline);
         setImages(res.data.profileImages);
-        // 마지막 접속 시간
-        setLastConnected(res.data.connectedAt);
+        if (res.data.isBlocked === true) {
+          alert("차단된 사용자입니다.");
+          goToMain();
+        }
       } else {
         const res = await axiosProfileMe();
         console.log("profile page oppen", res);
         setProfileData(res.data);
         setIsOnline(res.data.isOnline);
         setImages(res.data.profileImages);
-        // setLastConnected(res.data.connectedAt);
+        if (res.data.isBlocked === true) {
+          alert("차단된 사용자입니다.");
+          goToMain();
+        }
       }
-      // const res = await (!username ? axiosProfileMe() : axiosProfile(username));
-      // console.log("profile page", res);
-      // setProfileData(res.data);
-      // setIsOnline(res.data.isOnline);
-      // setImages(res.data.profileImages);
-      // setLastConnected(res.data.connectedAt);
       // TODO : username있으면 isLikeUser를 받아서 좋아요 상태 글자 변경
-    } catch (error) {
+    } catch (error: any) {
+      // 401 -> 로그인을 해주세요
+      // 404 -> 유저가 없습니다.
       goToMain();
-      alert("로그인을 해주세요");
+      if (error.response?.status === 404) {
+        alert("유저가 없습니다.");
+      }
+      if (error.response?.status === 401) {
+        alert("로그인을 해주세요.");
+      }
       console.log("profile page error", error);
     }
   };
@@ -94,10 +102,18 @@ const ProfilePage = () => {
   }, [socket]);
 
   const onClickLikeUser = () => {
-    alert("좋아요를 눌렀습니다.");
-    if (socket && username) {
-      socket.emit("likeUser", username);
-      console.log(`Liked user: ${username}`);
+    if (profileData?.isLiked !== true) {
+      alert("좋아요를 눌렀습니다.");
+      if (socket && username) {
+        socket.emit("likeUser", username);
+        console.log(`Liked user: ${username}`);
+      }
+    } else if (profileData?.isLiked === true) {
+      alert("좋아요를 취소했습니다.");
+      if (socket && username) {
+        socket.emit("dislikeUser", username);
+        console.log(`dislikeUser : ${username}`);
+      }
     }
   };
 
@@ -107,6 +123,7 @@ const ProfilePage = () => {
         const res = await axiosUserBlock(username);
         console.log("block user", res);
         goToMain();
+        alert(username + "을 차단했습니다.");
       } catch (error) {
         alert("차단에 실패했습니다.");
         console.log("block user error", error);
@@ -114,22 +131,10 @@ const ProfilePage = () => {
     }
   };
 
-  useEffect(() => {
-    if (socket && username) {
-      // 컴포넌트 마운트 시 사용자 상태 요청
-      socket.emit("likeUser", username);
-
-      return () => {
-        socket.off("likeUser");
-      };
-    }
-  }, [socket]);
-
   const handleRatingChange = (newRating: number) => {
     setUserRating(newRating);
   };
 
-  // TODO : username 있을떄만 실행
   const tryToRateUser = async () => {
     if (username) {
       try {
@@ -138,6 +143,21 @@ const ProfilePage = () => {
       } catch (error) {
         alert("평점 주기에 실패했습니다.");
         console.log("rate user error", error);
+      }
+    }
+  };
+
+  const tryUserReport = async () => {
+    if (username) {
+      try {
+        const res = await axiosUserReport(username);
+        console.log("report user", res);
+
+        goToMain();
+        alert("유저가 신고되었습니다.");
+      } catch (error) {
+        alert("신고에 실패했습니다.");
+        console.log("report user error", error);
       }
     }
   };
@@ -162,7 +182,7 @@ const ProfilePage = () => {
                 {profileData?.si}, {profileData?.gu}
               </UserLocationStyled>
               <UserLocationStyled>
-                {profileData?.lastConnectedAt}
+                {formatDate(profileData?.connectedAt)}
               </UserLocationStyled>
               <UserBioStyled>{profileData?.biography}</UserBioStyled>
               <UserHashtagsStyled>
@@ -181,6 +201,7 @@ const ProfilePage = () => {
             <TitleStyled>User Photo</TitleStyled>
             <ImageUploader
               images={images}
+              // images={profileData?.hashtags || []}
               setImages={setImages}
               isReadOnly={true}
             />
@@ -238,8 +259,15 @@ const ProfilePage = () => {
             <ButtonStyled onClick={onClickBlockUser} disabled={!username}>
               차단하기
             </ButtonStyled>
-            <ButtonStyled onClick={onClickLikeUser} disabled={!username}>
-              좋아요
+            <ButtonStyled
+              onClick={onClickLikeUser}
+              disabled={!username}
+              $isLiked={profileData?.isLiked}
+            >
+              {profileData?.isLiked ? "좋아요 취소하기" : "좋아요"}
+            </ButtonStyled>
+            <ButtonStyled onClick={tryUserReport} disabled={!username}>
+              신고하기
             </ButtonStyled>
           </ButtonContainer>
         </RightContainer>
@@ -298,11 +326,6 @@ const TitleImageContainer = styled.div`
     object-fit: cover;
     border-radius: 10px;
   }
-
-  /* @media screen and (max-width: 768px) {
-    width: 140px;
-    height: 165px;
-  } */
 `;
 
 const Container = styled.div`
@@ -320,7 +343,7 @@ const ButtonContainer = styled.div`
   margin-top: 30px;
 `;
 
-const ButtonStyled = styled.button<{ disabled: boolean }>`
+const ButtonStyled = styled.button<{ disabled: boolean; $isLiked?: boolean }>`
   width: 100%;
   @media screen and (max-width: 768px) {
     width: 100%;
@@ -340,15 +363,13 @@ const ButtonStyled = styled.button<{ disabled: boolean }>`
     color: ${(props) =>
       props.disabled ? "var(--line-gray-3)" : "var(--white)"};
   }
-
-  font-size: 1.1rem;
-  /* color: var(--brand-main-1); */
-  background-color: var(--white);
-  /* border: 1px solid var(--brand-main-1); */
   &:hover {
     background-color: var(--brand-main-1);
     color: var(--white);
   }
+
+  font-size: 1.1rem;
+  background-color: var(--white);
   padding: 12px 0px;
   border-radius: 4px;
 `;

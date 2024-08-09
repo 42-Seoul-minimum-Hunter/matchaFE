@@ -14,6 +14,11 @@ const useSocket = () => {
           auth: {
             authorization: token,
           },
+          // transports: ["websocket"], // WebSocket만 사용
+          // upgrade: false, // 다른 전송 방식으로 업그레이드 안 함
+          // reconnection: true, // 재연결 활성화
+          // reconnectionAttempts: 5, // 최대 5번 재연결 시도
+          // reconnectionDelay: 1000, // 1초 간격으로 재연결 시도
         });
         setSocket(newSocket);
         return newSocket;
