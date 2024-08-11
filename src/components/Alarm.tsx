@@ -1,6 +1,9 @@
+import { axiosCheckJWT } from "@/api/axios.custom";
 import { AlarmLableMap } from "@/types/maps";
 import { AlarmType } from "@/types/tag.enum";
+import { useEffect } from "react";
 import styled from "styled-components";
+import { c } from "vite/dist/node/types.d-aGj9QkWt";
 
 export interface IAlarmProps {
   alarmType: AlarmType;

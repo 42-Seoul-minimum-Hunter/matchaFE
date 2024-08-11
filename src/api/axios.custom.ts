@@ -93,6 +93,19 @@ export const axiosUserLogin = async (
 };
 
 /**
+ * jst access check -> 웹소켓 연결만 하는 라우터 이용시 jwt체크용
+ */
+const axiosCheckJWTURL = "/auth/check/access";
+export const axiosCheckJWT = async (): Promise<any> => {
+  try {
+    const response = await instance.get(axiosCheckJWTURL);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+/**
  * 로그아웃
  */
 const axiosLogoutURL = "/auth/logout";

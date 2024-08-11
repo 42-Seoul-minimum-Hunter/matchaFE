@@ -31,14 +31,19 @@ const ChatPage = () => {
   useEffect(() => {
     if (selectUser === "Chatgpt") {
       console.log("selectUser ", selectUser);
+      // setSelectedIndex(0);
+      // setSelectUser("Chatgpt");
+      // setShowChatRoom(true);
+      // setSelectedIndex(0);
       return;
     }
 
     if (socket) {
       const fetchChatList = () => {
         return new Promise<void>((resolve) => {
+          // socket.emit("leaveRoom", { username: selectUser });
           socket.emit("getChatList");
-          socket.once("getChatList", (newChatRooms: IChatRoomDto[]) => {
+          socket.on("getChatList", (newChatRooms: IChatRoomDto[]) => {
             console.log("newchatrooms", newChatRooms);
             updateChatRoom(newChatRooms);
             resolve();
@@ -54,6 +59,7 @@ const ChatPage = () => {
 
       // 내가 메세지 보내는 경우 -> sendMessage , username, message
       socket.on("sendMessage", (newMessage: IChatContentDto) => {
+        console.log("BE Message on", newMessage);
         setChatHistory((prev) => [...prev, newMessage]);
       });
 
@@ -79,7 +85,6 @@ const ChatPage = () => {
 
     if (socket) {
       setIsLoading(true);
-      //
       socket.emit("joinChatRoom", selectedUser);
       // socket.emit("getMessages", { username: selectedUser });
 
@@ -102,7 +107,6 @@ const ChatPage = () => {
         time: new Date(),
       };
       socket.emit("sendMessage", newMessage);
-      setChatHistory((prev) => [...prev, newMessage]);
     }
   };
 

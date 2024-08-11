@@ -47,7 +47,7 @@ const ChatRoom = ({
       <>
         <MessageContainer>
           {chatHistory.map((message, index) =>
-            message.username !== username ? (
+            message.username === username ? (
               <MyMessageWrapper key={index}>
                 <ContentStyled>{message.message}</ContentStyled>
               </MyMessageWrapper>

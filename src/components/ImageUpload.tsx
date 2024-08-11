@@ -104,8 +104,8 @@ const ImageUploader = ({
           {images.map((image, index) => (
             <ImageItem key={index}>
               <Image
-                // src={image}
-                src={decodeBase64Url(image)}
+                src={image}
+                // src={decodeBase64Url(image)}
                 alt={`Uploaded ${index}`}
               />
 

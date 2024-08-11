@@ -98,12 +98,6 @@ const SearchPage = () => {
     tryFindUser(1);
   }, [values]);
 
-  // const cardsPerPage = 15;
-  // const currentCards = searchData.slice(
-  //   (currentPage - 1) * cardsPerPage,
-  //   currentPage * cardsPerPage
-  // );
-
   const totalPages = Math.ceil(totalProfiles / 15);
   const pageGroup = Math.ceil(currentPage / 10);
   const lastPage = pageGroup * 10;
@@ -224,19 +218,6 @@ const SearchPage = () => {
           &gt;
         </ArrowButton>
       </Pagination>
-      {/* <Pagination>
-        {Array.from({
-          length: Math.ceil(searchData.length / cardsPerPage),
-        }).map((_, index) => (
-          <PageButton
-            key={index}
-            onClick={() => paginate(index + 1)}
-            $active={currentPage === index + 1}
-          >
-            {index + 1}
-          </PageButton>
-        ))}
-      </Pagination> */}
     </Container>
   );
 };
