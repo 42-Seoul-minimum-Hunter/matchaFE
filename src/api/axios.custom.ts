@@ -106,6 +106,21 @@ export const axiosCheckJWT = async (): Promise<any> => {
 };
 
 /**
+ * OAUTH 로그인
+ */
+
+const axiosLoginOauthURL = "/auth/callback";
+export const axiosLoginOauth = async (code: string): Promise<any> => {
+  try {
+    console.log("code : ", code);
+    const response = await instance.post(axiosLoginOauthURL, code);
+    return response;
+  } catch (error) {
+    throw error;
+  }
+};
+
+/**
  * 로그아웃
  */
 const axiosLogoutURL = "/auth/logout";

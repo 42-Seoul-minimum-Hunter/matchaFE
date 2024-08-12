@@ -12,6 +12,7 @@ import SettingPage from "./pages/SettingPage";
 import ChatPage from "./pages/ChatPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import MainPage from "./pages/MainPage";
+import OauthPage from "./pages/OauthPage";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <Route path="setting" element={<SettingPage />} />
           <Route path="resetPW" element={<ResetPasswordPage />} />
           <Route path="twofactor" element={<TwoFactorPage />} />
+          <Route path="oauth" element={<OauthPage />} />
         </Route>
         <Route path="/*" element={<NotFoundPage />} />
       </Routes>
