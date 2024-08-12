@@ -43,6 +43,7 @@ const SignupDetailPage = () => {
   const { goToMain } = useRouter();
   const [refreshLocation, setRefreshLocation] = useState(false);
   const [images, setImages] = useState<string[]>([]);
+  const [signupError, setSignupError] = useState<string | null>(null);
   const [locationGuTagList, setLocationGuTagList] = useState<tagItem[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [signUpTextData, setSignUpTextData] = useState({
@@ -113,7 +114,6 @@ const SignupDetailPage = () => {
     const { name, value } = e.target;
     console.log("e.target.name", e.target.name);
     setSignUpTextData({ ...signUpTextData, [name]: value });
-    // setError(false);
   };
   const handleDropboxChange = (name: string, option: tagItem) => {
     setSignUpDropboxData((prev) => ({ ...prev, [name]: option.value }));
@@ -163,6 +163,11 @@ const SignupDetailPage = () => {
   };
 
   const trySignup = async () => {
+    if (images.length < 5) {
+      setSignupError("최소 5개의 이미지를 업로드해야 합니다.");
+      return;
+    }
+
     try {
       const signupData: SignupDto = {
         username: signUpTextData.username,
@@ -244,6 +249,8 @@ const SignupDetailPage = () => {
         <TitleStyled>User Photo</TitleStyled>
         {/* <ImageUpload /> */}
         <ImageUpload images={images} setImages={setImages} />
+        {signupError ||
+          (images.length < 5 && <ErrorStyled>{signupError}</ErrorStyled>)}
       </RowContainer>
 
       <GeoLocationHandler

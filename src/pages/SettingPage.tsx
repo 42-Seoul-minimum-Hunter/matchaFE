@@ -31,6 +31,7 @@ const preferenceTagList: tagItem[] = Object.entries(PreferenceLableMap).map(
 );
 
 const SettingPage = () => {
+  const [signupError, setSignupError] = useState<string | null>(null);
   const { goToMain } = useRouter();
   const [settingData, setSettingData] = useState<SettingDto | undefined>(
     undefined
@@ -203,6 +204,10 @@ const SettingPage = () => {
   };
 
   const updateProfile = async () => {
+    if (images.length < 5) {
+      setSignupError("최소 5개의 이미지를 업로드해야 합니다.");
+      return;
+    }
     if (!isModified) {
       console.log("변경사항이 없습니다.");
       return;
@@ -274,6 +279,8 @@ const SettingPage = () => {
           <RowContainer>
             <TitleStyled>User Photo</TitleStyled>
             <ImageUploader images={images} setImages={setImages} />
+            {signupError ||
+              (images.length < 5 && <ErrorStyled>{signupError}</ErrorStyled>)}
           </RowContainer>
 
           <RowContainer>
@@ -530,6 +537,17 @@ const InputContainer = styled.div`
       max-width: none;
     }
   }
+`;
+
+const ErrorStyled = styled.div`
+  /* margin-left: 20px; */
+  margin-top: 4px;
+  font-weight: 400;
+  line-height: 1.4;
+  font-size: 0.8rem;
+  letter-spacing: -0.025em;
+  color: var(--status-error-1);
+  width: 250px;
 `;
 
 export default SettingPage;
