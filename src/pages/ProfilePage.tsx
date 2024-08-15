@@ -35,7 +35,7 @@ const ProfilePage = () => {
   const [images, setImages] = useState<string[]>(
     profileData?.profileImages || []
   );
-  const [isLikeUser, setIsLikeUser] = useState(false);
+  // const [isLikeUser, setIsLikeUser] = useState(false);
   const [userRating, setUserRating] = useState(0);
   const [searchParams] = useSearchParams();
   const username = searchParams.get("username");
@@ -100,6 +100,9 @@ const ProfilePage = () => {
       };
     }
   }, [socket]);
+
+  // 방이 열린것으로 연결된것을 판단
+  // 상대가 좋아요를 누른것은
 
   const onClickLikeUser = () => {
     if (profileData?.isLiked !== true) {
@@ -269,6 +272,9 @@ const ProfilePage = () => {
             <ButtonStyled onClick={tryUserReport} disabled={!username}>
               신고하기
             </ButtonStyled>
+            <ButtonStyled onClick={tryUserReport} disabled={!username}>
+              채팅하기
+            </ButtonStyled>
           </ButtonContainer>
         </RightContainer>
       </InputDataContainer>
@@ -334,6 +340,7 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
+  margin-bottom: 20px;
 `;
 
 const ButtonContainer = styled.div`

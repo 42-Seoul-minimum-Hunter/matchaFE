@@ -13,8 +13,8 @@ const ImageUploader = ({
   setImages: React.Dispatch<React.SetStateAction<string[]>>;
   isReadOnly?: boolean;
 }) => {
-  console.log("images", images);
   const useParams = location.pathname.includes("signup");
+  const MAX_IMAGES = 7;
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -22,49 +22,47 @@ const ImageUploader = ({
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
+      const remainingSlots = MAX_IMAGES - images.length;
+      const filesToAdd = files.slice(0, remainingSlots);
+
       setImages((prevImages) => [
         ...prevImages,
-        ...files.map((file) => URL.createObjectURL(file)),
+        ...filesToAdd.map((file) => URL.createObjectURL(file)),
       ]);
+
+      if (files.length > remainingSlots) {
+        alert(
+          `최대 ${MAX_IMAGES}개의 이미지만 업로드할 수 있습니다. ${
+            files.length - remainingSlots
+          }개의 이미지가 무시되었습니다.`
+        );
+      }
     }
   };
 
-  // const decodeBase64Url = (base64Url: string): string => {
-  //   try {
-  //     console.log("base64Url", atob(base64Url));
-  //     return atob(base64Url);
-  //   } catch (e) {
-  //     console.error("Invalid base64 string:", e);
-  //     return "";
-  //   }
-  // };
-
   const decodeBase64Url = (url: string): string => {
-    // URL이 이미 디코딩되어 있거나 일반 URL인 경우 그대로 반환
     if (url.startsWith("http") || url.startsWith("data:image")) {
       return url;
     }
 
     try {
-      // base64 디코딩 시도
       const decoded = atob(url);
-      // 디코딩된 문자열이 URL 형식이면 그대로 반환
       if (decoded.startsWith("http")) {
         return decoded;
       }
-      // 디코딩된 문자열이 URL 형식이 아니면 data URL로 변환
       return `data:image/png;base64,${url}`;
     } catch (e) {
       console.error("Invalid base64 string:", e);
-      // 디코딩에 실패하면 원래 URL 반환
       return url;
     }
   };
+
   const handleDelete = (index: number) => {
     setImages((prevImages) => prevImages.filter((_, i) => i !== index));
     if (currentIndex > 0 && index < currentIndex)
       setCurrentIndex((prev) => prev - 1);
   };
+
   const handleScroll = (direction: "left" | "right") => {
     if (isTransitioning) return;
 
@@ -79,7 +77,7 @@ const ImageUploader = ({
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsTransitioning(false);
-    }, 300); // 트랜지션 시간과 일치시킵니다
+    }, 300);
 
     return () => clearTimeout(timer);
   }, [currentIndex]);
@@ -87,7 +85,10 @@ const ImageUploader = ({
   return (
     <Container $useParams={useParams}>
       {!isReadOnly && (
-        <UploadButton onClick={() => fileInputRef.current?.click()}>
+        <UploadButton
+          onClick={() => fileInputRef.current?.click()}
+          disabled={images.length >= MAX_IMAGES}
+        >
           <PlusIcon />
           <input
             type="file"
@@ -95,6 +96,7 @@ const ImageUploader = ({
             onChange={handleFileChange}
             multiple
             accept="image/*"
+            disabled={images.length >= MAX_IMAGES}
           />
         </UploadButton>
       )}
@@ -103,11 +105,7 @@ const ImageUploader = ({
         <ImageWrapper $translateX={-currentIndex * 143}>
           {images.map((image, index) => (
             <ImageItem key={index}>
-              <Image
-                src={image}
-                // src={decodeBase64Url(image)}
-                alt={`Uploaded ${index}`}
-              />
+              <Image src={decodeBase64Url(image)} alt={`Uploaded ${index}`} />
 
               {!isReadOnly && (
                 <DeleteButton onClick={() => handleDelete(index)}>
@@ -133,6 +131,9 @@ const ImageUploader = ({
           <RightArrowIcon />
         </ScrollButton>
       </ScrollButtons>
+      <ImageCount>
+        {images.length} / {MAX_IMAGES}
+      </ImageCount>
     </Container>
   );
 };
@@ -152,7 +153,7 @@ const Container = styled.div<{ $useParams: boolean }>`
 `;
 
 const ImageContainer = styled.div`
-  width: 572px; // 4개의 이미지와 마진을 포함한 너비
+  width: 572px;
   overflow: hidden;
 `;
 
@@ -208,10 +209,8 @@ const ScrollButton = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
-
   width: 34px;
   height: 34px;
-
   border-radius: 10px;
   background: rgba(255, 255, 255, 0.7);
   border: 1px solid var(--line-gray-2);
@@ -224,21 +223,30 @@ const ScrollButton = styled.button`
   color: var(--black);
 `;
 
-const UploadButton = styled.button`
+const UploadButton = styled.button<{ disabled: boolean }>`
   width: 133px;
   height: 143px;
-  background-color: #f0f0f0;
+  background-color: ${(props) => (props.disabled ? "#e0e0e0" : "#f0f0f0")};
   border: 2px solid var(--line-gray-2);
   border-radius: 10px;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 24px;
-  cursor: pointer;
+  cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
+  opacity: ${(props) => (props.disabled ? 0.5 : 1)};
 
   & > input {
     display: none;
   }
+`;
+
+const ImageCount = styled.div`
+  position: absolute;
+  bottom: -25px;
+  right: 0;
+  font-size: 14px;
+  color: var(--gray);
 `;
 
 export default ImageUploader;

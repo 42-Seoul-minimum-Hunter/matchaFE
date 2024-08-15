@@ -65,6 +65,7 @@ const ChatRoom = ({
             placeholder="write your message ..."
             disabled={isLoading}
             value={inputMessage}
+            maxLength={255}
             onChange={(e) => setInputMessage(e.target.value)}
           />
           <SendButton type="submit" disabled={isLoading}>

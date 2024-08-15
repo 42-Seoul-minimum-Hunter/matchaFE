@@ -15,6 +15,7 @@ export interface IChatRoomDto {
   createdAt: string; // date형식
   lastContent: string; // last chat
 }
+
 // lastTime: string;
 // Unread: number;
 // handler?: (index: number) => void;

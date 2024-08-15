@@ -78,6 +78,7 @@ const GptChat: React.FC = () => {
       <ChatInputWrapper onSubmit={handleSubmit}>
         <ChatInput
           value={input}
+          maxLength={255}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask Claude something..."
           disabled={isLoading}

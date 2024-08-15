@@ -5,10 +5,6 @@ import ChatList, { IChatRoomDto } from "@/components/chat/ChatList";
 import ChatRoom, { IChatContentDto } from "@/components/chat/ChatRoom";
 import { useContext, useEffect, useState } from "react";
 import { SocketContext } from "./LayoutPage";
-// import Chatgpt from "@/components/Chatgpt";
-import { mockChatContentDto, mockIChatProps } from "@/assets/mock/mock";
-
-import { ReactComponent as ChatGptIcon } from "@/assets/icons/gpt-icon.svg";
 import GptChat from "@/components/chat/GptChat";
 
 // 이미지 경로 어떻게 받을지 생각해두기
@@ -18,6 +14,8 @@ const gptChatList: IChatRoomDto = {
   profileImage: TestImage2,
   lastContent: "Hello, I'm Chatgpt",
 };
+
+// const ChatPage: FC = () => { ... }
 
 const ChatPage = () => {
   const [selectUser, setSelectUser] = useState<string>("");
@@ -215,40 +213,6 @@ const ChatRoomWrapper = styled.div<{ $show: boolean }>`
     display: ${(props) => (props.$show ? "block" : "none")};
   }
 `;
-
-// const Container = styled.div`
-//   display: flex;
-//   padding: 20px 30px;
-//   gap: 24px;
-//   height: 100%;
-//   width: 1200px;
-// `;
-
-// const ChatRoomWrapper = styled.div`
-//   background-color: rgba(255, 255, 255, 0.5);
-//   border-radius: 4px;
-
-//   border: 1px solid var(--black);
-//   max-width: 792px;
-//   width: 100%;
-
-//   height: 100%;
-// `;
-
-// const ChatLobbyWrapper = styled.div`
-//   max-width: 384px;
-//   width: 100%;
-//   height: 100%;
-//   overflow-y: auto;
-//   display: flex;
-//   flex-direction: column;
-//   /* gap: 10px; */
-//   align-items: center;
-//   border-radius: 4px;
-//   /* padding: 20px 0; */
-//   padding: 10px 10px;
-//   border: 1px solid var(--black);
-// `;
 
 const BackButton = styled.button`
   display: none;
