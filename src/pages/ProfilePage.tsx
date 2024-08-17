@@ -39,64 +39,46 @@ const ProfilePage = () => {
   const username = searchParams.get("username");
   const socket = useContext(SocketContext);
 
-  const tryToGetProfile = async (username: any) => {
+  const tryToGetProfile = async (username?: string) => {
     try {
-      if (username) {
-        const res = await axiosProfile(username);
-        console.log("profile page me", res);
-        setProfileData(res.data);
-        setIsOnline(res.data.isOnline);
-        setImages(res.data.profileImages);
-        setIsMatched(res.data.isMatched);
-        if (res.data.isBlocked === true) {
-          alert("차단된 사용자입니다.");
-          goToMain();
-        }
-      } else {
-        const res = await axiosProfileMe();
-        console.log("profile page oppen", res);
-        setProfileData(res.data);
-        setIsOnline(res.data.isOnline);
-        setImages(res.data.profileImages);
-        if (res.data.isBlocked === true) {
-          alert("차단된 사용자입니다.");
-          goToMain();
-        }
+      const res = username
+        ? await axiosProfile(username)
+        : await axiosProfileMe();
+      console.log(`profile page ${username ? username : "me"}`, res);
+
+      const { isOnline, profileImages, isBlocked, isMatched } = res.data;
+
+      setProfileData(res.data);
+      setIsOnline(isOnline);
+      setImages(profileImages);
+      username && setIsMatched(isMatched);
+
+      if (isBlocked) {
+        alert("차단된 사용자입니다.");
+        goToMain();
       }
     } catch (error: any) {
-      // 401 -> 로그인을 해주세요
-      // 404 -> 유저가 없습니다.
       goToMain();
+
       if (error.response?.status === 404) {
         alert("유저가 없습니다.");
-      }
-      if (error.response?.status === 401) {
+      } else if (error.response?.status === 401) {
         alert("로그인을 해주세요.");
       }
+
       console.log("profile page error", error);
     }
   };
 
   useEffect(() => {
-    tryToGetProfile(username);
+    // tryToGetProfile(username);
+    tryToGetProfile(username || undefined);
   }, [username]);
-
-  //const AlarmType = {
-  //    SENDLIKED = "SENDLIKED",
-  //    VISITED = "VISITED",
-  //    MESSAGED = "MESSAGED",
-  //    MATCHED = "MATCHED",
-  //    SENDDISLIKED = "SENDDISLIKED",
-  //    RECEIVEDISLIKED = "RECEIVEDISLIKED",
-  //    RECEIVELIKED = "RECEIVELIKED",
-  //  }
 
   // 여기서 보내는 username은 상대방의 이름
   useEffect(() => {
     if (socket && username) {
       console.log("profileData?.username", username);
-      // socket.on("visitUserProfile", (data: { username: string }));
-      // 사용자 방문시 요청
       socket.emit("visitUserProfile", username);
 
       // matched깨지는 알람 오면 바꾸기

@@ -1,14 +1,11 @@
 import InputTemplate from "@/components/InputTemplate";
 import styled from "styled-components";
-import { useEffect, useState, useCallback } from "react";
+import { useState } from "react";
 import useRouter from "@/hooks/useRouter";
-import {
-  axiosCreateTwoFactor,
-  axiosRegister,
-  axiosUserLogin,
-} from "@/api/axios.custom";
+import { axiosCreateTwoFactor, axiosUserLogin } from "@/api/axios.custom";
 import ResetCheckEmail from "@/components/ResetCheckEmail";
 import Loading from "@/components/chat/Loading";
+import { FormEvent } from "react";
 
 // const GenderTag: ITagProps[] = [{ title: "male" }];
 //  나중에 꼭 수정 필요 -> useMemo, useCallback 렌더링 최적화 해야함
@@ -45,9 +42,10 @@ const LoginPage = () => {
       else {
         tryTwofactorCreate();
       }
-    } catch (error) {
+    } catch (error: any) {
+      // console.log("error", error);
       setLoading(false);
-      alert(error);
+      alert(error.response.data);
     }
   };
 
@@ -62,7 +60,8 @@ const LoginPage = () => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     if (error === true) {
       return;
     }
@@ -95,23 +94,25 @@ const LoginPage = () => {
               <TitleStyled>
                 MEET<span>CHA</span>
               </TitleStyled>
-              <InputTemplate
-                type="username"
-                label="유저네임"
-                value={signUpTextData.username}
-                onChange={handleInputChange}
-                setErrorr={setError}
-              />
-              <InputTemplate
-                type="password"
-                label="비밀번호"
-                value={signUpTextData.password}
-                onChange={handleInputChange}
-                setErrorr={setError}
-              />
-              <ButtonStyled onClick={handleSubmit} disabled={loading}>
-                로그인
-              </ButtonStyled>
+              <FormStyled onSubmit={handleSubmit}>
+                <InputTemplate
+                  type="username"
+                  label="유저네임"
+                  value={signUpTextData.username}
+                  onChange={handleInputChange}
+                  setErrorr={setError}
+                />
+                <InputTemplate
+                  type="password"
+                  label="비밀번호"
+                  value={signUpTextData.password}
+                  onChange={handleInputChange}
+                  setErrorr={setError}
+                />
+                <ButtonStyled type="submit" disabled={loading}>
+                  로그인
+                </ButtonStyled>
+              </FormStyled>
 
               {loading && <Loading />}
               <OauthContainer>
@@ -135,6 +136,13 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+
+const FormStyled = styled.form`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+`;
 
 const Container = styled.div`
   display: flex;
@@ -168,7 +176,6 @@ const InfoTextStyled = styled.div`
 
 const InputContainer = styled.div`
   display: flex;
-  /* width: 100%; */
   max-width: 350px;
   flex-direction: column;
   align-items: center;

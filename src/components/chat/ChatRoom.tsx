@@ -1,18 +1,16 @@
 import styled from "styled-components";
 import Loading from "./Loading";
 import { useState } from "react";
+import { validateMessage } from "@/utils/inputCheckUtils";
 
-// TODO:
-// 나에 대한 정보를 불러오는 곳이 없음
-// 1. layout단에서 내 정보를 호충 -> recoil로 전역상태 관리 , 너무 비효율적
-// 2. 내 이름이 필요한 경우가 이 페이지 밖에 없어서 내 정보에 대한 axios요청을 messagePage에서 보내는 것이 더 효율적일 수 있음
-// 3. 제일 편한것 -> jwt를 쿠키에 저장할때 똑같이 username도 쿠키에 저장해서
-
-// TODO
-// 내가 받는 정보는 저 형식이고 BE에 넘기는 데이터는 message와 username을 넘김
-export interface IChatContentDto {
+export interface IChatSendContentDto {
   message: string;
   username: string;
+  time: Date;
+}
+export interface IChatReciveContentDto {
+  message: string;
+  sender: string;
   time: Date;
 }
 
@@ -22,19 +20,13 @@ const ChatRoom = ({
   username,
   sendMessage,
 }: {
-  chatHistory: IChatContentDto[];
+  chatHistory: IChatReciveContentDto[];
   selectUserImg: string;
   username: string;
   sendMessage: (message: string) => void;
 }) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [inputMessage, setInputMessage] = useState<string>("");
-
-  const validateMessage = (message: string) => {
-    const messageRegex =
-      /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{}:"\\|,.\/?|ㄱ-ㅎ|ㅏ-ㅣ|가-힣]{1,255}$/;
-    return messageRegex.test(message);
-  };
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,13 +42,10 @@ const ChatRoom = ({
 
   return (
     <Container>
-      {/* {chatHistory.length === 0 ? (
-        <div>채팅방을 선택해 주세요</div>
-      ) : ( */}
       <>
         <MessageContainer>
           {chatHistory.map((message, index) =>
-            message.username === username ? (
+            message.sender !== username ? (
               <MyMessageWrapper key={index}>
                 <ContentStyled>{message.message}</ContentStyled>
               </MyMessageWrapper>
@@ -82,29 +71,22 @@ const ChatRoom = ({
           </SendButton>
         </ChatInputWrapper>
       </>
-      {/* )} */}
     </Container>
   );
 };
 
-// export default ChatRoom;
-
 export default ChatRoom;
 
 const Container = styled.div`
-  /* max-width: px; */
-  /* padding: 20px 20px; */
   padding-left: 35px;
   padding-right: 40px;
   padding-top: 40px;
-
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 20px;
   height: 100%;
   min-height: 100%;
-  /* overflow-y: auto; */
   position: relative;
   overflow-y: hidden;
 `;

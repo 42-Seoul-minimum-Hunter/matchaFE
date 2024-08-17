@@ -2,6 +2,7 @@ import { sendMessageToClaude } from "@/api/axios.custom";
 import React, { useState } from "react";
 import styled from "styled-components";
 import Loading from "./Loading";
+import { validateMessage } from "@/utils/inputCheckUtils";
 
 interface IChatContentDto {
   message: string;
@@ -18,6 +19,11 @@ const GptChat: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
+
+    if (validateMessage(input) === false) {
+      alert("더러운 메세지 보내지 마세요");
+      return;
+    }
 
     const newUserMessage: IChatContentDto = {
       message: input,
