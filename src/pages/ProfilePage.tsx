@@ -19,6 +19,7 @@ import Stars from "@/components/Stars";
 import StarsSubmit from "@/components/StarsSubmit";
 import useRouter from "@/hooks/useRouter";
 import { formatDate } from "@/utils/dataUtils";
+import { ReactComponent as HeartIcon } from "@/assets/icons/like-heart-icon.svg";
 
 const HashTagsList: tagItem[] = Object.entries(InterestLableMap).map(
   ([value, label]) => ({ value, label })
@@ -26,22 +27,17 @@ const HashTagsList: tagItem[] = Object.entries(InterestLableMap).map(
 
 // 웹소켓으로 차단하기, 좋아요 세팅
 const ProfilePage = () => {
-  const { goToMain } = useRouter();
+  const { goToMain, goToChat } = useRouter();
   const [isOnline, setIsOnline] = useState(false);
-  // const [isOwnProfile, setIsOwnProfile] = useState(false);
+  const [isMatched, setIsMatched] = useState(false);
   const [profileData, setProfileData] = useState<ProfileDto>();
-  // TODO
-  // 왜 이렇게 해야하는지 이유를 찾아보기
   const [images, setImages] = useState<string[]>(
     profileData?.profileImages || []
   );
-  // const [isLikeUser, setIsLikeUser] = useState(false);
   const [userRating, setUserRating] = useState(0);
   const [searchParams] = useSearchParams();
   const username = searchParams.get("username");
   const socket = useContext(SocketContext);
-
-  // TODO -> 좋아요를 누른 상태면 블락 disabled 해놓기
 
   const tryToGetProfile = async (username: any) => {
     try {
@@ -51,6 +47,7 @@ const ProfilePage = () => {
         setProfileData(res.data);
         setIsOnline(res.data.isOnline);
         setImages(res.data.profileImages);
+        setIsMatched(res.data.isMatched);
         if (res.data.isBlocked === true) {
           alert("차단된 사용자입니다.");
           goToMain();
@@ -66,7 +63,6 @@ const ProfilePage = () => {
           goToMain();
         }
       }
-      // TODO : username있으면 isLikeUser를 받아서 좋아요 상태 글자 변경
     } catch (error: any) {
       // 401 -> 로그인을 해주세요
       // 404 -> 유저가 없습니다.
@@ -81,40 +77,78 @@ const ProfilePage = () => {
     }
   };
 
-  // likeUser -> username을 보내기
-  // alarm으로 알람
   useEffect(() => {
     tryToGetProfile(username);
   }, [username]);
+
+  //const AlarmType = {
+  //    SENDLIKED = "SENDLIKED",
+  //    VISITED = "VISITED",
+  //    MESSAGED = "MESSAGED",
+  //    MATCHED = "MATCHED",
+  //    SENDDISLIKED = "SENDDISLIKED",
+  //    RECEIVEDISLIKED = "RECEIVEDISLIKED",
+  //    RECEIVELIKED = "RECEIVELIKED",
+  //  }
 
   // 여기서 보내는 username은 상대방의 이름
   useEffect(() => {
     if (socket && username) {
       console.log("profileData?.username", username);
       // socket.on("visitUserProfile", (data: { username: string }));
-      // 컴포넌트 마운트 시 사용자 상태 요청
+      // 사용자 방문시 요청
       socket.emit("visitUserProfile", username);
 
+      // matched깨지는 알람 오면 바꾸기
+      socket.on("alarm", (data: any) => {
+        console.log("alarm", data.alarmType);
+        if (data.alarmType === "MATCHED") {
+          setIsMatched(true);
+        }
+        if (data.alarmType === "UNMATCHED") {
+          setIsMatched(false);
+        }
+        if (data.alarmType === "DISLIKED") {
+          setProfileData((prevData) => ({
+            ...prevData!,
+            isReceivedLiked: false,
+          }));
+        }
+        if (data.alarmType === "LIKED") {
+          setIsMatched(false);
+          setProfileData((prevData) => ({
+            ...prevData!,
+            isReceivedLiked: true,
+          }));
+        }
+      });
+
       return () => {
-        socket.off("userStatus");
+        socket.off("alarm");
       };
     }
   }, [socket]);
 
-  // 방이 열린것으로 연결된것을 판단
-  // 상대가 좋아요를 누른것은
-
   const onClickLikeUser = () => {
-    if (profileData?.isLiked !== true) {
+    if (profileData?.isSendedLiked !== true) {
       alert("좋아요를 눌렀습니다.");
       if (socket && username) {
         socket.emit("likeUser", username);
+        setProfileData((prevData) => ({
+          ...prevData!,
+          isSendedLiked: true,
+        }));
         console.log(`Liked user: ${username}`);
       }
-    } else if (profileData?.isLiked === true) {
+    } else if (profileData?.isSendedLiked === true) {
       alert("좋아요를 취소했습니다.");
       if (socket && username) {
         socket.emit("dislikeUser", username);
+        setProfileData((prevData) => ({
+          ...prevData!,
+          isSendedLiked: false,
+          // isReceivedLiked: false,
+        }));
         console.log(`dislikeUser : ${username}`);
       }
     }
@@ -134,22 +168,6 @@ const ProfilePage = () => {
     }
   };
 
-  const handleRatingChange = (newRating: number) => {
-    setUserRating(newRating);
-  };
-
-  const tryToRateUser = async () => {
-    if (username) {
-      try {
-        const res = await axiosUserRate(userRating, username);
-        console.log("rate user", res);
-      } catch (error) {
-        alert("평점 주기에 실패했습니다.");
-        console.log("rate user error", error);
-      }
-    }
-  };
-
   const tryUserReport = async () => {
     if (username) {
       try {
@@ -165,6 +183,31 @@ const ProfilePage = () => {
     }
   };
 
+  const handleRatingChange = (newRating: number) => {
+    setUserRating(newRating);
+  };
+
+  const tryToRateUser = async () => {
+    if (username) {
+      try {
+        const res = await axiosUserRate(userRating, username);
+        console.log("rate user data", res.data);
+        console.log("rate user Avg", res.data.rateAvg);
+        alert(userRating + " 점을 주었습니다.");
+        // console.log("rate user", res);
+        setProfileData((prevData) => ({
+          ...prevData!,
+          rate: res.data.rateAvg,
+        }));
+      } catch (error) {
+        alert("평점 주기에 실패했습니다.");
+        console.log("rate user error", error);
+      }
+    }
+  };
+  console.log("!username && isMatched", !(!username && isMatched));
+  console.log("!username ", !!username);
+
   return (
     <Container>
       <InputDataContainer>
@@ -179,7 +222,9 @@ const ProfilePage = () => {
                 <p>
                   {profileData?.username}, {profileData?.age}
                 </p>
-                <OnlineStatusStyled $isOnline={isOnline}></OnlineStatusStyled>
+                <OnlineStatusStyled $isOnline={isOnline}>
+                  {profileData?.isReceivedLiked && <HeartIcon />}
+                </OnlineStatusStyled>
               </UserNameStyled>
               <UserLocationStyled>
                 {profileData?.si}, {profileData?.gu}
@@ -233,7 +278,6 @@ const ProfilePage = () => {
             </ToggleContainer>
           </RowContainer>
 
-          {/* <RowContainer> */}
           <FilterContainer>
             {["age", "rate", "location", "preference"].map((type) => (
               <FilterItemStyled key={type}>
@@ -265,14 +309,14 @@ const ProfilePage = () => {
             <ButtonStyled
               onClick={onClickLikeUser}
               disabled={!username}
-              $isLiked={profileData?.isLiked}
+              $isLiked={profileData?.isSendedLiked}
             >
-              {profileData?.isLiked ? "좋아요 취소하기" : "좋아요"}
+              {profileData?.isSendedLiked ? "좋아요 취소하기" : "좋아요"}
             </ButtonStyled>
             <ButtonStyled onClick={tryUserReport} disabled={!username}>
               신고하기
             </ButtonStyled>
-            <ButtonStyled onClick={tryUserReport} disabled={!username}>
+            <ButtonStyled onClick={goToChat} disabled={!username || !isMatched}>
               채팅하기
             </ButtonStyled>
           </ButtonContainer>

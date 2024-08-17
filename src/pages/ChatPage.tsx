@@ -6,6 +6,7 @@ import ChatRoom, { IChatContentDto } from "@/components/chat/ChatRoom";
 import { useContext, useEffect, useState } from "react";
 import { SocketContext } from "./LayoutPage";
 import GptChat from "@/components/chat/GptChat";
+import useRouter from "@/hooks/useRouter";
 
 // 이미지 경로 어떻게 받을지 생각해두기
 
@@ -18,6 +19,7 @@ const gptChatList: IChatRoomDto = {
 // const ChatPage: FC = () => { ... }
 
 const ChatPage = () => {
+  const { goToMain } = useRouter();
   const [selectUser, setSelectUser] = useState<string>("");
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [chatRoom, setChatRoom] = useState<IChatRoomDto[]>([gptChatList]);
@@ -61,9 +63,20 @@ const ChatPage = () => {
         setChatHistory((prev) => [...prev, newMessage]);
       });
 
+      socket.on("alarm", (data: any) => {
+        console.log("alarm", data.alarmType);
+
+        if (data.alarmType === "UNMATCHED") {
+          // setIsMatched(false);
+          alert("상대방이 너 싫어한대");
+          goToMain();
+        }
+      });
+
       return () => {
         socket.off("getChatList");
         socket.off("sendMessage");
+        socket.off("alarm");
       };
     }
   }, [socket]);

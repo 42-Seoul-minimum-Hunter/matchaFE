@@ -45,9 +45,10 @@ export interface ProfileDto {
 
   // 내 프로필이 아닌 상대방 프로필일 경우
   connectedAt?: Date;
-  isBlocked: false;
-  isLiked: true;
-  isOnline: false;
+  isBlocked: boolean;
+  isSendedLiked: boolean; // 내가 좋아요 보냄
+  isReceivedLiked: boolean; // 내가 좋아요 받음
+  isOnline: boolean;
 }
 
 export interface SettingDto {

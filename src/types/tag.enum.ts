@@ -71,3 +71,10 @@ export enum AlarmType {
   MATCHED = "MATCHED",
   DISLIKED = "DISLIKED",
 }
+
+export enum SortType {
+  ascAge = "ascAge",
+  descAge = "descAge",
+  ascRate = "ascRate",
+  descRate = "descRate",
+}

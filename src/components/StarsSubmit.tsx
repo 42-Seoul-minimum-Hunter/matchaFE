@@ -20,7 +20,7 @@ const StarsSubmit: React.FC<StarsProps> = ({
     const x = e.clientX - left;
     const newRating = Math.min(
       5,
-      Math.max(0, Math.round((x / width) * 50) / 10)
+      Math.max(0, Math.round((x / width) * 10) / 2)
     );
     setHoverRating(newRating);
   };

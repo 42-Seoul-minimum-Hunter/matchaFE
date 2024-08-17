@@ -30,8 +30,17 @@ const ChatRoom = ({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [inputMessage, setInputMessage] = useState<string>("");
 
+  const validateMessage = (message: string) => {
+    const messageRegex =
+      /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{}:"\\|,.\/?|ㄱ-ㅎ|ㅏ-ㅣ|가-힣]{1,255}$/;
+    return messageRegex.test(message);
+  };
+
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
+    if (validateMessage(inputMessage) === false) {
+      alert("더러운 메세지 보내지 마세요");
+    }
     if (inputMessage.trim() !== "") {
       sendMessage(inputMessage);
       setInputMessage("");

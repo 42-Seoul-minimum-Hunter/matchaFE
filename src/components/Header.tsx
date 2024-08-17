@@ -39,6 +39,7 @@ const Header = () => {
         setIsAlarm(true);
       });
 
+      // getAlarms는 알람페이지 들어간 경우
       socket.emit("getAlarms");
       return () => {
         socket.off("alarm");

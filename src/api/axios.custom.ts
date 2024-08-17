@@ -244,7 +244,8 @@ export const axiosFindUser = async (
   minRate?: number,
   maxRate?: number,
   hashtags?: string[],
-  page?: number
+  page?: number,
+  sort?: string
 ): Promise<any> => {
   try {
     const params: Record<string, string> = {};
@@ -255,6 +256,7 @@ export const axiosFindUser = async (
     if (si) params.si = si;
     if (gu) params.gu = gu;
     if (page) params.page = page.toString();
+    if (sort) params.sortInfo = sort;
 
     // hashtags 처리: undefined나 빈 배열일 경우 빈 문자열 할당
     params.hashtags = hashtags && hashtags.length > 0 ? hashtags.join(",") : "";

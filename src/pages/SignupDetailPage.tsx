@@ -11,9 +11,6 @@ import TagList, { TagProps } from "@/components/TagTemplate";
 import InputTemplate from "@/components/InputTemplate";
 import ImageUpload from "@/components/ImageUpload";
 import DropboxTemplate from "@/components/DropboxTemplate";
-
-import Loading from "@/components/chat/Loading";
-import LocationFromCoords from "@/components/location/LocationFromCoords";
 import GeoLocationHandler from "@/components/location/GeoLocationHandler";
 import { axiosUserCreate } from "@/api/axios.custom";
 import { SignupDto } from "@/types/tag.dto";
@@ -206,42 +203,26 @@ const SignupDetailPage = () => {
             type="firstname"
             label="First Name"
             value={signUpTextData.firstname}
-            // onChange={savePassword}
             onChange={handleInputChange}
-            // setErrorr={setError}
           />
           <InputTemplate
             type="lastname"
             label="last Name"
             value={signUpTextData.lastname}
-            // onChange={savePassword}
             onChange={handleInputChange}
-            // setErrorr={setError}
           />
           <InputTemplate
             type="username"
             label="유저네임"
             value={signUpTextData.username}
-            // onChange={savePassword}
             onChange={handleInputChange}
-            // setErrorr={setError}
           />
           <InputTemplate
             type="bio"
             label="약력"
             value={signUpTextData.bio}
-            // onChange={savePassword}
             onChange={handleInputChange}
-            // setErrorr={setError}
           />
-          {/* <InputTemplate
-            type="email"
-            label="email"
-            value={signUpTextData.email}
-            // onChange={savePassword}
-            onChange={handleInputChange}
-            // setErrorr={setError}
-          /> */}
         </InputContainer>
       </RowContainer>
 

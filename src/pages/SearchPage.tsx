@@ -1,5 +1,5 @@
 import { axiosFindUser } from "@/api/axios.custom";
-import { InterestLableMap } from "@/types/maps";
+import { InterestLableMap, sortLableMap } from "@/types/maps";
 import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import { tagItem } from "./SignUpPage";
@@ -22,7 +22,7 @@ const HashTagsList: tagItem[] = Object.entries(InterestLableMap).map(
   ([value, label]) => ({ value, label })
 );
 
-type ModalType = "age" | "rate" | "location" | "hashtag";
+type ModalType = "age" | "rate" | "location" | "hashtag" | "sort";
 
 const SearchPage = () => {
   const { goToMain } = useRouter();
@@ -41,9 +41,9 @@ const SearchPage = () => {
     rate: { min: 0, max: 5 },
     location: { si: "", gu: "" },
     hashtag: [] as string[],
+    sort: "descRate",
   });
 
-  // const paginate = setCurrentPage;
   const openModal = (type: ModalType) => setModalState({ isOpen: true, type });
   const closeModal = () => setModalState({ isOpen: false, type: null });
   const tryFindUser = async (page: number) => {
@@ -56,11 +56,11 @@ const SearchPage = () => {
         values.rate.min,
         values.rate.max,
         values.hashtag.length > 0 ? values.hashtag : undefined,
-        page
+        page,
+        values.sort || undefined
       );
       console.log("res search", res);
       setSearchData(res.data.users);
-      // setSearchData(res.data.profiles);
       setTotalProfiles(res.data.totalCount);
       setCurrentPage(res.data.currentPage);
     } catch (error: any) {
@@ -88,6 +88,9 @@ const SearchPage = () => {
           break;
         case "hashtag":
           setValues((prev) => ({ ...prev, hashtag: value }));
+          break;
+        case "sort":
+          setValues((prev) => ({ ...prev, sort: value }));
           break;
       }
       closeModal();
@@ -117,7 +120,7 @@ const SearchPage = () => {
   return (
     <Container>
       <FilterContainer>
-        {["age", "rate", "location", "hashtag"].map((type) => (
+        {["age", "rate", "location", "hashtag", "sort"].map((type) => (
           <FilterItemStyled
             key={type}
             onClick={() => openModal(type as ModalType)}
@@ -137,6 +140,7 @@ const SearchPage = () => {
                         values.location.gu ? `, ${values.location.gu}` : ""
                       }`
                     : "Not set")}
+                {type === "sort" && `${values.sort}`}
               </FilterValueStyled>
             </FilterValueContainer>
           </FilterItemStyled>
@@ -222,12 +226,6 @@ const SearchPage = () => {
   );
 };
 export default SearchPage;
-
-// const Pagination = styled.div`
-//   display: flex;
-//   justify-content: center;
-//   margin-top: 20px;
-// `;
 
 const Pagination = styled.div`
   display: flex;

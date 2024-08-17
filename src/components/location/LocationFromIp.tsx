@@ -3,7 +3,7 @@ import axios from "axios";
 
 const LocationFromIP = () => {
   const [location, setLocation] = useState(null);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string>();
 
   useEffect(() => {
     const fetchLocation = async () => {
