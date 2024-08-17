@@ -1,8 +1,5 @@
 import styled from "styled-components";
-import TestImage1 from "@/assets/mock/test1.png";
-import { ProfileDto, RegisterDto } from "@/types/tag.dto";
-import { tagItem } from "./SignUpPage";
-import { InterestLableMap } from "@/types/maps";
+import { ProfileDto } from "@/types/tag.dto";
 import { useContext, useEffect, useState } from "react";
 import {
   axiosProfile,
@@ -20,10 +17,7 @@ import StarsSubmit from "@/components/StarsSubmit";
 import useRouter from "@/hooks/useRouter";
 import { formatDate } from "@/utils/dataUtils";
 import { ReactComponent as HeartIcon } from "@/assets/icons/like-heart-icon.svg";
-
-const HashTagsList: tagItem[] = Object.entries(InterestLableMap).map(
-  ([value, label]) => ({ value, label })
-);
+import { HashTagsList } from "@/types/tags";
 
 // 웹소켓으로 차단하기, 좋아요 세팅
 const ProfilePage = () => {
@@ -46,6 +40,15 @@ const ProfilePage = () => {
         : await axiosProfileMe();
       console.log(`profile page ${username ? username : "me"}`, res);
 
+      // if (res.data.username === username) {
+      // console.log("res.data.username", res.data.username);
+      // console.log("username", username);
+      // console.log("vs ", username === res.data.username);
+      // console.log("잘못된 접근");
+      // goToProfileMe();
+      // tryToGetProfile();
+      //   return;
+      // }
       const { isOnline, profileImages, isBlocked, isMatched } = res.data;
 
       setProfileData(res.data);
@@ -54,24 +57,20 @@ const ProfilePage = () => {
       username && setIsMatched(isMatched);
 
       if (isBlocked) {
-        alert("차단된 사용자입니다.");
+        alert("접근이 불가능한 사용자입니다.");
         goToMain();
       }
     } catch (error: any) {
       goToMain();
-
       if (error.response?.status === 404) {
         alert("유저가 없습니다.");
       } else if (error.response?.status === 401) {
         alert("로그인을 해주세요.");
       }
-
-      console.log("profile page error", error);
     }
   };
 
   useEffect(() => {
-    // tryToGetProfile(username);
     tryToGetProfile(username || undefined);
   }, [username]);
 
@@ -129,7 +128,6 @@ const ProfilePage = () => {
         setProfileData((prevData) => ({
           ...prevData!,
           isSendedLiked: false,
-          // isReceivedLiked: false,
         }));
         console.log(`dislikeUser : ${username}`);
       }
@@ -144,8 +142,7 @@ const ProfilePage = () => {
         goToMain();
         alert(username + "을 차단했습니다.");
       } catch (error) {
-        alert("차단에 실패했습니다.");
-        console.log("block user error", error);
+        alert("'좋아요'를 누른 사람은 차단이 불가능 합니다.");
       }
     }
   };
@@ -155,12 +152,10 @@ const ProfilePage = () => {
       try {
         const res = await axiosUserReport(username);
         console.log("report user", res);
-
         goToMain();
         alert("유저가 신고되었습니다.");
       } catch (error) {
-        alert("신고에 실패했습니다.");
-        console.log("report user error", error);
+        alert("'좋아요'를 누른 사람은 신고가 불가능 합니다.");
       }
     }
   };
@@ -204,7 +199,10 @@ const ProfilePage = () => {
                 <p>
                   {profileData?.username}, {profileData?.age}
                 </p>
-                <OnlineStatusStyled $isOnline={isOnline}>
+                <OnlineStatusStyled
+                  $isOnline={isOnline}
+                  $isReceivedLiked={profileData?.isReceivedLiked}
+                >
                   {profileData?.isReceivedLiked && <HeartIcon />}
                 </OnlineStatusStyled>
               </UserNameStyled>
@@ -231,7 +229,6 @@ const ProfilePage = () => {
             <TitleStyled>User Photo</TitleStyled>
             <ImageUploader
               images={images}
-              // images={profileData?.hashtags || []}
               setImages={setImages}
               isReadOnly={true}
             />
@@ -285,9 +282,6 @@ const ProfilePage = () => {
             ))}
           </FilterContainer>
           <ButtonContainer>
-            <ButtonStyled onClick={onClickBlockUser} disabled={!username}>
-              차단하기
-            </ButtonStyled>
             <ButtonStyled
               onClick={onClickLikeUser}
               disabled={!username}
@@ -295,11 +289,14 @@ const ProfilePage = () => {
             >
               {profileData?.isSendedLiked ? "좋아요 취소하기" : "좋아요"}
             </ButtonStyled>
-            <ButtonStyled onClick={tryUserReport} disabled={!username}>
-              신고하기
-            </ButtonStyled>
             <ButtonStyled onClick={goToChat} disabled={!username || !isMatched}>
               채팅하기
+            </ButtonStyled>
+            <ButtonStyled onClick={onClickBlockUser} disabled={!username}>
+              차단하기
+            </ButtonStyled>
+            <ButtonStyled onClick={tryUserReport} disabled={!username}>
+              신고하기
             </ButtonStyled>
           </ButtonContainer>
         </RightContainer>
@@ -585,38 +582,140 @@ const StarSubmitButtonStyled = styled.button<{ disabled: boolean }>`
   }
 `;
 
-// const OnlineStatusStyled = styled.div<{ $userStatus: boolean }>`
-//   background-color: var(--online);
-//   width: 20px;
-//   height: 20px;
-//   border-radius: 20px;
-//   box-shadow: 0 0 0.5rem #fff, inset 0 0 0.5rem #fff, 0 0 1rem var(--online),
-//     inset 0 0 1rem var(--online), 0 0 4rem var(--online),
-//     inset 0 0 2rem var(--online);
-// `;
-
-const OnlineStatusStyled = styled.div<{ $isOnline: boolean }>`
-  background-color: ${(props) =>
-    props.$isOnline ? "var(--online)" : "var(--offline)"};
+const OnlineStatusStyled = styled.div<{
+  $isOnline: boolean;
+  $isReceivedLiked?: boolean;
+}>`
+  position: relative;
   width: 20px;
   height: 20px;
   border-radius: 20px;
-  /* box-shadow: ${(props) =>
-    props.$isOnline
-      ? "0 0 0.5rem #fff, inset 0 0 0.5rem #fff, 0 0 1rem var(--online), inset 0 0 1rem var(--online), 0 0 4rem var(--online), inset 0 0 2rem var(--online)"
-      : "none"}; */
+  background-color: ${(props) =>
+    props.$isOnline ? "var(--online)" : "var(--offline)"};
   box-shadow: ${(props) =>
     props.$isOnline
       ? `0 0 0.5rem #fff, 
-       inset 0 0 0.5rem #fff, 
-       0 0 1rem var(--online),
-       inset 0 0 1rem var(--online), 
-       0 0 4rem var(--online),
-       inset 0 0 2rem var(--online)`
+         inset 0 0 0.5rem #fff, 
+         0 0 1rem var(--online),
+         inset 0 0 1rem var(--online), 
+         0 0 4rem var(--online),
+         inset 0 0 2rem var(--online)`
       : `0 0 0.5rem #fff, 
-       inset 0 0 0.5rem #fff, 
-       0 0 1rem var(--offline),
-       inset 0 0 1rem var(--offline), 
-       0 0 4rem var(--offline),
-       inset 0 0 2rem var(--offline)`};
+         inset 0 0 0.5rem #fff, 
+         0 0 1rem var(--offline),
+         inset 0 0 1rem var(--offline), 
+         0 0 4rem var(--offline),
+         inset 0 0 2rem var(--offline)`};
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 55px;
+    left: 5px;
+    /* right: 0px;
+    bottom: 0; */
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    z-index: 1;
+  }
+
+  ${({ $isReceivedLiked }) =>
+    $isReceivedLiked &&
+    `
+    &::before {
+      background-color: var(--brand-sub-2);
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1.3);
+        box-shadow: 0 0 0 0 rgba(255, 82, 82, 0.7);
+      }
+      
+      70% {
+        transform: scale(1.35);
+        box-shadow: 0 0 0 10px rgba(255, 82, 82, 0);
+      }
+      
+      100% {
+        transform: scale(1.3);
+        box-shadow: 0 0 0 0 rgba(255, 82, 82, 0);
+      }
+    }
+  `}
+
+  & > svg {
+    position: absolute;
+    top: 60px;
+    left: 10px;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    /* color: white; // 하트 아이콘 색상 */
+  }
 `;
+
+// const OnlineStatusStyled = styled.div<{
+//   $isOnline: boolean;
+//   $isReceivedLiked?: boolean;
+// }>`
+//   position: relative;
+//   & > svg {
+//     z-index: 3;
+//   }
+//   ${({ $isReceivedLiked }) =>
+//     $isReceivedLiked &&
+//     `
+//     &::after {
+//       content: '';
+//       position: absolute;
+//       top: 20px;
+//       right: 5px;
+//       z-index: 0;
+//       width: 10px;
+//       height: 10px;
+//       background-color: var(--brand-main-1);
+//       border-radius: 50%;
+//       animation: pulse 1s infinite;
+//     }
+
+//     @keyframes pulse {
+//       0% {
+//         transform: scale(0.95);
+//         box-shadow: 0 0 0 0 rgba(255, 82, 82, 0.7);
+//       }
+
+//       70% {
+//         transform: scale(1);
+//         box-shadow: 0 0 0 10px rgba(255, 82, 82, 0);
+//       }
+
+//       100% {
+//         transform: scale(0.95);
+//         box-shadow: 0 0 0 0 rgba(255, 82, 82, 0);
+//       }
+//     }
+//   `}
+//   /* } */
+
+//   background-color: ${(props) =>
+//     props.$isOnline ? "var(--online)" : "var(--offline)"};
+//   width: 20px;
+//   height: 20px;
+//   border-radius: 20px;
+//   box-shadow: ${(props) =>
+//     props.$isOnline
+//       ? `0 0 0.5rem #fff,
+//        inset 0 0 0.5rem #fff,
+//        0 0 1rem var(--online),
+//        inset 0 0 1rem var(--online),
+//        0 0 4rem var(--online),
+//        inset 0 0 2rem var(--online)`
+//       : `0 0 0.5rem #fff,
+//        inset 0 0 0.5rem #fff,
+//        0 0 1rem var(--offline),
+//        inset 0 0 1rem var(--offline),
+//        0 0 4rem var(--offline),
+//        inset 0 0 2rem var(--offline)`};
+// `;

@@ -98,7 +98,6 @@ const Header = () => {
               Setting
             </NavStyled>
             <NavStyled onClick={() => onClickLogout()}>Logout</NavStyled>
-            {/* <NavStyled onClick={() => test()}>Logout</NavStyled> */}
           </>
         )}
       </HeaderContainer>
