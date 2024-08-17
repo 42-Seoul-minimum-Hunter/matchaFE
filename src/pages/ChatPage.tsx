@@ -2,7 +2,10 @@ import styled from "styled-components";
 import TestImage1 from "@/assets/mock/test1.png";
 import TestImage2 from "@/assets/icons/gpt-icon.svg";
 import ChatList, { IChatRoomDto } from "@/components/chat/ChatList";
-import ChatRoom, { IChatContentDto } from "@/components/chat/ChatRoom";
+import ChatRoom, {
+  IChatReciveContentDto,
+  IChatSendContentDto,
+} from "@/components/chat/ChatRoom";
 import { useContext, useEffect, useState } from "react";
 import { SocketContext } from "./LayoutPage";
 import GptChat from "@/components/chat/GptChat";
@@ -23,18 +26,19 @@ const ChatPage = () => {
   const [selectUser, setSelectUser] = useState<string>("");
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [chatRoom, setChatRoom] = useState<IChatRoomDto[]>([gptChatList]);
-  const [chatHistory, setChatHistory] = useState<IChatContentDto[]>([]);
+  const [chatHistory, setChatHistory] = useState<IChatReciveContentDto[]>([]);
   const [showChatRoom, setShowChatRoom] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const socket = useContext(SocketContext);
 
+  // useEffect(() => {
+  //   // ChatGPT 방으로 시작
+  //   // setSelectUser("Chatgpt");
+  //   onClickChatRoom(0);
+  // }, []);
+
   useEffect(() => {
     if (selectUser === "Chatgpt") {
-      console.log("selectUser ", selectUser);
-      // setSelectedIndex(0);
-      // setSelectUser("Chatgpt");
-      // setShowChatRoom(true);
-      // setSelectedIndex(0);
       return;
     }
 
@@ -58,7 +62,7 @@ const ChatPage = () => {
       })();
 
       // 내가 메세지 보내는 경우 -> sendMessage , username, message
-      socket.on("sendMessage", (newMessage: IChatContentDto) => {
+      socket.on("sendMessage", (newMessage: IChatReciveContentDto) => {
         console.log("BE Message on", newMessage);
         setChatHistory((prev) => [...prev, newMessage]);
       });
@@ -83,7 +87,6 @@ const ChatPage = () => {
 
   const onClickChatRoom = async (index: number) => {
     setSelectedIndex(index);
-    console.log("chatroom index", index);
     const selectedUser = chatRoom[index].username;
     setSelectUser(selectedUser);
     setShowChatRoom(true);
@@ -97,10 +100,8 @@ const ChatPage = () => {
     if (socket) {
       setIsLoading(true);
       socket.emit("joinChatRoom", selectedUser);
-      // socket.emit("getMessages", { username: selectedUser });
-
       await new Promise<void>((resolve) => {
-        socket.once("getMessages", (messages: IChatContentDto[]) => {
+        socket.once("getMessages", (messages: IChatReciveContentDto[]) => {
           console.log("getMessages", messages);
           setChatHistory(messages);
           setIsLoading(false);
@@ -112,7 +113,7 @@ const ChatPage = () => {
 
   const sendMessage = (message: string) => {
     if (socket && selectUser) {
-      const newMessage: IChatContentDto = {
+      const newMessage: IChatSendContentDto = {
         message,
         username: selectUser,
         time: new Date(),
@@ -122,7 +123,7 @@ const ChatPage = () => {
   };
 
   const updateChatRoom = (newChatRooms: IChatRoomDto[]) => {
-    setChatRoom((prevChatRoom) => {
+    setChatRoom(() => {
       const filteredNewChatRooms = newChatRooms.filter(
         (room) => room.username !== gptChatList.username
       );
@@ -161,7 +162,8 @@ const ChatPage = () => {
         ) : (
           <ChatRoom
             chatHistory={chatHistory}
-            selectUserImg={chatRoom[selectedIndex]?.profileImage}
+            // selectUserImg={chatRoom[selectedIndex]?.profileImage}
+            selectUserImg={chatRoom[selectedIndex ?? 0]?.profileImage}
             username={selectUser}
             sendMessage={sendMessage}
           />

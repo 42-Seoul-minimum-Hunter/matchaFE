@@ -233,6 +233,7 @@ const SettingPage = () => {
 
       const response = await axiosSettingModify(updatedData);
       console.log("프로필 업데이트 성공:", response);
+      alert("프로필이 업데이트 되었습니다.");
       setIsModified(false);
       // 성공 메시지 표시
     } catch (error) {
@@ -413,8 +414,6 @@ const InputDataContainer = styled.div`
   display: flex;
   padding-top: 6vh;
 
-  /* flex-direction: column; */
-  /* align-items: center; */
   gap: 24px;
   justify-content: center;
   border-radius: 10px;
