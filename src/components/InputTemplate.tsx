@@ -24,8 +24,10 @@ const InputTemplate = (props: InputTemplateProps) => {
       props.checkPW
     );
     setError(validationError);
-    // if (error) props.setErrorr(true);
-    // else props.setErrorr(false);
+    if (props.setErrorr) {
+      // setErrorr이 존재할 때만 호출
+      props.setErrorr(!!validationError);
+    }
   };
 
   return (

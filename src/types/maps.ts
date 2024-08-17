@@ -5,6 +5,7 @@ import {
   InterestType,
   PreferenceType,
   RateType,
+  SortType,
 } from "@/types/tag.enum";
 
 export const GenderLableMap = {
@@ -69,7 +70,7 @@ export const AlarmLableMap = {
   [AlarmType.LIKED]: "You received a like from",
   [AlarmType.VISITED]: "Your profile was viewed by",
   [AlarmType.MESSAGED]: "New Message Received by",
-  [AlarmType.MATCHED]: "Your Like Was Reciprocated by",
+  [AlarmType.MATCHED]: "Your Like Was Matched by",
   [AlarmType.DISLIKED]: "A Connection Removed Like ",
 };
 
@@ -79,4 +80,11 @@ export const rateLableMap = {
   [RateType.THREE]: "3",
   [RateType.FOUR]: "4",
   [RateType.FIVE]: "5",
+};
+
+export const sortLableMap = {
+  [SortType.ascAge]: "나이 낮은순서",
+  [SortType.descAge]: "나이 높은순서",
+  [SortType.ascRate]: "평점 낮은순서",
+  [SortType.descRate]: "평점 낮은순서",
 };

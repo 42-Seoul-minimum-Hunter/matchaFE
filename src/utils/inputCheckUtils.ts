@@ -10,7 +10,8 @@ export function validateUsername(username: string) {
 
 // password 검사 함수
 export function validatePassword(password: string) {
-  const passwordRegex = /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{};:"\\|,.<>\/?]{8,15}$/;
+  const passwordRegex =
+    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#.])[A-Za-z\d@$!%*#?&]{8,}$/;
   return passwordRegex.test(password);
 }
 
@@ -476,7 +477,7 @@ export const useInputValidation = (
       return !validateUsername(value) ? "유저네임은 4-15자여야 합니다." : null;
     case "password":
       return !validatePassword(value)
-        ? "패스워드는 알파벳 8-15자여야 합니다."
+        ? "비밀번호는 최소 8글자이며, 알파벳, 숫자, 특수문자 '!@#.'를 포함해야 합니다."
         : null;
     case "firstname":
     case "lastname":

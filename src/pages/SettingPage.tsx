@@ -1,5 +1,5 @@
 import InputTemplate from "@/components/InputTemplate";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { tagItem } from "./LoginPage";
 import ImageUploader from "@/components/ImageUpload";
@@ -12,6 +12,9 @@ import {
 import { LocationData } from "@/assets/mock/mock";
 import { AgeTagItem } from "./SignupDetailPage";
 import TagList, { TagProps } from "@/components/TagTemplate";
+import { axiosSettingCreate, axiosSettingModify } from "@/api/axios.custom";
+import { SettingDto } from "@/types/tag.dto";
+import useRouter from "@/hooks/useRouter";
 
 const ageTagList: AgeTagItem[] = Array.from({ length: 81 }, (_, index) => {
   const age = index + 20;
@@ -20,34 +23,128 @@ const ageTagList: AgeTagItem[] = Array.from({ length: 81 }, (_, index) => {
     label: `${age}세`,
   };
 });
+const genderTagList: tagItem[] = Object.entries(GenderLableMap).map(
+  ([value, label]) => ({ value, label })
+);
+const preferenceTagList: tagItem[] = Object.entries(PreferenceLableMap).map(
+  ([value, label]) => ({ value, label })
+);
 
 const SettingPage = () => {
+  const [signupError, setSignupError] = useState<string | null>(null);
+  const { goToMain } = useRouter();
+  const [settingData, setSettingData] = useState<SettingDto | undefined>(
+    undefined
+  );
+  const [isModified, setIsModified] = useState(false);
   const [images, setImages] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [locationGuTagList, setLocationGuTagList] = useState<tagItem[]>([]);
   const [signUpTextData, setSignUpTextData] = useState({
     firstname: "",
     lastname: "",
     email: "",
-    password: "",
+    bio: "",
     username: "",
   });
-
   const [signUpDropboxData, setSignUpDropboxData] = useState({
     location_si: "",
     location_gu: "",
     gender: "",
     preference: "",
+    age: "",
   });
-
   const [toggleData, setToggleData] = useState({
     twoFactor: false,
     location: false,
   });
 
-  const handleToggle = (field: "twoFactor" | "location") => {
+  useEffect(() => {
+    trySettingProfile();
+  }, []);
+
+  useEffect(() => {
+    if (settingData) {
+      setImages(settingData.profileImages || []);
+      setSelectedTags(settingData.hashtags || []);
+      setSignUpTextData({
+        firstname: settingData.firstName || "",
+        lastname: settingData.lastName || "",
+        email: settingData.email || "",
+        bio: settingData.biography || "",
+        username: settingData.username || "",
+      });
+      setSignUpDropboxData({
+        location_si: settingData.si || "",
+        location_gu: settingData.gu || "",
+        gender: settingData.gender || "",
+        preference: settingData.preference || "",
+        age: settingData.age?.toString() || "",
+      });
+      setToggleData({
+        twoFactor: settingData.isTwofa || false,
+        location: settingData.isGpsAllowed || false,
+      });
+    }
+  }, [settingData]);
+
+  const checkModification = useCallback(() => {
+    if (!settingData) return false;
+
+    const isProfileModified =
+      signUpTextData.firstname !== settingData.firstName ||
+      signUpTextData.lastname !== settingData.lastName ||
+      signUpTextData.email !== settingData.email ||
+      signUpTextData.bio !== settingData.biography ||
+      signUpTextData.username !== settingData.username;
+
+    const isDropboxModified =
+      signUpDropboxData.location_si !== settingData.si ||
+      signUpDropboxData.location_gu !== settingData.gu ||
+      signUpDropboxData.gender !== settingData.gender ||
+      signUpDropboxData.preference !== settingData.preference ||
+      signUpDropboxData.age !== settingData.age?.toString();
+
+    const isToggleModified =
+      toggleData.twoFactor !== settingData.isTwofa ||
+      toggleData.location !== settingData.isGpsAllowed;
+
+    const isTagsModified =
+      JSON.stringify(selectedTags) !== JSON.stringify(settingData.hashtags);
+    const isImagesModified =
+      JSON.stringify(images) !== JSON.stringify(settingData.profileImages);
+
+    return (
+      isProfileModified ||
+      isDropboxModified ||
+      isToggleModified ||
+      isTagsModified ||
+      isImagesModified
+    );
+  }, [
+    signUpTextData,
+    signUpDropboxData,
+    toggleData,
+    selectedTags,
+    images,
+    settingData,
+  ]);
+
+  useEffect(() => {
+    setIsModified(checkModification());
+  }, [
+    signUpTextData,
+    signUpDropboxData,
+    toggleData,
+    selectedTags,
+    images,
+    checkModification,
+  ]);
+
+  const handleToggle = (field: "twoFactor" | "location", value: boolean) => {
     setToggleData((prev) => ({
       ...prev,
-      [field]: !prev[field],
+      [field]: value,
     }));
   };
 
@@ -59,7 +156,6 @@ const SettingPage = () => {
 
   const handleDropboxChange = (name: string, option: tagItem) => {
     setSignUpDropboxData((prev) => ({ ...prev, [name]: option.value }));
-
     if (name === "location_si") {
       const selectedArea = LocationData.find(
         (area) => area.name === option.value
@@ -70,27 +166,18 @@ const SettingPage = () => {
           label: gu,
         }));
         setLocationGuTagList(guList);
+        // 'si'가 변경되면 'gu' 초기화
+        setSignUpDropboxData((prev) => ({ ...prev, location_gu: "" }));
       } else {
         setLocationGuTagList([]);
       }
     }
   };
 
-  const genderTagList: tagItem[] = Object.entries(GenderLableMap).map(
-    ([value, label]) => ({ value, label })
-  );
-  const preferenceTagList: tagItem[] = Object.entries(PreferenceLableMap).map(
-    ([value, label]) => ({ value, label })
-  );
-
   const locationSiTagList: tagItem[] = LocationData.map((area) => ({
     value: area.name,
     label: area.name,
   }));
-
-  // hashtags
-  const dummySelectHastags = ["HEALTH", "PHOTOGRAPHY"];
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const onClickTags = (tag: TagProps) => {
     setSelectedTags((prev) => {
@@ -105,11 +192,58 @@ const SettingPage = () => {
     ([value, label]) => ({ value, label })
   );
 
+  const trySettingProfile = async () => {
+    try {
+      const res = await axiosSettingCreate();
+      setSettingData(res.data);
+      console.log("res", res);
+    } catch (error) {
+      goToMain();
+      alert("로그인을 해주세요");
+    }
+  };
+
+  const updateProfile = async () => {
+    if (images.length < 5) {
+      setSignupError("최소 5개의 이미지를 업로드해야 합니다.");
+      return;
+    }
+    if (!isModified) {
+      console.log("변경사항이 없습니다.");
+      return;
+    }
+
+    try {
+      const updatedData: SettingDto = {
+        firstName: signUpTextData.firstname,
+        lastName: signUpTextData.lastname,
+        email: signUpTextData.email,
+        username: signUpTextData.username,
+        biography: signUpTextData.bio,
+        si: signUpDropboxData.location_si,
+        gu: signUpDropboxData.location_gu,
+        gender: signUpDropboxData.gender,
+        preference: signUpDropboxData.preference,
+        age: parseInt(signUpDropboxData.age),
+        isTwofa: toggleData.twoFactor,
+        isGpsAllowed: toggleData.location,
+        hashtags: selectedTags,
+        profileImages: images,
+      };
+
+      const response = await axiosSettingModify(updatedData);
+      console.log("프로필 업데이트 성공:", response);
+      setIsModified(false);
+      // 성공 메시지 표시
+    } catch (error) {
+      console.error("프로필 업데이트 실패:", error);
+      // 에러 메시지 표시
+    }
+  };
+
   return (
     <Container>
       <InputDataContainer>
-        {/* <LocationFromIP />
-      <LocationFromCoords latitude={37.4882059} longitude={127.0647553} /> */}
         <LeftContainer>
           <RowContainer>
             <TitleStyled>User Profile</TitleStyled>
@@ -133,17 +267,20 @@ const SettingPage = () => {
                 onChange={handleInputChange}
               />
               <InputTemplate
-                type="password"
-                label="비밀번호"
-                value={signUpTextData.password}
+                type="username"
+                label="유저네임"
+                value={signUpTextData.username}
+                // onChange={savePassword}
                 onChange={handleInputChange}
+                // setErrorr={setError}
               />
             </InputContainer>
           </RowContainer>
           <RowContainer>
             <TitleStyled>User Photo</TitleStyled>
-            {/* <ImageUpload /> */}
             <ImageUploader images={images} setImages={setImages} />
+            {signupError ||
+              (images.length < 5 && <ErrorStyled>{signupError}</ErrorStyled>)}
           </RowContainer>
 
           <RowContainer>
@@ -155,6 +292,7 @@ const SettingPage = () => {
                 onSelect={(option) =>
                   handleDropboxChange("location_si", option)
                 }
+                selectedValue={signUpDropboxData.location_si}
               />
               <DropboxTemplate
                 options={locationGuTagList}
@@ -162,29 +300,32 @@ const SettingPage = () => {
                 onSelect={(option) =>
                   handleDropboxChange("location_gu", option)
                 }
+                selectedValue={signUpDropboxData.location_gu}
+                disabled={!signUpDropboxData.location_si}
               />
               <DropboxTemplate
                 options={genderTagList}
                 type="gender"
                 onSelect={(option) => handleDropboxChange("gender", option)}
+                selectedValue={signUpDropboxData.gender}
               />
               <DropboxTemplate
                 options={preferenceTagList}
                 type="preference"
                 onSelect={(option) => handleDropboxChange("preference", option)}
+                selectedValue={signUpDropboxData.preference}
               />
               <DropboxTemplate
                 options={ageTagList}
                 type="age"
                 onSelect={(option) => handleDropboxChange("age", option)}
+                selectedValue={signUpDropboxData.age}
               />
               <InputTemplate
-                type="username"
-                label="유저네임"
-                value={signUpTextData.username}
-                // onChange={savePassword}
+                type="bio"
+                label="약력"
+                value={signUpTextData.bio}
                 onChange={handleInputChange}
-                // setErrorr={setError}
               />
             </InputContainer>
           </RowContainer>
@@ -197,13 +338,13 @@ const SettingPage = () => {
               <TagContainer>
                 <TagStyled
                   $selected={toggleData.twoFactor}
-                  onClick={() => handleToggle("twoFactor")}
+                  onClick={() => handleToggle("twoFactor", true)}
                 >
                   허용
                 </TagStyled>
                 <TagStyled
                   $selected={!toggleData.twoFactor}
-                  onClick={() => handleToggle("twoFactor")}
+                  onClick={() => handleToggle("twoFactor", false)}
                 >
                   거부
                 </TagStyled>
@@ -213,13 +354,13 @@ const SettingPage = () => {
               <TagContainer>
                 <TagStyled
                   $selected={toggleData.location}
-                  onClick={() => handleToggle("location")}
+                  onClick={() => handleToggle("location", true)}
                 >
                   허용
                 </TagStyled>
                 <TagStyled
                   $selected={!toggleData.location}
-                  onClick={() => handleToggle("location")}
+                  onClick={() => handleToggle("location", false)}
                 >
                   거부
                 </TagStyled>
@@ -232,15 +373,15 @@ const SettingPage = () => {
             <TagList
               tags={HashTagsList}
               onTagSelect={onClickTags}
-              selectedTags={dummySelectHastags}
+              selectedTags={selectedTags}
               // onTagSelect={(tag) => onClickTags(tag)}
             />
           </RowContainer>
         </RightContainer>
       </InputDataContainer>
-      {/* 수정하기 버튼 생성할까..? */}
-      {/* <ButtonStyled>edit</ButtonStyled> */}
-      <ButtonStyled>수정하기</ButtonStyled>
+      <ButtonStyled onClick={updateProfile} disabled={!isModified}>
+        {isModified ? "수정하기" : "변경사항 없음"}
+      </ButtonStyled>
     </Container>
   );
 };
@@ -250,11 +391,12 @@ const Container = styled.div`
   flex-direction: column;
   flex-direction: column;
   align-items: center;
+  width: 100%;
 `;
 
 const ButtonStyled = styled.button`
   @media screen and (max-width: 768px) {
-    width: 100%;
+    width: 90%;
     max-width: none;
   }
   width: 350px;
@@ -287,9 +429,10 @@ const InputDataContainer = styled.div`
   }
 
   @media screen and (max-width: 768px) {
+    width: 100%;
     padding-top: 4vh;
-    /* padding-left: 2.5rem;
-    padding-right: 2.5rem; */
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 `;
 
@@ -388,12 +531,23 @@ const InputContainer = styled.div`
     max-width: 350px;
   }
 
-  @media screen and (max-width: 876px) {
+  @media screen and (max-width: 1360px) {
     width: 100%;
     & > div {
       max-width: none;
     }
   }
+`;
+
+const ErrorStyled = styled.div`
+  /* margin-left: 20px; */
+  margin-top: 4px;
+  font-weight: 400;
+  line-height: 1.4;
+  font-size: 0.8rem;
+  letter-spacing: -0.025em;
+  color: var(--status-error-1);
+  width: 250px;
 `;
 
 export default SettingPage;

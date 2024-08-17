@@ -1,47 +1,76 @@
 import Alarm, { IAlarmProps } from "@/components/Alarm";
-import { AlarmType } from "@/types/tag.enum";
+import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
-
-const mockAlarmData: IAlarmProps[] = [
-  {
-    type: AlarmType.LIKED,
-    lastTime: "2024-06-15T12:00:00",
-    isViewed: false,
-    username: "John",
-  },
-  {
-    type: AlarmType.VISITED,
-    lastTime: "2024-06-14T15:30:00",
-    isViewed: true,
-    username: "Emily",
-  },
-  {
-    type: AlarmType.MESSAGED,
-    lastTime: "2024-06-13T09:45:00",
-    isViewed: false,
-    username: "Michael",
-  },
-  {
-    type: AlarmType.MATCHED,
-    lastTime: "2024-06-13T09:45:00",
-    isViewed: false,
-    username: "Test",
-  },
-  {
-    type: AlarmType.DISLIKED,
-    lastTime: "2024-06-13T09:45:00",
-    isViewed: true,
-    username: "Code",
-  },
-  // Add more mock data as needed
-];
+import { SocketContext } from "./LayoutPage";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { userAlarm, userAlarmContent } from "@/recoil/atoms";
+import { axiosCheckJWT } from "@/api/axios.custom";
+import useRouter from "@/hooks/useRouter";
 
 const AlarmPage = () => {
+  const { goToMain } = useRouter();
+  const setHeaderAlarm = useSetRecoilState(userAlarm);
+  const [alarms, setAlarms] = useRecoilState<IAlarmProps[]>(userAlarmContent);
+  const socket = useContext(SocketContext);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    setHeaderAlarm(false);
+
+    const fetchAlarms = async () => {
+      if (socket) {
+        setIsLoading(true);
+
+        return new Promise<void>((resolve) => {
+          socket.emit("getAlarms");
+
+          socket.on("getAlarms", (data: IAlarmProps[]) => {
+            setAlarms(data);
+            console.log("getAlarms", data);
+            resolve();
+          });
+        });
+      }
+    };
+
+    (async () => {
+      await fetchAlarms();
+      setIsLoading(false);
+    })();
+
+    return () => {
+      if (socket) {
+        socket.off("getAlarms");
+      }
+    };
+  }, [socket, setAlarms, setHeaderAlarm]);
+
+  const tryCheckJwt = () => {
+    try {
+      const res = axiosCheckJWT();
+      console.log("res", res);
+    } catch (error: any) {
+      // 깨달은 것 -> 404오류는 catch로 안 잡힘
+      console.log("jwt is not valid", error);
+      alert("jwt is not valid");
+    }
+  };
+
+  useEffect(() => {
+    tryCheckJwt();
+  }, []);
+
+  if (isLoading) {
+    return <Wrapper>알람을 불러오는 중...</Wrapper>;
+  }
+
   return (
     <Wrapper>
-      {mockAlarmData.map((alarm, index) => (
-        <Alarm key={index} {...alarm} />
-      ))}
+      {alarms.length !== 0 ? (
+        alarms.map((alarm, index) => <Alarm key={index} {...alarm} />)
+      ) : (
+        <div>알람이 없습니다.</div>
+      )}
     </Wrapper>
   );
 };

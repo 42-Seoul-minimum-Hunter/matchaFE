@@ -24,9 +24,17 @@ const useRouter = () => {
   const goToResetPW = () => {
     navigate("/resetPW");
   };
-
+  const goToSetting = () => {
+    navigate("/setting");
+  };
   const goToProfileMe = () => {
     navigate("/profile");
+  };
+  const goToTwofactor = () => {
+    navigate("/twoFactor");
+  };
+  const goToMain = () => {
+    navigate("/main");
   };
 
   const goToProfileUserClick = (nickname: string) => {
@@ -43,6 +51,9 @@ const useRouter = () => {
     goToResetPW,
     goToProfileMe,
     goToProfileUserClick,
+    goToSetting,
+    goToMain,
+    goToTwofactor,
   };
 };
 

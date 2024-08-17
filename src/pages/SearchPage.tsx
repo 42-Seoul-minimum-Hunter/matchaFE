@@ -1,37 +1,34 @@
 import { axiosFindUser } from "@/api/axios.custom";
-
-import { ageLableMap, InterestLableMap, rateLableMap } from "@/types/maps";
+import { InterestLableMap, sortLableMap } from "@/types/maps";
 import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
 import { tagItem } from "./SignUpPage";
 import { ReactComponent as FilterIcon } from "@/assets/icons/filter-icon.svg";
-
 import TagList from "@/components/TagTemplate";
 import FilterModal from "@/components/search/FilterModal";
 import SearchCard from "@/components/search/SearchCard";
+import useRouter from "@/hooks/useRouter";
 
 export interface ISearchDateDto {
   profileImages: string;
   username: string;
   age: number;
   rate: number;
-  // 지역도 요청하기
   si?: string;
   gu?: string;
-}
-
-export interface IRangeDto {
-  rate: { min: number; max: number };
-  age: { min: number; max: number };
-  location: { si: string; gu: string };
 }
 
 const HashTagsList: tagItem[] = Object.entries(InterestLableMap).map(
   ([value, label]) => ({ value, label })
 );
 
+type ModalType = "age" | "rate" | "location" | "hashtag" | "sort";
+
 const SearchPage = () => {
+  const { goToMain } = useRouter();
   const [searchData, setSearchData] = useState<ISearchDateDto[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalProfiles, setTotalProfiles] = useState(0);
   const [modalState, setModalState] = useState<{
     isOpen: boolean;
     type: ModalType | null;
@@ -44,12 +41,12 @@ const SearchPage = () => {
     rate: { min: 0, max: 5 },
     location: { si: "", gu: "" },
     hashtag: [] as string[],
+    sort: "descRate",
   });
 
   const openModal = (type: ModalType) => setModalState({ isOpen: true, type });
   const closeModal = () => setModalState({ isOpen: false, type: null });
-
-  const tryFindUser = async () => {
+  const tryFindUser = async (page: number) => {
     try {
       const res = await axiosFindUser(
         values.location.si || undefined,
@@ -58,42 +55,20 @@ const SearchPage = () => {
         values.age.max,
         values.rate.min,
         values.rate.max,
-        values.hashtag.length > 0 ? values.hashtag : undefined
+        values.hashtag.length > 0 ? values.hashtag : undefined,
+        page,
+        values.sort || undefined
       );
-      console.log("res", res);
-      console.log("res data", res.data.users);
+      console.log("res search", res);
       setSearchData(res.data.users);
+      setTotalProfiles(res.data.totalCount);
+      setCurrentPage(res.data.currentPage);
     } catch (error: any) {
+      goToMain();
+      // alert("로그인을 해주세요");
       console.log("search page error", error);
     }
   };
-
-  // 해당 유저 선택할 때
-
-  // const socket = useContext(SocketContext);
-  // useEffect(() => {
-  //   socket.on("connect", () => {
-  //     {
-  //       message: "message";
-  //       id: 1;
-  //     }
-  //   });
-  // }, []);
-
-  // const socket = useContext(SocketContext);
-  // socket.on("connect", () => {});
-  // useEffect(() => {
-  //   socket.on("message", () => {
-  //     console.log("message");
-  //   });
-  // }, []);
-  // sendMessage();
-
-  type ModalType = "age" | "rate" | "location" | "hashtag";
-
-  useEffect(() => {
-    console.log("values", values);
-  }, [values]);
 
   const handleSave = (value: any) => {
     if (modalState.type) {
@@ -114,29 +89,29 @@ const SearchPage = () => {
         case "hashtag":
           setValues((prev) => ({ ...prev, hashtag: value }));
           break;
+        case "sort":
+          setValues((prev) => ({ ...prev, sort: value }));
+          break;
       }
-      // tryFindUser();
       closeModal();
     }
   };
 
   useEffect(() => {
-    tryFindUser();
+    tryFindUser(1);
   }, [values]);
 
-  // useEffect(() => {
-  //   tryFindUser();
-  // }, []);
+  const totalPages = Math.ceil(totalProfiles / 15);
+  const pageGroup = Math.ceil(currentPage / 10);
+  const lastPage = pageGroup * 10;
+  const firstPage = lastPage - 9;
 
-  const [currentPage, setCurrentPage] = useState(1);
-  // const dummySearchData = generateDummyData(45);
-  const cardsPerPage = 15;
-
-  const indexOfLastCard = currentPage * cardsPerPage;
-  const indexOfFirstCard = indexOfLastCard - cardsPerPage;
-  const currentCards = searchData.slice(indexOfFirstCard, indexOfLastCard);
-
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+      tryFindUser(newPage);
+    }
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -145,13 +120,12 @@ const SearchPage = () => {
   return (
     <Container>
       <FilterContainer>
-        {["age", "rate", "location", "hashtag"].map((type) => (
+        {["age", "rate", "location", "hashtag", "sort"].map((type) => (
           <FilterItemStyled
             key={type}
             onClick={() => openModal(type as ModalType)}
           >
             <FilterTitleStyled>
-              {/* charAt -> 문자열 쿼리 함수 */}
               {type.charAt(0).toUpperCase() + type.slice(1)}
               <FilterIcon />
             </FilterTitleStyled>
@@ -166,6 +140,7 @@ const SearchPage = () => {
                         values.location.gu ? `, ${values.location.gu}` : ""
                       }`
                     : "Not set")}
+                {type === "sort" && `${values.sort}`}
               </FilterValueStyled>
             </FilterValueContainer>
           </FilterItemStyled>
@@ -175,7 +150,7 @@ const SearchPage = () => {
       <SelectTagStyled>
         <TagList
           tags={HashTagsList}
-          onTagSelect={() => {}} // 빈 함수로 설정하여 선택 기능 비활성화
+          onTagSelect={() => {}}
           onTagRemove={(tag) => {
             setValues((prev) => ({
               ...prev,
@@ -190,7 +165,7 @@ const SearchPage = () => {
       </SelectTagStyled>
 
       <SearchCardContainer>
-        {currentCards.map((data) => (
+        {searchData.map((data) => (
           <SearchCard key={data.username} {...data} />
         ))}
       </SearchCardContainer>
@@ -204,17 +179,48 @@ const SearchPage = () => {
         />
       )}
       <Pagination>
-        {Array.from({
-          length: Math.ceil(searchData.length / cardsPerPage),
-        }).map((_, index) => (
-          <PageButton
-            key={index}
-            onClick={() => paginate(index + 1)}
-            $active={currentPage === index + 1}
-          >
-            {index + 1}
-          </PageButton>
-        ))}
+        <ArrowButton
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          &lt;
+        </ArrowButton>
+
+        {firstPage > 1 && (
+          <>
+            <PageButton onClick={() => handlePageChange(1)}>1</PageButton>
+            {firstPage > 2 && <PageEllipsis>...</PageEllipsis>}
+          </>
+        )}
+
+        {[...Array(10)].map((_, index) => {
+          const pageNumber = firstPage + index;
+          return pageNumber <= totalPages ? (
+            <PageButton
+              key={pageNumber}
+              onClick={() => handlePageChange(pageNumber)}
+              $active={currentPage === pageNumber}
+            >
+              {pageNumber}
+            </PageButton>
+          ) : null;
+        })}
+
+        {lastPage < totalPages && (
+          <>
+            {lastPage < totalPages - 1 && <PageEllipsis>...</PageEllipsis>}
+            <PageButton onClick={() => handlePageChange(totalPages)}>
+              {totalPages}
+            </PageButton>
+          </>
+        )}
+
+        <ArrowButton
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
+          &gt;
+        </ArrowButton>
       </Pagination>
     </Container>
   );
@@ -224,25 +230,89 @@ export default SearchPage;
 const Pagination = styled.div`
   display: flex;
   justify-content: center;
+  align-items: center;
   margin-top: 20px;
+  gap: 5px;
 `;
 
-const PageButton = styled.button<{ $active: boolean }>`
-  margin: 0 5px;
+const PageButton = styled.button<{ $active?: boolean; disabled?: boolean }>`
+  margin: 0 2px;
   padding: 5px 10px;
   border: 1px solid
-    ${(props) => (props.$active ? "var(--brand-main-1)" : "var(--line-gray-3)")};
+    ${(props) =>
+      props.disabled
+        ? "var(--line-gray-2)"
+        : props.$active
+        ? "var(--brand-main-1)"
+        : "var(--line-gray-3)"};
   background-color: ${(props) =>
-    props.$active ? "var(--brand-main-1)" : "white"};
-  color: ${(props) => (props.$active ? "white" : "var(--black)")};
-  cursor: pointer;
+    props.disabled
+      ? "var(--line-gray-1)"
+      : props.$active
+      ? "var(--brand-main-1)"
+      : "white"};
+  color: ${(props) =>
+    props.disabled
+      ? "var(--line-gray-3)"
+      : props.$active
+      ? "white"
+      : "var(--black)"};
+  cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
   border-radius: 5px;
+  font-size: 14px;
+  min-width: 32px;
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.2s ease-in-out;
 
   &:hover {
     background-color: ${(props) =>
-      props.$active ? "var(--brand-main-1)" : "var(--brand-sub-2)"};
+      props.disabled
+        ? "var(--line-gray-1)"
+        : props.$active
+        ? "var(--brand-main-1)"
+        : "var(--brand-sub-2)"};
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--brand-main-2);
   }
 `;
+
+const ArrowButton = styled(PageButton)`
+  font-weight: bold;
+`;
+
+const PageEllipsis = styled.span`
+  margin: 0 5px;
+  color: var(--black);
+`;
+
+// const PageButton = styled.button`
+//   margin: 0 5px;
+//   padding: 5px 10px;
+//   border: 1px solid;
+// `;
+
+// const PageNumberButton = styled.button<{ $active: boolean }>`
+//   margin: 0 5px;
+//   padding: 5px 10px;
+//   border: 1px solid
+//     ${(props) => (props.$active ? "var(--brand-main-1)" : "var(--line-gray-3)")};
+//   background-color: ${(props) =>
+//     props.$active ? "var(--brand-main-1)" : "white"};
+//   color: ${(props) => (props.$active ? "white" : "var(--black)")};
+//   cursor: pointer;
+//   border-radius: 5px;
+
+//   &:hover {
+//     background-color: ${(props) =>
+//       props.$active ? "var(--brand-main-1)" : "var(--brand-sub-2)"};
+//   }
+// `;
 
 const Container = styled.div`
   display: flex;
@@ -257,6 +327,9 @@ const FilterContainer = styled.div`
   justify-content: flex-start;
   gap: 30px;
   width: 100%;
+  @media screen and (max-width: 768px) {
+    flex-wrap: wrap;
+  }
 `;
 
 const FilterItemStyled = styled.div`
@@ -267,12 +340,19 @@ const FilterItemStyled = styled.div`
   box-shadow: 5px 5px 5px 0 var(--black);
   padding: 10px 20px;
   align-items: flex-end;
+
+  @media screen and (max-width: 768px) {
+    width: calc(50% - 30px);
+  }
+
+  @media screen and (max-width: 460px) {
+    width: 100%;
+  }
 `;
 
 const FilterTitleStyled = styled.div`
   display: flex;
   justify-content: space-between;
-  /* align-items: center; */
   font-size: 1.2rem;
   font-weight: 600;
   line-height: 1.4;
@@ -297,30 +377,6 @@ const FilterValueStyled = styled.div`
   line-height: 1.4;
 `;
 
-// const SearchCardContainer = styled.div`
-//   display: grid;
-//   grid-template-columns: repeat(5, 252px);
-
-//   /* grid-template-rows: 200px 200px; */
-//   /* grid-auto-rows: 250px; */
-//   gap: 26px;
-//   @media (max-width: 1000px) {
-//     grid-template-columns: repeat(4, 1fr);
-//   }
-
-//   /* @media (max-width: 960px) {
-//     grid-template-columns: repeat(3, 1fr);
-//   } */
-
-//   @media (max-width: 720px) {
-//     grid-template-columns: repeat(2, 1fr);
-//   }
-
-//   @media (max-width: 480px) {
-//     grid-template-columns: 1fr;
-//   }
-// `;
-
 const SearchCardContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(
@@ -337,7 +393,6 @@ const SearchCardContainer = styled.div`
       minmax(min(252px, calc(23.3vw - 0.933vw)), 1fr)
     );
     grid-auto-rows: min(300px, calc((23.3vw - 0.933vw) * 1.19));
-    /* grid-auto-rows: min(300px, calc((23.3vw - 0.933vw) * 1.19)); */
   }
 
   @media (max-width: 720px) {

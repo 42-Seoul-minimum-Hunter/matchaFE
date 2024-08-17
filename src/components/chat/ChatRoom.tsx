@@ -13,57 +13,81 @@ import { useState } from "react";
 export interface IChatContentDto {
   message: string;
   username: string;
-  time: string;
+  time: Date;
 }
-// userId: number;
 
 const ChatRoom = ({
   chatHistory,
   selectUserImg,
   username,
+  sendMessage,
 }: {
   chatHistory: IChatContentDto[];
   selectUserImg: string;
   username: string;
+  sendMessage: (message: string) => void;
 }) => {
-  // TODO : 웹소켓 대기하는 곳에다가 두기
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [inputMessage, setInputMessage] = useState<string>("");
+
+  const validateMessage = (message: string) => {
+    const messageRegex =
+      /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{}:"\\|,.\/?|ㄱ-ㅎ|ㅏ-ㅣ|가-힣]{1,255}$/;
+    return messageRegex.test(message);
+  };
+
+  const handleSendMessage = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (validateMessage(inputMessage) === false) {
+      alert("더러운 메세지 보내지 마세요");
+    }
+    if (inputMessage.trim() !== "") {
+      sendMessage(inputMessage);
+      setInputMessage("");
+    }
+  };
+  console.log("chatHistory", chatHistory);
 
   return (
     <Container>
-      {chatHistory.length === 0 ? (
+      {/* {chatHistory.length === 0 ? (
         <div>채팅방을 선택해 주세요</div>
-      ) : (
-        <>
-          <MessageContainer>
-            {chatHistory.map((message, index) =>
-              message.username === username ? (
-                <MyMessageWrapper key={index}>
-                  <ContentStyled>{message.message}</ContentStyled>
-                </MyMessageWrapper>
-              ) : (
-                <PartnerMessageWrapper key={index}>
-                  <img src={selectUserImg} />
-                  <ContentStyled>{message.message}</ContentStyled>
-                </PartnerMessageWrapper>
-              )
-            )}
-            {isLoading && <Loading />}
-          </MessageContainer>
-          <ChatInputWrapper>
-            <ChatInput
-              placeholder="write your message ..."
-              disabled={isLoading}
-            />
-            <SendButton type="submit" disabled={isLoading}>
-              Send
-            </SendButton>
-          </ChatInputWrapper>
-        </>
-      )}
+      ) : ( */}
+      <>
+        <MessageContainer>
+          {chatHistory.map((message, index) =>
+            message.username === username ? (
+              <MyMessageWrapper key={index}>
+                <ContentStyled>{message.message}</ContentStyled>
+              </MyMessageWrapper>
+            ) : (
+              <PartnerMessageWrapper key={index}>
+                <img src={selectUserImg} alt="User Avatar" />
+                <ContentStyled>{message.message}</ContentStyled>
+              </PartnerMessageWrapper>
+            )
+          )}
+          {isLoading && <Loading />}
+        </MessageContainer>
+        <ChatInputWrapper onSubmit={handleSendMessage}>
+          <ChatInput
+            placeholder="write your message ..."
+            disabled={isLoading}
+            value={inputMessage}
+            maxLength={255}
+            onChange={(e) => setInputMessage(e.target.value)}
+          />
+          <SendButton type="submit" disabled={isLoading}>
+            Send
+          </SendButton>
+        </ChatInputWrapper>
+      </>
+      {/* )} */}
     </Container>
   );
 };
+
+// export default ChatRoom;
 
 export default ChatRoom;
 
@@ -79,6 +103,7 @@ const Container = styled.div`
   justify-content: space-between;
   gap: 20px;
   height: 100%;
+  min-height: 100%;
   /* overflow-y: auto; */
   position: relative;
   overflow-y: hidden;
@@ -160,8 +185,9 @@ const ContentStyled = styled.div`
   letter-spacing: -0.025em;
 
   white-space: normal;
-  /* text-overflow: ellipsis;
-  word-break: break-all; */
+
+  text-overflow: ellipsis;
+  word-break: break-all;
 `;
 
 const ChatInput = styled.textarea`

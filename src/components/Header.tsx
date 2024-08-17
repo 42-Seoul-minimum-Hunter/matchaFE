@@ -1,66 +1,70 @@
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
-import { axiosLogout, axiosProfileMe } from "@/api/axios.custom";
+import { axiosLogout } from "@/api/axios.custom";
 import { SocketContext } from "@/pages/LayoutPage";
 import useRouter from "@/hooks/useRouter";
+import { getCookie } from "@/api/cookie";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import { userAlarm, userAlarmContent } from "@/recoil/atoms";
+import { IAlarmProps } from "./Alarm";
 
 // TODO: Router 테이블 만들어서 해당 라우터에서 색상 표현
 const Header = () => {
-  const { goToSignup, goTologin, goToSearch, goToProfileMe, goToChat } =
-    useRouter();
-  const [disable, setDisable] = useState<boolean>(false);
+  const {
+    goToSignup,
+    goTologin,
+    goToSearch,
+    goToProfileMe,
+    goToChat,
+    goToAlarm,
+    goToSetting,
+    goToMain,
+  } = useRouter();
+  const [isLogin, setIsLogin] = useState<boolean>(false);
+  const [isAlarm, setIsAlarm] = useRecoilState(userAlarm);
+
   const socket = useContext(SocketContext);
 
-  // socket.on("getAlarms", (data: any) => {
-  //   console.log("onlineStatus On", data);
-  // });
-  // useEffect(() => {}, []);
+  useEffect(() => {
+    const token = getCookie("jwt");
+    console.log("token", !!token);
+    setIsLogin(!!token); // token이 존재하면 true, 없으면 false
+  }, []);
 
-  // socket.on("connect_error", (error: any) => {
-  //   console.error("Socket connection error:", error);
-  // });
+  useEffect(() => {
+    console.log("alarm test");
+    if (socket) {
+      socket.on("alarm", (data: { username: string }) => {
+        console.log("alarm", data);
+        setIsAlarm(true);
+      });
 
-  // 알람 설정 나중에
-  // useEffect(() => {
-  //   if (socket) {
-  //     console.log("socket", socket);
-  //     socket.on("getAlarms", (data: any) => {
-  //       console.log("onlineStatus On", data);
-  //     });
-  //   }
-  // }, []);
-
-  // const checkAlarm = () => {
-  //   socket.emit("getAlarms");
-  // };
-
-  // const onClickLogout = () => {
-  //   try {
-  //     const res = axiosLogout();
-  //     console.log("logout ", res);
-  //   } catch (error: any) {
-  //     console.log("error", error);
-  //     throw error;
-  //   }
-  //   navigate("/login");
-  // };
-
-  const tryProfileMe = async () => {
-    try {
-      const res = await axiosProfileMe();
-      console.log("res", res);
-      // onClickProfile();
-    } catch (error: any) {
-      console.log("error", error);
-      throw error;
+      // getAlarms는 알람페이지 들어간 경우
+      socket.emit("getAlarms");
+      return () => {
+        socket.off("alarm");
+        // socket.off("getAlarms");
+      };
     }
-  };
+  }, [socket]);
+
   const handleNavClick = (action: () => void) => {
-    if (disable) {
+    if (!isLogin) {
       alert("로그인 해주세요");
     } else {
       action();
+    }
+  };
+
+  // jwt로 인증
+  const onClickLogout = async () => {
+    try {
+      const res = await axiosLogout();
+      console.log("logout ", res);
+      setIsLogin(!isLogin);
+      goToMain();
+    } catch (error) {
+      console.log("error", error);
     }
   };
 
@@ -73,12 +77,30 @@ const Header = () => {
         <NavStyled onClick={() => handleNavClick(goToSearch)}>Search</NavStyled>
         <NavStyled onClick={() => handleNavClick(goToChat)}>Chat</NavStyled>
       </HeaderContainer>
-      <TitleStyled>
+      <TitleStyled onClick={goToMain}>
         MEET<span>CHA</span>
       </TitleStyled>
       <HeaderContainer>
-        <NavStyled onClick={goTologin}>Log In</NavStyled>
-        <NavStyled onClick={goToSignup}>Sign Up</NavStyled>
+        {!isLogin ? (
+          <>
+            <NavStyled onClick={goTologin}>Log In</NavStyled>
+            <NavStyled onClick={goToSignup}>Sign Up</NavStyled>
+          </>
+        ) : (
+          <>
+            <NavStyled
+              onClick={() => handleNavClick(goToAlarm)}
+              $isAlarm={isAlarm}
+            >
+              Alarm
+            </NavStyled>
+            <NavStyled onClick={() => handleNavClick(goToSetting)}>
+              Setting
+            </NavStyled>
+            <NavStyled onClick={() => onClickLogout()}>Logout</NavStyled>
+            {/* <NavStyled onClick={() => test()}>Logout</NavStyled> */}
+          </>
+        )}
       </HeaderContainer>
     </Wrapper>
   );
@@ -86,7 +108,7 @@ const Header = () => {
 
 export default Header;
 
-const NavStyled = styled.div`
+const NavStyled = styled.div<{ $isAlarm?: boolean }>`
   border: 1px solid var(--black);
   display: flex;
   justify-content: center;
@@ -94,6 +116,7 @@ const NavStyled = styled.div`
   flex: 1;
   font-size: 1rem;
   font-weight: 400;
+  position: relative;
 
   @media screen and (max-width: 1024px) {
     font-size: 0.8rem;
@@ -101,11 +124,40 @@ const NavStyled = styled.div`
 
   &:hover {
     background-color: var(--brand-sub-2);
-    /* color: var(--white); */
   }
-  /* @media screen and (max-width: 768px) {
-    font-size: 0.6rem;
-  } */
+
+  ${({ $isAlarm }) =>
+    $isAlarm &&
+    `
+    &::after {
+      content: '';
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      width: 10px;
+      height: 10px;
+      background-color: var(--brand-main-1);
+      border-radius: 50%;
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(255, 82, 82, 0.7);
+      }
+      
+      70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 10px rgba(255, 82, 82, 0);
+      }
+      
+      100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(255, 82, 82, 0);
+      }
+    }
+  `}
 `;
 
 const HeaderContainer = styled.div`

@@ -1,9 +1,7 @@
 import InputTemplate from "@/components/InputTemplate";
 import styled from "styled-components";
-import { GenderType, InterestType, PreferenceType } from "@/types/tag.enum";
 import { useEffect, useState, useCallback } from "react";
-import { axiosUserCreate } from "@/api/axios.custom";
-import { useNavigate } from "react-router-dom";
+import { axiosEmailSend, axiosRegister } from "@/api/axios.custom";
 
 // const GenderTag: ITagProps[] = [{ title: "male" }];
 //  나중에 꼭 수정 필요 -> useMemo, useCallback 렌더링 최적화 해야함
@@ -13,81 +11,46 @@ export interface tagItem {
 }
 
 const SignUpPage = () => {
-  const navigator = useNavigate();
-
-  //  TODO
-  // email, password만 보내기
-  const trySignUp = async () => {
-    try {
-      const res = await axiosUserCreate({
-        email: userEmail,
-        username: userName,
-        password: password,
-        lastName: lastName,
-        firstName: firstName,
-        gender: genderType as GenderType,
-        preference: preferenceType as PreferenceType,
-        age: age as number,
-        biography: bio,
-        isGpsAllowed: true,
-        si: selectedArea,
-        gu: selectedSubArea,
-        hashtags: interestType as InterestType[],
-        profileImages: showImages,
-      });
-      console.log("res", res);
-      if (res.status === 200) navigator("/email");
-      else {
-        alert("회원가입 실패");
-      }
-    } catch (error: any) {
-      console.log("error", error);
-      throw error;
-    }
-  };
-
-  const onClickLogin = async () => {
-    try {
-      const res = await trySignUp();
-      // res데이터 확인후 중복 검사 -> 이메일, username이 중복되면 오류 던짐
-      // 인풋값들 확인해버리기
-      console.log("register res", res);
-      // 이메일 페이지로 변환 -> 나중에 풀기 ##
-      // setIsEmail(true);
-      // console.log("res.data.status", res.status);
-      // if (res.status === 200) console.log("res.;");
-
-      alert("회원가입 성공");
-    } catch (error) {
-      // 회원가입 백엔드 실패시 login이동
-      // navigate("/login");
-      alert("회원가입 백엔드 실패");
-      console.log("register error", error);
-    }
-  };
-
   const [error, setError] = useState<boolean>(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
+  const [isCheckEmail, setIsCheckEmail] = useState<boolean>(false);
   const [signUpTextData, setSignUpTextData] = useState({
     email: "",
     password: "",
     checkPassword: "",
   });
+
+  const trySignUp = async () => {
+    try {
+      const res = await axiosRegister(
+        signUpTextData.email,
+        signUpTextData.password,
+        signUpTextData.checkPassword
+      );
+      console.log("res", res);
+      axiosEmailSend();
+      setIsCheckEmail(true);
+      setErrorMessage(""); // 성공 시 에러 메시지 초기화
+    } catch (error: any) {
+      console.log("error", error);
+      setErrorMessage(
+        error.response?.data || "회원가입 중 오류가 발생했습니다."
+      );
+      throw error;
+    }
+  };
   const handleInputChange = (e: any) => {
     const { name, value } = e.target;
     console.log("name, value", name, value);
     setSignUpTextData({ ...signUpTextData, [name]: value });
-    // setError(false);
+    setErrorMessage(""); // 입력 시 에러 메시지 초기화
   };
 
   const handleSubmit = () => {
-    // if (signUpTextData.password !== signUpTextData.checkPassword) {
-    //   alert("비밀번호가 일치하지 않습니다.");
-    //   return;
-    // }
-    // TODO : 비밀번호가 틀리면 버튼 자체가 안눌리게 만들기
     if (error === true) {
       return;
     }
+    trySignUp();
   };
 
   return (
@@ -101,7 +64,6 @@ const SignUpPage = () => {
           label="이메일"
           value={signUpTextData.email}
           onChange={handleInputChange}
-          // TODO : 에러 발생시 true로 변경 -> 나중에..
           setErrorr={setError}
         />
         <InputTemplate
@@ -119,7 +81,9 @@ const SignUpPage = () => {
           onChange={handleInputChange}
           setErrorr={setError}
         />
+        {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
         <ButtonStyled onClick={handleSubmit}>가입하기</ButtonStyled>
+        {isCheckEmail && <div> 이메일을 확인하세요</div>}
         <OauthContainer>
           <OauthLabelStyled>간편 회원가입</OauthLabelStyled>
           <OauthButtonStyled>42 login</OauthButtonStyled>
@@ -145,6 +109,14 @@ const Container = styled.div`
     padding-left: 2.5rem;
     padding-right: 2.5rem;
   }
+`;
+
+const ErrorMessage = styled.div`
+  color: var(--status-error-1);
+  font-size: 0.9rem;
+  margin-top: 10px;
+  text-align: center;
+  width: 100%;
 `;
 
 const InputContainer = styled.div`

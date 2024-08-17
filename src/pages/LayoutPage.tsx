@@ -2,42 +2,15 @@ import styled from "styled-components";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { createContext, useEffect, useState } from "react";
 import Header from "@/components/Header";
-import { getCookie } from "@/api/cookie";
 import { io, Socket } from "socket.io-client";
+import useRouter from "@/hooks/useRouter";
+import useSocket from "@/hooks/useSocket";
 
-const token = getCookie("jwt");
-
-// const socket = io("http://localhost:3001", {
-//   auth: {
-//     authorization: token,
-//   },
-// });
-
-export const SocketContext = createContext<null>(null);
-
-// const socket = io("http://localhost:3001", {
-//   auth: {
-//     //  jwt넣기
-//     userId: 1,
-//     // token: "abc123",
-//   },
-// });
-
-// export const SocketContext = createContext(null);
+export const SocketContext = createContext<Socket | null>(null);
 
 const Layout = () => {
+  const { goToMain } = useRouter();
   const location = useLocation();
-  const [state, setState] = useState({ message: "", name: "" });
-  const [chat, setChat] = useState([]);
-
-  //  jwt 토큰이 있으면 main, 없으면 로그인 페이지로 이동
-  // useEffect(() => {
-  //   if (!loginToken && !isMainPage) navigate("/main");
-  //   else if (!loginToken && !isMainPage) navigate("/login");
-  //   else {
-  //     console.log("로그인 성공");
-  //   }
-  // }, []);
 
   const directOutletPaths = [
     "/twoFactor",
@@ -52,17 +25,25 @@ const Layout = () => {
     location.pathname.startsWith(path)
   );
 
+  const socket = useSocket();
+
+  useEffect(() => {
+    if (location.pathname === "/" || location.pathname === "") {
+      goToMain();
+    }
+  }, [location]);
+
   return isDirectOutletPath ? (
     <Outlet />
   ) : (
-    // <SocketContext.Provider value={socket}>
-    <Wrapper>
-      <Header />
-      <MainStyled>
-        <Outlet />
-      </MainStyled>
-    </Wrapper>
-    // </SocketContext.Provider>
+    <SocketContext.Provider value={socket}>
+      <Wrapper>
+        <Header />
+        <MainStyled>
+          <Outlet />
+        </MainStyled>
+      </Wrapper>
+    </SocketContext.Provider>
   );
 };
 
@@ -89,9 +70,6 @@ const MainStyled = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* border-radius: 10px; */
-  /* box-shadow: 0 0 10px; */
-  /* overflow: hidden; */
 `;
 
 const LoginWrapper = styled.div`

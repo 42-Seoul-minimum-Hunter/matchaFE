@@ -1,111 +1,212 @@
 import styled from "styled-components";
 import TestImage1 from "@/assets/mock/test1.png";
-import TestImage2 from "@/assets/mock/test2.png";
 import { ProfileDto, RegisterDto } from "@/types/tag.dto";
 import { tagItem } from "./SignUpPage";
 import { InterestLableMap } from "@/types/maps";
 import { useContext, useEffect, useState } from "react";
-
-// import Stars from "@/components/Stars";
-import { axiosProfile, axiosProfileMe } from "@/api/axios.custom";
-import { useParams, useSearchParams } from "react-router-dom";
+import {
+  axiosProfile,
+  axiosProfileMe,
+  axiosUserBlock,
+  axiosUserRate,
+  axiosUserReport,
+} from "@/api/axios.custom";
+import { useSearchParams } from "react-router-dom";
 import { SocketContext } from "./LayoutPage";
-import { convertToUpperCase } from "@/utils/inputCheckUtils";
 import ImageUploader from "@/components/ImageUpload";
 import TagList from "@/components/TagTemplate";
 import Stars from "@/components/Stars";
-import { mockProfileData } from "@/assets/mock/mock";
 import StarsSubmit from "@/components/StarsSubmit";
+import useRouter from "@/hooks/useRouter";
+import { formatDate } from "@/utils/dataUtils";
+import { ReactComponent as HeartIcon } from "@/assets/icons/like-heart-icon.svg";
 
 const HashTagsList: tagItem[] = Object.entries(InterestLableMap).map(
   ([value, label]) => ({ value, label })
 );
 
+// 웹소켓으로 차단하기, 좋아요 세팅
 const ProfilePage = () => {
-  const [profileData, setProfileData] = useState<RegisterDto | null>();
-  const socket = useContext(SocketContext);
-  const [searchParams, setSeratchParams] = useSearchParams();
+  const { goToMain, goToChat } = useRouter();
+  const [isOnline, setIsOnline] = useState(false);
+  const [isMatched, setIsMatched] = useState(false);
+  const [profileData, setProfileData] = useState<ProfileDto>();
+  const [images, setImages] = useState<string[]>(
+    profileData?.profileImages || []
+  );
+  const [userRating, setUserRating] = useState(0);
+  const [searchParams] = useSearchParams();
   const username = searchParams.get("username");
-  const [rate, setRate] = useState<number>(0);
-  const handleRateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newRate = parseFloat(e.target.value);
-    if (newRate >= 0 && newRate <= 5) {
-      setRate(newRate);
-    }
-  };
-  const [hashtagList, setHashtagList] = useState<tagItem[]>([]);
-
-  // 실제 있는 값들이 모두 있어야 하니까
+  const socket = useContext(SocketContext);
 
   const tryToGetProfile = async (username: any) => {
     try {
-      const res = await (!username ? axiosProfileMe() : axiosProfile(username));
-      console.log("profile", res.data);
-      setProfileData(res.data);
-      const convertUpperCaseHashtags = convertToUpperCase(res.data.hashtags);
-      const newHashtagList: tagItem[] = Object.entries(InterestLableMap)
-        .filter(([key, _]) => convertUpperCaseHashtags.includes(key))
-        .map(([key, name]) => ({ key, name }));
-
-      console.log("newHashtagList", newHashtagList);
-      setHashtagList(newHashtagList);
-    } catch (error) {
+      if (username) {
+        const res = await axiosProfile(username);
+        console.log("profile page me", res);
+        setProfileData(res.data);
+        setIsOnline(res.data.isOnline);
+        setImages(res.data.profileImages);
+        setIsMatched(res.data.isMatched);
+        if (res.data.isBlocked === true) {
+          alert("차단된 사용자입니다.");
+          goToMain();
+        }
+      } else {
+        const res = await axiosProfileMe();
+        console.log("profile page oppen", res);
+        setProfileData(res.data);
+        setIsOnline(res.data.isOnline);
+        setImages(res.data.profileImages);
+        if (res.data.isBlocked === true) {
+          alert("차단된 사용자입니다.");
+          goToMain();
+        }
+      }
+    } catch (error: any) {
+      // 401 -> 로그인을 해주세요
+      // 404 -> 유저가 없습니다.
+      goToMain();
+      if (error.response?.status === 404) {
+        alert("유저가 없습니다.");
+      }
+      if (error.response?.status === 401) {
+        alert("로그인을 해주세요.");
+      }
       console.log("profile page error", error);
     }
   };
 
-  // likeUser -> username을 보내기
-  // alarm으로 알람
   useEffect(() => {
     tryToGetProfile(username);
-  }, []);
+  }, [username]);
 
-  // 현재 유저의 on,offline 상태 불러오기
+  //const AlarmType = {
+  //    SENDLIKED = "SENDLIKED",
+  //    VISITED = "VISITED",
+  //    MESSAGED = "MESSAGED",
+  //    MATCHED = "MATCHED",
+  //    SENDDISLIKED = "SENDDISLIKED",
+  //    RECEIVEDISLIKED = "RECEIVEDISLIKED",
+  //    RECEIVELIKED = "RECEIVELIKED",
+  //  }
 
-  // socket.on("connect", () => {});
-  // useEffect(() => {
-  //   socket.on("connect", () => {
-  //     console.log("message");
-  //   });
-  // }, []);
+  // 여기서 보내는 username은 상대방의 이름
+  useEffect(() => {
+    if (socket && username) {
+      console.log("profileData?.username", username);
+      // socket.on("visitUserProfile", (data: { username: string }));
+      // 사용자 방문시 요청
+      socket.emit("visitUserProfile", username);
 
-  // const onClickBanButton = async () => {
-  //   try {
-  //     const res = await axiosUserBlock(userName);
-  //     console.log("block ", res);
-  //     navigate("/search");
-  //   } catch (error) {
-  //     console.log("error", error);
-  //     throw error;
-  //   }
-  // };
+      // matched깨지는 알람 오면 바꾸기
+      socket.on("alarm", (data: any) => {
+        console.log("alarm", data.alarmType);
+        if (data.alarmType === "MATCHED") {
+          setIsMatched(true);
+        }
+        if (data.alarmType === "UNMATCHED") {
+          setIsMatched(false);
+        }
+        if (data.alarmType === "DISLIKED") {
+          setProfileData((prevData) => ({
+            ...prevData!,
+            isReceivedLiked: false,
+          }));
+        }
+        if (data.alarmType === "LIKED") {
+          setIsMatched(false);
+          setProfileData((prevData) => ({
+            ...prevData!,
+            isReceivedLiked: true,
+          }));
+        }
+      });
 
-  // // socket.on("connect", () => {});
-  // // me 일때는 userName 으로 안감
-  // // console.log("userName", userName);
-  // const onClickHeartButton = () => {
-  //   console.log("likeUser click", userName);
-  //   setIsLike(!isLike);
-  //   socket.emit("likeUser", {
-  //     username: userName,
-  //   });
-  // };
+      return () => {
+        socket.off("alarm");
+      };
+    }
+  }, [socket]);
 
-  // // 여기서도 matched확인
-  // useEffect(() => {
-  //   socket.on("likeUser", (data) => {
-  //     console.log("matched", data);
-  //   });
-  // }, []);
+  const onClickLikeUser = () => {
+    if (profileData?.isSendedLiked !== true) {
+      alert("좋아요를 눌렀습니다.");
+      if (socket && username) {
+        socket.emit("likeUser", username);
+        setProfileData((prevData) => ({
+          ...prevData!,
+          isSendedLiked: true,
+        }));
+        console.log(`Liked user: ${username}`);
+      }
+    } else if (profileData?.isSendedLiked === true) {
+      alert("좋아요를 취소했습니다.");
+      if (socket && username) {
+        socket.emit("dislikeUser", username);
+        setProfileData((prevData) => ({
+          ...prevData!,
+          isSendedLiked: false,
+          // isReceivedLiked: false,
+        }));
+        console.log(`dislikeUser : ${username}`);
+      }
+    }
+  };
 
-  const [images, setImages] = useState<string[]>([TestImage1, TestImage2]);
+  const onClickBlockUser = async () => {
+    if (username) {
+      try {
+        const res = await axiosUserBlock(username);
+        console.log("block user", res);
+        goToMain();
+        alert(username + "을 차단했습니다.");
+      } catch (error) {
+        alert("차단에 실패했습니다.");
+        console.log("block user error", error);
+      }
+    }
+  };
 
-  const [userRating, setUserRating] = useState(0);
+  const tryUserReport = async () => {
+    if (username) {
+      try {
+        const res = await axiosUserReport(username);
+        console.log("report user", res);
+
+        goToMain();
+        alert("유저가 신고되었습니다.");
+      } catch (error) {
+        alert("신고에 실패했습니다.");
+        console.log("report user error", error);
+      }
+    }
+  };
 
   const handleRatingChange = (newRating: number) => {
     setUserRating(newRating);
-    // 여기에 서버로 새 평점을 보내는 로직을 추가할 수 있습니다.
   };
+
+  const tryToRateUser = async () => {
+    if (username) {
+      try {
+        const res = await axiosUserRate(userRating, username);
+        console.log("rate user data", res.data);
+        console.log("rate user Avg", res.data.rateAvg);
+        alert(userRating + " 점을 주었습니다.");
+        // console.log("rate user", res);
+        setProfileData((prevData) => ({
+          ...prevData!,
+          rate: res.data.rateAvg,
+        }));
+      } catch (error) {
+        alert("평점 주기에 실패했습니다.");
+        console.log("rate user error", error);
+      }
+    }
+  };
+  console.log("!username && isMatched", !(!username && isMatched));
+  console.log("!username ", !!username);
 
   return (
     <Container>
@@ -114,25 +215,30 @@ const ProfilePage = () => {
           <UserCardContainer>
             <TitleImageContainer>
               {/* 나중에 선택해서 바꿀수 있게 만들기 */}
-              <img src={mockProfileData.profileImages[0]} alt="Profile" />
+              <img src={profileData?.profileImages[0]} alt="Profile" />
             </TitleImageContainer>
             <UserInfoContainer>
               <UserNameStyled>
                 <p>
-                  {mockProfileData.username}, {mockProfileData.age}
+                  {profileData?.username}, {profileData?.age}
                 </p>
-                <OnlineStatusStyled $userStatus={true}></OnlineStatusStyled>
+                <OnlineStatusStyled $isOnline={isOnline}>
+                  {profileData?.isReceivedLiked && <HeartIcon />}
+                </OnlineStatusStyled>
               </UserNameStyled>
               <UserLocationStyled>
-                {mockProfileData.si}, {mockProfileData.gu}
+                {profileData?.si}, {profileData?.gu}
               </UserLocationStyled>
-              <UserBioStyled>{mockProfileData.biography}</UserBioStyled>
+              <UserLocationStyled>
+                {formatDate(profileData?.connectedAt)}
+              </UserLocationStyled>
+              <UserBioStyled>{profileData?.biography}</UserBioStyled>
               <UserHashtagsStyled>
                 <TagList
                   tags={HashTagsList}
                   onTagSelect={() => {}}
                   selectable={false}
-                  selectedTags={mockProfileData.hashtags || []}
+                  selectedTags={profileData?.hashtags || []}
                   showSelectedOnly={true}
                 />
               </UserHashtagsStyled>
@@ -143,6 +249,7 @@ const ProfilePage = () => {
             <TitleStyled>User Photo</TitleStyled>
             <ImageUploader
               images={images}
+              // images={profileData?.hashtags || []}
               setImages={setImages}
               isReadOnly={true}
             />
@@ -154,19 +261,23 @@ const ProfilePage = () => {
             <ToggleContainer>
               <TitleStyled>유저 평점 주기</TitleStyled>
               <StarsContainer>
-                <Stars rating={mockProfileData.rate}></Stars>
+                <Stars rating={profileData?.rate}></Stars>
                 <StarsSubmit
                   initialRating={userRating}
                   onRatingChange={handleRatingChange}
                 />
               </StarsContainer>
 
-              <StarSubmitButtonStyled>평점주기</StarSubmitButtonStyled>
+              <StarSubmitButtonStyled
+                onClick={tryToRateUser}
+                disabled={!username}
+              >
+                평점주기
+              </StarSubmitButtonStyled>
               <TagContainer></TagContainer>
             </ToggleContainer>
           </RowContainer>
 
-          {/* <RowContainer> */}
           <FilterContainer>
             {["age", "rate", "location", "preference"].map((type) => (
               <FilterItemStyled key={type}>
@@ -177,13 +288,13 @@ const ProfilePage = () => {
 
                 <FilterValueContainer>
                   <FilterValueStyled>
-                    {type === "age" && `${mockProfileData.age}`}
-                    {type === "rate" && `${mockProfileData.gender}`}
-                    {type === "preference" && `${mockProfileData.preference}`}
+                    {type === "age" && `${profileData?.age}`}
+                    {type === "rate" && `${profileData?.gender}`}
+                    {type === "preference" && `${profileData?.preference}`}
                     {type === "location" &&
-                      (mockProfileData.si
-                        ? `${mockProfileData.si}${
-                            mockProfileData.gu ? `, ${mockProfileData.gu}` : ""
+                      (profileData?.si
+                        ? `${profileData?.si}${
+                            profileData?.gu ? `, ${profileData?.gu}` : ""
                           }`
                         : "Not set")}
                   </FilterValueStyled>
@@ -191,10 +302,23 @@ const ProfilePage = () => {
               </FilterItemStyled>
             ))}
           </FilterContainer>
-          {/* </RowContainer> */}
           <ButtonContainer>
-            <ButtonStyled>차단하기</ButtonStyled>
-            <ButtonStyled>좋아요</ButtonStyled>
+            <ButtonStyled onClick={onClickBlockUser} disabled={!username}>
+              차단하기
+            </ButtonStyled>
+            <ButtonStyled
+              onClick={onClickLikeUser}
+              disabled={!username}
+              $isLiked={profileData?.isSendedLiked}
+            >
+              {profileData?.isSendedLiked ? "좋아요 취소하기" : "좋아요"}
+            </ButtonStyled>
+            <ButtonStyled onClick={tryUserReport} disabled={!username}>
+              신고하기
+            </ButtonStyled>
+            <ButtonStyled onClick={goToChat} disabled={!username || !isMatched}>
+              채팅하기
+            </ButtonStyled>
           </ButtonContainer>
         </RightContainer>
       </InputDataContainer>
@@ -203,8 +327,6 @@ const ProfilePage = () => {
 };
 
 export default ProfilePage;
-
-const UserInfoContainer = styled.div``;
 
 const UserNameStyled = styled.div`
   font-size: 1.5rem;
@@ -228,16 +350,20 @@ const UserBioStyled = styled.div`
   letter-spacing: -0.025em;
   font-size: 0.9rem;
   font-weight: 400;
-
   max-width: 380px;
   max-height: 80px;
   height: 80px;
-
   margin-top: 30px;
   margin-bottom: 40px;
 `;
 
-const UserHashtagsStyled = styled.div``;
+const UserHashtagsStyled = styled.div`
+  width: 100%;
+`;
+
+const UserInfoContainer = styled.div`
+  width: 100%;
+`;
 
 const TitleImageContainer = styled.div`
   width: 280px;
@@ -257,6 +383,8 @@ const Container = styled.div`
   flex-direction: column;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
 `;
 
 const ButtonContainer = styled.div`
@@ -266,21 +394,33 @@ const ButtonContainer = styled.div`
   margin-top: 30px;
 `;
 
-const ButtonStyled = styled.button`
+const ButtonStyled = styled.button<{ disabled: boolean; $isLiked?: boolean }>`
   width: 100%;
   @media screen and (max-width: 768px) {
     width: 100%;
     max-width: none;
   }
 
-  font-size: 1.1rem;
-  color: var(--brand-main-1);
-  background-color: var(--white);
-  border: 1px solid var(--brand-main-1);
+  cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
+  color: ${(props) =>
+    props.disabled ? "var(--line-gray-3)" : "var(--brand-main-1)"};
+
+  border: 1px solid
+    ${(props) =>
+      props.disabled ? "var(--line-gray-3)" : "var(--brand-main-1)"};
+  &:hover {
+    background-color: ${(props) =>
+      props.disabled ? "var(--white)" : "var(--brand-main-1)"};
+    color: ${(props) =>
+      props.disabled ? "var(--line-gray-3)" : "var(--white)"};
+  }
   &:hover {
     background-color: var(--brand-main-1);
     color: var(--white);
   }
+
+  font-size: 1.1rem;
+  background-color: var(--white);
   padding: 12px 0px;
   border-radius: 4px;
 `;
@@ -288,13 +428,9 @@ const ButtonStyled = styled.button`
 const InputDataContainer = styled.div`
   display: flex;
   padding-top: 6vh;
-
-  /* flex-direction: column; */
-  /* align-items: center; */
   gap: 24px;
   justify-content: center;
   border-radius: 10px;
-
   max-width: 1200px;
 
   @media screen and (max-width: 1360px) {
@@ -305,19 +441,16 @@ const InputDataContainer = styled.div`
   }
 
   @media screen and (max-width: 768px) {
-    padding-top: 4vh;
-    /* padding-left: 2.5rem;
-    padding-right: 2.5rem; */
+    padding: 4vh 0;
   }
 `;
 
 const RightContainer = styled.div`
   flex: 1;
+
   @media screen and (max-width: 1360px) {
     flex: 2;
     max-width: 792px;
-    /* flex-direction: column;
-    align-items: center; */
     width: 90%;
   }
 `;
@@ -337,40 +470,38 @@ const TagContainer = styled.div`
   }
 `;
 
-// const Filt;
-
 const UserCardContainer = styled.div`
-  margin-bottom: 40px;
-  border: 1px solid var(--black);
   @media screen and (max-width: 768px) {
     width: 100%;
+    flex-direction: column;
+    /* ## */
+    align-items: center;
   }
 
+  border: 1px solid var(--black);
+  margin-bottom: 40px;
   padding-right: 38px;
   padding-left: 38px;
   padding-bottom: 38px;
   padding-top: 20px;
-
   width: 100%;
   display: flex;
-  /* flex-direction: column; */
   gap: 30px;
 `;
 
 const RowContainer = styled.div`
   margin-bottom: 40px;
   border: 1px solid var(--black);
-  @media screen and (max-width: 768px) {
-    width: 100%;
-  }
-
   padding-right: 38px;
   padding-left: 38px;
   padding-bottom: 38px;
   padding-top: 20px;
-
   width: 100%;
-  /* width: 792px; */
+
+  @media screen and (max-width: 768px) {
+    width: 100%;
+    padding-left: 20px;
+  }
 `;
 
 const TitleStyled = styled.div`
@@ -378,7 +509,6 @@ const TitleStyled = styled.div`
   font-weight: 400;
   line-height: 1.4;
   letter-spacing: -0.025em;
-
   margin-bottom: 20px;
 
   @media screen and (max-width: 768px) {
@@ -391,9 +521,6 @@ const ToggleContainer = styled.div`
     margin-top: 30px;
   }
   width: 100%;
-  /* display: flex;
-  flex-direction: column;
-  gap: 20px; */
 `;
 
 const StarsContainer = styled.div`
@@ -403,26 +530,8 @@ const StarsContainer = styled.div`
   width: 100%;
 `;
 
-const InputContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-
-  & > div {
-    max-width: 350px;
-  }
-
-  @media screen and (max-width: 876px) {
-    width: 100%;
-    & > div {
-      max-width: none;
-    }
-  }
-`;
-
 const FilterContainer = styled.div`
   display: flex;
-
   flex-wrap: wrap;
   justify-content: flex-start;
   gap: 8px;
@@ -433,8 +542,13 @@ const FilterItemStyled = styled.div`
   display: flex;
   flex-direction: column;
   width: 188px;
+  @media screen and (max-width: 1360px) {
+    width: calc(50% - 8px); // 2개씩 나열되도록 설정
+  }
+  /* @media screen and (max-width: 480px) {
+    width: 100%; // 모바일에서는 full width
+  } */
   border: 1px solid var(--black);
-  /* box-shadow: 5px 5px 5px 0 var(--black); */
   padding: 10px 20px;
   align-items: flex-end;
 `;
@@ -442,11 +556,9 @@ const FilterItemStyled = styled.div`
 const FilterTitleStyled = styled.div`
   display: flex;
   justify-content: space-between;
-  /* align-items: center; */
   font-size: 1.2rem;
   font-weight: 600;
   line-height: 1.4;
-
   width: 100%;
   border-bottom: 1px solid var(--black);
 `;
@@ -467,38 +579,62 @@ const FilterValueStyled = styled.div`
   line-height: 1.4;
 `;
 
-const StarSubmitButtonStyled = styled.div`
+const StarSubmitButtonStyled = styled.button<{ disabled: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  color: var(--brand-main-1);
   background-color: var(--white);
-  border: 1px solid var(--brand-main-1);
-  &:hover {
-    background-color: var(--brand-main-1);
-    color: var(--white);
-  }
   padding: 10px 20px;
   border-radius: 4px;
   font-weight: 400;
+  cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
+  color: ${(props) =>
+    props.disabled ? "var(--line-gray-3)" : "var(--brand-main-1)"};
+
+  border: 1px solid
+    ${(props) =>
+      props.disabled ? "var(--line-gray-3)" : "var(--brand-main-1)"};
+  &:hover {
+    background-color: ${(props) =>
+      props.disabled ? "var(--white)" : "var(--brand-main-1)"};
+    color: ${(props) =>
+      props.disabled ? "var(--line-gray-3)" : "var(--white)"};
+  }
 `;
 
-const OnlineStatusStyled = styled.div<{ $userStatus: boolean }>`
-  background-color: var(--online);
+// const OnlineStatusStyled = styled.div<{ $userStatus: boolean }>`
+//   background-color: var(--online);
+//   width: 20px;
+//   height: 20px;
+//   border-radius: 20px;
+//   box-shadow: 0 0 0.5rem #fff, inset 0 0 0.5rem #fff, 0 0 1rem var(--online),
+//     inset 0 0 1rem var(--online), 0 0 4rem var(--online),
+//     inset 0 0 2rem var(--online);
+// `;
+
+const OnlineStatusStyled = styled.div<{ $isOnline: boolean }>`
+  background-color: ${(props) =>
+    props.$isOnline ? "var(--online)" : "var(--offline)"};
   width: 20px;
   height: 20px;
   border-radius: 20px;
-  box-shadow: 0 0 0.5rem #fff, inset 0 0 0.5rem #fff, 0 0 1rem var(--online),
-    inset 0 0 1rem var(--online), 0 0 4rem var(--online),
-    inset 0 0 2rem var(--online);
-`;
-
-const StarInputStyled = styled.input`
-  padding-left: 12px;
-  background-color: var(--white);
-  color: var(--black);
-  border-radius: 20px;
-  width: 80px;
-  height: 1.1rem;
+  /* box-shadow: ${(props) =>
+    props.$isOnline
+      ? "0 0 0.5rem #fff, inset 0 0 0.5rem #fff, 0 0 1rem var(--online), inset 0 0 1rem var(--online), 0 0 4rem var(--online), inset 0 0 2rem var(--online)"
+      : "none"}; */
+  box-shadow: ${(props) =>
+    props.$isOnline
+      ? `0 0 0.5rem #fff, 
+       inset 0 0 0.5rem #fff, 
+       0 0 1rem var(--online),
+       inset 0 0 1rem var(--online), 
+       0 0 4rem var(--online),
+       inset 0 0 2rem var(--online)`
+      : `0 0 0.5rem #fff, 
+       inset 0 0 0.5rem #fff, 
+       0 0 1rem var(--offline),
+       inset 0 0 1rem var(--offline), 
+       0 0 4rem var(--offline),
+       inset 0 0 2rem var(--offline)`};
 `;

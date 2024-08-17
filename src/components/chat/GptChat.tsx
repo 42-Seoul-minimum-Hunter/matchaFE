@@ -14,6 +14,7 @@ const GptChat: React.FC = () => {
   const [messages, setMessages] = useState<IChatContentDto[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  console.log("open chat gpt");
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
@@ -77,6 +78,7 @@ const GptChat: React.FC = () => {
       <ChatInputWrapper onSubmit={handleSubmit}>
         <ChatInput
           value={input}
+          maxLength={255}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Ask Claude something..."
           disabled={isLoading}
@@ -184,6 +186,8 @@ const ContentStyled = styled.div`
   letter-spacing: -0.025em;
 
   white-space: normal;
+  text-overflow: ellipsis;
+  word-break: break-all;
   /* text-overflow: ellipsis;
   word-break: break-all; */
 `;

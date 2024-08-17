@@ -15,10 +15,17 @@ import React, { useEffect, useState } from "react";
 // }, []);
 
 // 경도 위도로 주소 찾기 -> ip로 경도,위도 얻고 찾을 때 사용
-const LocationFromCoords = ({ latitude, longitude }) => {
-  const [location, setLocation] = useState(null);
-  const [error, setError] = useState(null);
+interface LocationFromCoordsProps {
+  latitude: number;
+  longitude: number;
+  onLocationFound: (si: string, gu: string) => void;
+}
 
+const LocationFromCoords: React.FC<LocationFromCoordsProps> = ({
+  latitude,
+  longitude,
+  onLocationFound,
+}) => {
   useEffect(() => {
     const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`;
 
@@ -26,45 +33,18 @@ const LocationFromCoords = ({ latitude, longitude }) => {
       .then((response) => response.json())
       .then((data) => {
         console.log("Location Info:", data);
-        setLocation(data);
+        const si = data.address.state || data.address.city;
+        const gu = data.address.county || data.address.city_district;
+        if (si && gu) {
+          onLocationFound(si, gu);
+        }
       })
       .catch((error) => {
         console.error("Error:", error);
-        setError(error);
       });
-  }, [latitude, longitude]);
+  }, [latitude, longitude, onLocationFound]);
 
-  if (error) return <div>Error: {error.message}</div>;
-  if (!location) return <div>Loading...</div>;
-
-  return (
-    <div>
-      <h2>Location Information</h2>
-      <p>Address: {location.display_name}</p>
-      <p>Country: {location.address.country}</p>
-      <p>State/Province: {location.address.state}</p>
-      <p>
-        City:{" "}
-        {location.address.city ||
-          location.address.town ||
-          location.address.village}
-      </p>
-      <p>Postcode: {location.address.postcode}</p>
-      <p>Road: {location.address.road}</p>
-    </div>
-  );
+  return null;
 };
 
 export default LocationFromCoords;
-
-const test = () => {
-  var startPos;
-  var geoSuccess = function (position) {
-    startPos = position;
-    console.log("Latitude:", startPos.coords.latitude);
-    console.log("Longitude:", startPos.coords.longitude);
-  };
-  navigator.geolocation.getCurrentPosition(geoSuccess, function (error) {
-    console.error("Error occurred. Error code: " + error.code);
-  });
-};

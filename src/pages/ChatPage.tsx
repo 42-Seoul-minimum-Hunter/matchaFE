@@ -1,17 +1,12 @@
 import styled from "styled-components";
 import TestImage1 from "@/assets/mock/test1.png";
 import TestImage2 from "@/assets/icons/gpt-icon.svg";
-import TestImage3 from "@/assets/mock/test3.png";
 import ChatList, { IChatRoomDto } from "@/components/chat/ChatList";
 import ChatRoom, { IChatContentDto } from "@/components/chat/ChatRoom";
 import { useContext, useEffect, useState } from "react";
 import { SocketContext } from "./LayoutPage";
-import { axiosChatroom } from "@/api/axios.custom";
-// import Chatgpt from "@/components/Chatgpt";
-import { mockChatContentDto, mockIChatProps } from "@/assets/mock/mock";
-
-import { ReactComponent as ChatGptIcon } from "@/assets/icons/gpt-icon.svg";
 import GptChat from "@/components/chat/GptChat";
+import useRouter from "@/hooks/useRouter";
 
 // 이미지 경로 어떻게 받을지 생각해두기
 
@@ -21,123 +16,156 @@ const gptChatList: IChatRoomDto = {
   lastContent: "Hello, I'm Chatgpt",
 };
 
+// const ChatPage: FC = () => { ... }
+
 const ChatPage = () => {
+  const { goToMain } = useRouter();
   const [selectUser, setSelectUser] = useState<string>("");
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [chatRoom, setChatRoom] = useState<IChatRoomDto[]>([gptChatList]);
   const [chatHistory, setChatHistory] = useState<IChatContentDto[]>([]);
-  // const socket = useContext(SocketContext);
+  const [showChatRoom, setShowChatRoom] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const socket = useContext(SocketContext);
 
-  // const CheckChatList = async () => {
-  //   try {
-  //     // jwt있으면 userID 없어도 됨
-  //     const res = await axiosChatroom(1);
-  //     console.log("chat list :", res);
-  //     setChatRoom(res.data);
-  //     console.log("chat list data:", res.data);
-  //   } catch (error) {
-  //     // TODO
-  //     // 데이터 불러오는데 실패하거나 서버가 불안정한 경우
-  //     // 걍 터지면 404 페이지로 보내버리기
-  //     console.log(error);
-  //   }
-  // };
+  useEffect(() => {
+    if (selectUser === "Chatgpt") {
+      console.log("selectUser ", selectUser);
+      // setSelectedIndex(0);
+      // setSelectUser("Chatgpt");
+      // setShowChatRoom(true);
+      // setSelectedIndex(0);
+      return;
+    }
 
-  // useEffect(() => {
-  //   CheckChatList();
-  // }, []);
+    if (socket) {
+      const fetchChatList = () => {
+        return new Promise<void>((resolve) => {
+          // socket.emit("leaveRoom", { username: selectUser });
+          socket.emit("getChatList");
+          socket.on("getChatList", (newChatRooms: IChatRoomDto[]) => {
+            console.log("newchatrooms", newChatRooms);
+            updateChatRoom(newChatRooms);
+            resolve();
+          });
+        });
+      };
 
-  // useEffect(() => {
-  //   clickChatRoom();
-  // }, [selectUser]);
+      (async () => {
+        setIsLoading(true);
+        await fetchChatList();
+        setIsLoading(false);
+      })();
 
-  // const clickChatRoom = () => {
-  //   socket.emit("joinChatRoom", {
-  //     username: selectUser,
-  //   });
-  // };
+      // 내가 메세지 보내는 경우 -> sendMessage , username, message
+      socket.on("sendMessage", (newMessage: IChatContentDto) => {
+        console.log("BE Message on", newMessage);
+        setChatHistory((prev) => [...prev, newMessage]);
+      });
 
-  // useEffect(() => {
-  //   socket.on("sendHistories", (data) => {
-  //     console.log("onlineStatus On", data);
-  //     setChatHistory(data);
-  //   });
+      socket.on("alarm", (data: any) => {
+        console.log("alarm", data.alarmType);
 
-  // return () => {
-  //   socket.off("sendHistories");
-  // };
+        if (data.alarmType === "UNMATCHED") {
+          // setIsMatched(false);
+          alert("상대방이 너 싫어한대");
+          goToMain();
+        }
+      });
 
-  // clickChatRoom();
-  // socket.emit("joinChatRoom", {
-  //   username: selectUser,
-  // });
-  // }, []);
+      return () => {
+        socket.off("getChatList");
+        socket.off("sendMessage");
+        socket.off("alarm");
+      };
+    }
+  }, [socket]);
 
-  const onClickChatRoom = (index: number) => {
+  const onClickChatRoom = async (index: number) => {
     setSelectedIndex(index);
-    // TODO : 선택한 채팅방의 정보를 서버에 보내서 채팅방의 메시지를 받아옴
-    // 이게 맞나
-    setSelectUser(chatRoom[index].username);
-    setChatHistory(mockChatContentDto);
-    console.log(chatRoom[index]);
+    console.log("chatroom index", index);
+    const selectedUser = chatRoom[index].username;
+    setSelectUser(selectedUser);
+    setShowChatRoom(true);
+    if (selectedUser === "Chatgpt") {
+      console.log("selectUser ", selectedUser);
+      console.log("Chatgpt index", index);
+      return;
+    }
+    console.log("selectUser ", selectedUser);
 
-    // clickChatRoom();
+    if (socket) {
+      setIsLoading(true);
+      socket.emit("joinChatRoom", selectedUser);
+      // socket.emit("getMessages", { username: selectedUser });
+
+      await new Promise<void>((resolve) => {
+        socket.once("getMessages", (messages: IChatContentDto[]) => {
+          console.log("getMessages", messages);
+          setChatHistory(messages);
+          setIsLoading(false);
+          resolve();
+        });
+      });
+    }
+  };
+
+  const sendMessage = (message: string) => {
+    if (socket && selectUser) {
+      const newMessage: IChatContentDto = {
+        message,
+        username: selectUser,
+        time: new Date(),
+      };
+      socket.emit("sendMessage", newMessage);
+    }
   };
 
   const updateChatRoom = (newChatRooms: IChatRoomDto[]) => {
     setChatRoom((prevChatRoom) => {
-      // 기존의 gptChatList를 제외한 새로운 채팅방 목록 생성
       const filteredNewChatRooms = newChatRooms.filter(
         (room) => room.username !== gptChatList.username
       );
-
-      // gptChatList를 첫 번째로, 그 뒤에 새로운 채팅방 목록 추가
       return [gptChatList, ...filteredNewChatRooms];
     });
   };
 
-  useEffect(() => {
-    // TODO : 처음 message페이지 들어왔을때 chatroom 정보 받아오기
-    // setChatRoom(mockIChatProps);
-    updateChatRoom(mockIChatProps);
-  }, []);
-  const selectUserImg = mockIChatProps[selectedIndex]?.profileImage;
-  // const selectUserImg =
-  //   selectedIndex !== null ? chatRoom[selectedIndex]?.profileImage : null;
+  const handleBackButton = () => {
+    setShowChatRoom(false);
+    if (socket) {
+      socket.emit("leaveRoom", { username: selectUser });
+    }
+  };
 
-  // // const selectUserImg = mockChatListData[selectedIndex]?.profileImage;
-  // const selectUserImg =
-  //   selectedIndex !== null ? chatRoom[selectedIndex]?.profileImage : null;
+  if (isLoading) {
+    return <Container>Loading chat rooms...</Container>;
+  }
 
   return (
     <Container>
-      <ChatLobbyWrapper>
-        {chatRoom &&
-          chatRoom.map((chatList, index) => (
-            <ChatList
-              key={index}
-              {...chatList}
-              isSelected={selectedIndex === index}
-              index={index}
-              handler={onClickChatRoom}
-            />
-          ))}
+      <ChatLobbyWrapper $show={!showChatRoom}>
+        {chatRoom.map((chatList, index) => (
+          <ChatList
+            key={index}
+            {...chatList}
+            isSelected={selectedIndex === index}
+            index={index}
+            handler={onClickChatRoom}
+          />
+        ))}
       </ChatLobbyWrapper>
-      <ChatRoomWrapper>
+      <ChatRoomWrapper $show={showChatRoom}>
+        <BackButton onClick={handleBackButton}>Back</BackButton>
         {selectUser === "Chatgpt" ? (
-          <>
-            <GptChat />
-          </>
+          <GptChat />
         ) : (
           <ChatRoom
             chatHistory={chatHistory}
-            selectUserImg={selectUserImg}
+            selectUserImg={chatRoom[selectedIndex]?.profileImage}
             username={selectUser}
+            sendMessage={sendMessage}
           />
         )}
-
-        {/* <Chatgpt /> */}
       </ChatRoomWrapper>
     </Container>
   );
@@ -149,32 +177,72 @@ const Container = styled.div`
   display: flex;
   padding: 20px 30px;
   gap: 24px;
-  height: 100%;
-  width: 1200px;
-`;
-
-const ChatRoomWrapper = styled.div`
-  background-color: rgba(255, 255, 255, 0.5);
-  border-radius: 4px;
-
-  border: 1px solid var(--black);
-  max-width: 792px;
+  height: calc(100% - 120px);
   width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
 
-  height: 100%;
+  @media (max-width: 768px) {
+    flex-direction: column;
+    padding: 10px;
+  }
 `;
 
-const ChatLobbyWrapper = styled.div`
+const ChatLobbyWrapper = styled.div<{ $show: boolean }>`
   max-width: 384px;
   width: 100%;
+  /* height: 100%; */
   height: 100%;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  /* gap: 10px; */
   align-items: center;
   border-radius: 4px;
-  /* padding: 20px 0; */
   padding: 10px 10px;
   border: 1px solid var(--black);
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+    display: ${(props) => (props.$show ? "flex" : "none")};
+  }
+`;
+
+const ChatRoomWrapper = styled.div<{ $show: boolean }>`
+  background-color: rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+  border: 1px solid var(--black);
+  max-width: 792px;
+  width: 100%;
+  height: 100%;
+
+  /* overflow-y: scroll; */
+  /* 오버레이 스크롤바 사용 */
+  overflow-y: overlay;
+  scrollbar-width: thin;
+  scrollbar-color: var(--brand-main-1) var(--brand-sub-2);
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+    display: ${(props) => (props.$show ? "block" : "none")};
+  }
+`;
+
+const BackButton = styled.button`
+  display: none;
+  padding: 10px;
+  margin: 10px;
+  /* background-color: #f0f0f0; */
+  background-color: var(--brand-main-1);
+  color: var(--white);
+  font-size: 1rem;
+  letter-spacing: -0.025em;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  z-index: 2;
+
+  @media (max-width: 768px) {
+    display: block;
+    position: fixed;
+  }
 `;

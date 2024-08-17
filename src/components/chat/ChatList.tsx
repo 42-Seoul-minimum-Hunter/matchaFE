@@ -15,6 +15,7 @@ export interface IChatRoomDto {
   createdAt: string; // date형식
   lastContent: string; // last chat
 }
+
 // lastTime: string;
 // Unread: number;
 // handler?: (index: number) => void;
@@ -30,7 +31,6 @@ const ChatList = ({
   profileImage,
   createdAt,
   lastContent,
-  // Unread,
   isSelected,
   index,
   handler,
@@ -70,8 +70,6 @@ const Container = styled.div<{ $isSelected: boolean }>`
 
   background-color: ${(props) =>
     props.$isSelected ? "var(--brand-sub-2)" : "#f3f3f3"};
-  /* cursor: pointer; */
-  /* background-color: #f3f3f3; */
   border-bottom: 1px solid var(--line-gray-3);
   &:hover {
     background-color: var(--brand-sub-2);
@@ -125,8 +123,4 @@ const ColumnWrapper = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-
-  /* &:first-child {
-    margin-bottom: 4px;
-  } */
 `;
