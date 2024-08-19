@@ -43,7 +43,6 @@ const LoginPage = () => {
         tryTwofactorCreate();
       }
     } catch (error: any) {
-      // console.log("error", error);
       setLoading(false);
       alert(error.response.data);
     }
@@ -100,14 +99,14 @@ const LoginPage = () => {
                   label="유저네임"
                   value={signUpTextData.username}
                   onChange={handleInputChange}
-                  setErrorr={setError}
+                  setError={setError}
                 />
                 <InputTemplate
                   type="password"
                   label="비밀번호"
                   value={signUpTextData.password}
                   onChange={handleInputChange}
-                  setErrorr={setError}
+                  setError={setError}
                 />
                 <ButtonStyled type="submit" disabled={loading}>
                   로그인

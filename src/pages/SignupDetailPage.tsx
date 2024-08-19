@@ -23,7 +23,7 @@ export interface AgeTagItem {
   label: string;
 }
 
-interface GpsState {
+export interface GpsState {
   isAllowed: boolean;
   error: string | null;
   hasAttempted: boolean;
@@ -39,7 +39,6 @@ const ageTagList: AgeTagItem[] = Array.from({ length: 81 }, (_, index) => {
 
 const SignupDetailPage = () => {
   const { goToMain } = useRouter();
-  const [refreshLocation, setRefreshLocation] = useState(false);
   const [images, setImages] = useState<string[]>([]);
   const [imageError, setImageError] = useState<string | null>(null);
   const [hashTags, setHashTagsError] = useState<string | null>(null);
@@ -74,7 +73,7 @@ const SignupDetailPage = () => {
         hasAttempted: true,
         error: null,
       }));
-      setRefreshLocation(true);
+      // setRefreshLocation(true);
     }
   };
 

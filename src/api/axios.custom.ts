@@ -113,7 +113,7 @@ const axiosLoginOauthURL = "/auth/callback";
 export const axiosLoginOauth = async (code: string): Promise<any> => {
   try {
     console.log("code : ", code);
-    const response = await instance.post(axiosLoginOauthURL, code);
+    const response = await instance.post(axiosLoginOauthURL, { code: code });
     return response;
   } catch (error) {
     throw error;

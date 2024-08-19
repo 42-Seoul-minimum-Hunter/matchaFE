@@ -4,17 +4,15 @@ import styled from "styled-components";
 import { tagItem } from "./LoginPage";
 import ImageUploader from "@/components/ImageUpload";
 import DropboxTemplate from "@/components/DropboxTemplate";
-import {
-  GenderLableMap,
-  InterestLableMap,
-  PreferenceLableMap,
-} from "@/types/maps";
+import { GenderLableMap, PreferenceLableMap } from "@/types/maps";
 import { LocationData } from "@/assets/mock/mock";
-import { AgeTagItem } from "./SignupDetailPage";
+import { AgeTagItem, GpsState } from "./SignupDetailPage";
 import TagList, { TagProps } from "@/components/TagTemplate";
 import { axiosSettingCreate, axiosSettingModify } from "@/api/axios.custom";
 import { SettingDto } from "@/types/tag.dto";
 import useRouter from "@/hooks/useRouter";
+import GeoLocationHandler from "@/components/location/GeoLocationHandler";
+import { HashTagsList, locationSiTagList } from "@/types/tags";
 
 const ageTagList: AgeTagItem[] = Array.from({ length: 81 }, (_, index) => {
   const age = index + 20;
@@ -37,6 +35,7 @@ const SettingPage = () => {
     undefined
   );
   const [isModified, setIsModified] = useState(false);
+  const [isChangeGps, setIsChangeGps] = useState(false);
   const [images, setImages] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [locationGuTagList, setLocationGuTagList] = useState<tagItem[]>([]);
@@ -57,6 +56,11 @@ const SettingPage = () => {
   const [toggleData, setToggleData] = useState({
     twoFactor: false,
     location: false,
+  });
+  const [gpsState, setGpsState] = useState<GpsState>({
+    isAllowed: false,
+    error: null,
+    hasAttempted: false,
   });
 
   useEffect(() => {
@@ -130,18 +134,25 @@ const SettingPage = () => {
     settingData,
   ]);
 
-  useEffect(() => {
-    setIsModified(checkModification());
-  }, [
-    signUpTextData,
-    signUpDropboxData,
-    toggleData,
-    selectedTags,
-    images,
-    checkModification,
-  ]);
-
   const handleToggle = (field: "twoFactor" | "location", value: boolean) => {
+    if (isChangeGps === false) setIsChangeGps(true);
+    if (field === "location" && value === false) {
+      setGpsState((prev) => ({
+        ...prev,
+        isAllowed: false,
+        hasAttempted: true,
+        error: null,
+      }));
+    }
+    if (field === "location" && value === true) {
+      setGpsState((prev) => ({
+        ...prev,
+        isAllowed: true,
+        hasAttempted: true,
+        error: null,
+      }));
+    }
+
     setToggleData((prev) => ({
       ...prev,
       [field]: value,
@@ -174,11 +185,6 @@ const SettingPage = () => {
     }
   };
 
-  const locationSiTagList: tagItem[] = LocationData.map((area) => ({
-    value: area.name,
-    label: area.name,
-  }));
-
   const onClickTags = (tag: TagProps) => {
     setSelectedTags((prev) => {
       if (prev.includes(tag.value)) {
@@ -188,9 +194,6 @@ const SettingPage = () => {
       }
     });
   };
-  const HashTagsList: tagItem[] = Object.entries(InterestLableMap).map(
-    ([value, label]) => ({ value, label })
-  );
 
   const trySettingProfile = async () => {
     try {
@@ -241,6 +244,36 @@ const SettingPage = () => {
       // 에러 메시지 표시
     }
   };
+
+  const handleGeoLocationError = (error: string) => {
+    setGpsState((prev) => ({ ...prev, error }));
+  };
+
+  const handleAddressFound = (si: string, gu: string) => {
+    console.log("si, gu", si, gu);
+    setSignUpDropboxData((prev) => ({
+      ...prev,
+      location_si: si,
+      location_gu: gu,
+    }));
+  };
+
+  useEffect(() => {
+    setIsModified(checkModification());
+  }, [
+    signUpTextData,
+    signUpDropboxData,
+    toggleData,
+    selectedTags,
+    images,
+    checkModification,
+  ]);
+
+  // useEffect(() => {
+  //   if (isChangeGps === true) {
+  //     setIsChangeGps(true);
+  //   }
+  // }, [toggleData.location]);
 
   return (
     <Container>
@@ -366,6 +399,23 @@ const SettingPage = () => {
                   거부
                 </TagStyled>
               </TagContainer>
+
+              {isChangeGps && (
+                <GeoLocationHandler
+                  isGpsAllowed={gpsState.isAllowed}
+                  onGeoLocationError={handleGeoLocationError}
+                  onAddressFound={handleAddressFound}
+                />
+              )}
+              {gpsState.error && (
+                <ErrorStyled>
+                  {gpsState.error}
+                  <br />
+                  {gpsState.isAllowed
+                    ? "브라우저 설정에서 위치 정보 접근을 허용해주세요."
+                    : "IP 기반 위치 정보를 사용합니다."}
+                </ErrorStyled>
+              )}
             </ToggleContainer>
           </RowContainer>
 
@@ -375,7 +425,6 @@ const SettingPage = () => {
               tags={HashTagsList}
               onTagSelect={onClickTags}
               selectedTags={selectedTags}
-              // onTagSelect={(tag) => onClickTags(tag)}
             />
           </RowContainer>
         </RightContainer>
