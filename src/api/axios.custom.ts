@@ -259,7 +259,9 @@ export const axiosFindUser = async (
     if (sort) params.sortInfo = sort;
 
     // hashtags 처리: undefined나 빈 배열일 경우 빈 문자열 할당
-    params.hashtags = hashtags && hashtags.length > 0 ? hashtags.join(",") : "";
+    if (hashtags)
+      params.hashtags =
+        hashtags && hashtags.length > 0 ? hashtags.join(",") : "";
 
     const queryString = new URLSearchParams(params).toString();
     const url = queryString

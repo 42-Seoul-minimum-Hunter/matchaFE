@@ -69,6 +69,30 @@ const SearchPage = () => {
       console.log("search page error", error);
     }
   };
+  //
+  const tryFindUserBrowser = async (page: number) => {
+    try {
+      const res = await axiosFindUser(
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        page,
+        undefined
+      );
+      console.log("res search", res);
+      setSearchData(res.data.users);
+      setTotalProfiles(res.data.totalCount);
+      setCurrentPage(res.data.currentPage);
+    } catch (error: any) {
+      goToMain();
+      // alert("로그인을 해주세요");
+      console.log("search page error", error);
+    }
+  };
 
   const handleSave = (value: any) => {
     if (modalState.type) {
@@ -98,7 +122,8 @@ const SearchPage = () => {
   };
 
   useEffect(() => {
-    tryFindUser(1);
+    // tryFindUser(1);
+    tryFindUserBrowser(1);
   }, [values]);
 
   const totalPages = Math.ceil(totalProfiles / 15);

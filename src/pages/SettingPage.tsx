@@ -313,8 +313,9 @@ const SettingPage = () => {
           <RowContainer>
             <TitleStyled>User Photo</TitleStyled>
             <ImageUploader images={images} setImages={setImages} />
-            {signupError ||
-              (images.length < 5 && <ErrorStyled>{signupError}</ErrorStyled>)}
+            {/* {signupError ||
+              (images.length < 5 && <ErrorStyled>{signupError}</ErrorStyled>)} */}
+            {signupError && <ErrorStyled>{signupError}</ErrorStyled>}
           </RowContainer>
 
           <RowContainer>
