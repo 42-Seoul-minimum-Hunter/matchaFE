@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useEffect, useState, memo } from "react";
+import { useState } from "react";
 import { useInputValidation } from "@/utils/inputCheckUtils";
 
 // 숫자는 드롭다운형식으로 받아오기
@@ -10,7 +10,7 @@ interface InputTemplateProps {
   value: string;
   label: string;
   checkPW?: string;
-  setErrorr?: (error: boolean) => void;
+  setError?: (error: boolean) => void;
 }
 
 const InputTemplate = (props: InputTemplateProps) => {
@@ -24,14 +24,12 @@ const InputTemplate = (props: InputTemplateProps) => {
       props.checkPW
     );
     setError(validationError);
-    if (props.setErrorr) {
-      // setErrorr이 존재할 때만 호출
-      props.setErrorr(!!validationError);
+    if (props.setError) {
+      props.setError(!!validationError);
     }
   };
 
   return (
-    // 에러 유무를 boolean으로 전달
     <InputContainer data-error={!!error}>
       <InputStyled
         id={props.type}

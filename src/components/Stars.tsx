@@ -1,6 +1,7 @@
 import styled from "styled-components";
 import { ReactComponent as StarIcon } from "@/assets/icons/star-icon.svg";
 import { ReactComponent as EmptyStarIcon } from "@/assets/icons/empty-star-icon.svg";
+import { roundToThirdDecimal } from "@/utils/dataUtils";
 
 const Stars = ({ rating }: { rating: number | undefined }) => {
   const filledWidth = rating ? `${(rating / 5) * 100}%` : "0%";
@@ -23,7 +24,9 @@ const Stars = ({ rating }: { rating: number | undefined }) => {
           ))}
         </FilledStars>
       </StarsContainer>
-      <StarsRatingTextStyled>{rating ?? "N/A"}</StarsRatingTextStyled>
+      <StarsRatingTextStyled>
+        {roundToThirdDecimal(rating) ?? "N/A"}
+      </StarsRatingTextStyled>
     </Wrapper>
   );
 };

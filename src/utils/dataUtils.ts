@@ -29,3 +29,8 @@ export const formatDate = (date: Date | undefined): string => {
 
   return `${year}-${month}-${day} ${hours}:${minutes}`;
 };
+
+export const roundToThirdDecimal = (number: number | undefined) => {
+  if (!number) return 0;
+  return Math.round(number * 100) / 100;
+};

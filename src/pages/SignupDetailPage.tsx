@@ -1,10 +1,5 @@
 import styled from "styled-components";
 import { useEffect, useState } from "react";
-import {
-  GenderLableMap,
-  InterestLableMap,
-  PreferenceLableMap,
-} from "@/types/maps";
 import { tagItem } from "@/pages/SignUpPage";
 import { LocationData } from "@/assets/mock/mock";
 import TagList, { TagProps } from "@/components/TagTemplate";
@@ -15,6 +10,12 @@ import GeoLocationHandler from "@/components/location/GeoLocationHandler";
 import { axiosUserCreate } from "@/api/axios.custom";
 import { SignupDto } from "@/types/tag.dto";
 import useRouter from "@/hooks/useRouter";
+import {
+  genderTagList,
+  HashTagsList,
+  locationSiTagList,
+  preferenceTagList,
+} from "@/types/tags";
 
 // TODO : 다른 곳으로 정리
 export interface AgeTagItem {
@@ -40,9 +41,11 @@ const SignupDetailPage = () => {
   const { goToMain } = useRouter();
   const [refreshLocation, setRefreshLocation] = useState(false);
   const [images, setImages] = useState<string[]>([]);
-  const [signupError, setSignupError] = useState<string | null>(null);
+  const [imageError, setImageError] = useState<string | null>(null);
+  const [hashTags, setHashTagsError] = useState<string | null>(null);
   const [locationGuTagList, setLocationGuTagList] = useState<tagItem[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [inputError, setInputError] = useState<boolean>(false);
   const [signUpTextData, setSignUpTextData] = useState({
     firstname: "",
     lastname: "",
@@ -86,12 +89,19 @@ const SignupDetailPage = () => {
     }
   };
 
-  const handleRefreshComplete = () => {
-    setRefreshLocation(false);
-  };
-
-  const handleGeoLocationSuccess = (latitude: number, longitude: number) => {
-    console.log(`위치: ${latitude}, ${longitude}`);
+  const isFormValid = () => {
+    return (
+      signUpTextData.firstname.trim() !== "" &&
+      signUpTextData.lastname.trim() !== "" &&
+      signUpTextData.username.trim() !== "" &&
+      signUpTextData.bio.trim() !== "" &&
+      signUpDropboxData.location_si !== "" &&
+      signUpDropboxData.location_gu !== "" &&
+      signUpDropboxData.gender !== "" &&
+      signUpDropboxData.preference !== "" &&
+      signUpDropboxData.age !== "" &&
+      inputError !== true
+    );
   };
 
   const handleGeoLocationError = (error: string) => {
@@ -109,9 +119,9 @@ const SignupDetailPage = () => {
 
   const handleInputChange = (e: any) => {
     const { name, value } = e.target;
-    console.log("e.target.name", e.target.name);
     setSignUpTextData({ ...signUpTextData, [name]: value });
   };
+
   const handleDropboxChange = (name: string, option: tagItem) => {
     setSignUpDropboxData((prev) => ({ ...prev, [name]: option.value }));
 
@@ -133,22 +143,6 @@ const SignupDetailPage = () => {
     }
   };
 
-  const genderTagList: tagItem[] = Object.entries(GenderLableMap).map(
-    ([value, label]) => ({ value, label })
-  );
-  const preferenceTagList: tagItem[] = Object.entries(PreferenceLableMap).map(
-    ([value, label]) => ({ value, label })
-  );
-
-  const locationSiTagList: tagItem[] = LocationData.map((area) => ({
-    value: area.name,
-    label: area.name,
-  }));
-
-  const HashTagsList: tagItem[] = Object.entries(InterestLableMap).map(
-    ([value, label]) => ({ value, label })
-  );
-
   const onClickTags = (tag: TagProps) => {
     setSelectedTags((prev) => {
       if (prev.includes(tag.value)) {
@@ -161,7 +155,11 @@ const SignupDetailPage = () => {
 
   const trySignup = async () => {
     if (images.length < 5) {
-      setSignupError("최소 5개의 이미지를 업로드해야 합니다.");
+      setImageError("최소 5개의 이미지를 업로드해야 합니다.");
+      return;
+    }
+    if (selectedTags.length < 3) {
+      setHashTagsError("최소 3개의 해시태그를 선택해야 합니다.");
       return;
     }
 
@@ -186,7 +184,8 @@ const SignupDetailPage = () => {
       goToMain();
       // 성공 후 처리 (예: 로그인 페이지로 리다이렉트)
     } catch (err) {
-      console.error("회원가입 실패", err);
+      alert("빈 공란을 모두 채워주세요");
+      // console.error("회원가입 실패", err);
       // 에러 처리 (예: 사용자에게 에러 메시지 표시)
     }
   };
@@ -204,24 +203,28 @@ const SignupDetailPage = () => {
             label="First Name"
             value={signUpTextData.firstname}
             onChange={handleInputChange}
+            setError={setInputError}
           />
           <InputTemplate
             type="lastname"
             label="last Name"
             value={signUpTextData.lastname}
             onChange={handleInputChange}
+            setError={setInputError}
           />
           <InputTemplate
             type="username"
             label="유저네임"
             value={signUpTextData.username}
             onChange={handleInputChange}
+            setError={setInputError}
           />
           <InputTemplate
             type="bio"
             label="약력"
             value={signUpTextData.bio}
             onChange={handleInputChange}
+            setError={setInputError}
           />
         </InputContainer>
       </RowContainer>
@@ -230,17 +233,13 @@ const SignupDetailPage = () => {
         <TitleStyled>User Photo</TitleStyled>
         {/* <ImageUpload /> */}
         <ImageUpload images={images} setImages={setImages} />
-        {signupError ||
-          (images.length < 5 && <ErrorStyled>{signupError}</ErrorStyled>)}
+        {imageError && <ErrorStyled>{imageError}</ErrorStyled>}
       </RowContainer>
 
       <GeoLocationHandler
         isGpsAllowed={gpsState.isAllowed}
-        refreshLocation={refreshLocation}
-        onGeoLocationSuccess={handleGeoLocationSuccess}
         onGeoLocationError={handleGeoLocationError}
         onAddressFound={handleAddressFound}
-        onRefreshComplete={handleRefreshComplete}
       />
 
       <RowContainer>
@@ -280,19 +279,6 @@ const SignupDetailPage = () => {
             selectedValue={signUpDropboxData.location_gu}
             disabled={!signUpDropboxData.location_si}
           />
-          {/* <DropboxTemplate
-            options={locationSiTagList}
-            type="location_si"
-            onSelect={(option) => handleDropboxChange("location_si", option)}
-            selectedValue={signUpDropboxData.location_si}
-          />
-          <DropboxTemplate
-            options={locationGuTagList}
-            type="location_gu"
-            onSelect={(option) => handleDropboxChange("location_gu", option)}
-            selectedValue={signUpDropboxData.location_gu}
-            disabled={!signUpDropboxData.location_si}
-          /> */}
           <DropboxTemplate
             options={genderTagList}
             type="gender"
@@ -320,26 +306,18 @@ const SignupDetailPage = () => {
           tags={HashTagsList}
           onTagSelect={onClickTags}
           selectedTags={selectedTags}
-          // onTagSelect={(tag) => onClickTags(tag)}
         />
+        {hashTags && <ErrorStyled>{hashTags}</ErrorStyled>}
       </HashTagContainer>
-      <ButtonStyled onClick={trySignup}>가입하기</ButtonStyled>
+      {/* <ButtonStyled onClick={trySignup}>가입하기</ButtonStyled> */}
+      <ButtonStyled onClick={trySignup} disabled={!isFormValid()}>
+        가입하기
+      </ButtonStyled>
     </Container>
   );
 };
 
 export default SignupDetailPage;
-
-const ButtonStyled = styled.button`
-  width: 350px;
-  font-size: 1.1rem;
-  background-color: var(--brand-main-1);
-  padding: 12px 0px;
-
-  box-shadow: 4px 4px 3px 0px var(--black);
-  margin-top: 30px;
-  margin-bottom: 50px;
-`;
 
 const InputContainer = styled.div`
   display: flex;
@@ -420,6 +398,16 @@ const TagContainer = styled.div`
   }
 `;
 
+const ErrorStyled = styled.div`
+  color: var(--status-error-1);
+  margin-top: 6px;
+  font-weight: 400;
+  line-height: 1.4;
+  font-size: 1rem;
+  letter-spacing: -0.025em;
+  width: 250px;
+`;
+
 const TagStyled = styled.div<{
   $selected: boolean;
 }>`
@@ -442,13 +430,16 @@ const TagStyled = styled.div<{
   }
 `;
 
-const ErrorStyled = styled.div`
-  /* margin-left: 20px; */
-  margin-top: 4px;
-  font-weight: 400;
-  line-height: 1.4;
-  font-size: 0.8rem;
-  letter-spacing: -0.025em;
-  color: var(--status-error-1);
-  width: 250px;
+const ButtonStyled = styled.button<{ disabled: boolean }>`
+  width: 350px;
+  font-size: 1.1rem;
+  background-color: ${(props) =>
+    props.disabled ? "var(--line-gray-3)" : "var(--brand-main-1)"};
+  color: ${(props) => (props.disabled ? "var(--line-gray-1)" : "var(--white)")};
+  padding: 12px 0px;
+  box-shadow: 4px 4px 3px 0px var(--black);
+  margin-top: 30px;
+  margin-bottom: 50px;
+  cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
+  opacity: ${(props) => (props.disabled ? 0.5 : 1)};
 `;

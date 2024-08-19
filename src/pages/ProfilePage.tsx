@@ -15,7 +15,7 @@ import TagList from "@/components/TagTemplate";
 import Stars from "@/components/Stars";
 import StarsSubmit from "@/components/StarsSubmit";
 import useRouter from "@/hooks/useRouter";
-import { formatDate } from "@/utils/dataUtils";
+import { formatDate, roundToThirdDecimal } from "@/utils/dataUtils";
 import { ReactComponent as HeartIcon } from "@/assets/icons/like-heart-icon.svg";
 import { HashTagsList } from "@/types/tags";
 
@@ -171,10 +171,9 @@ const ProfilePage = () => {
         console.log("rate user data", res.data);
         console.log("rate user Avg", res.data.rateAvg);
         alert(userRating + " 점을 주었습니다.");
-        // console.log("rate user", res);
         setProfileData((prevData) => ({
           ...prevData!,
-          rate: res.data.rateAvg,
+          rate: roundToThirdDecimal(res.data.rateAvg),
         }));
       } catch (error) {
         alert("평점 주기에 실패했습니다.");
@@ -522,11 +521,8 @@ const FilterItemStyled = styled.div`
   flex-direction: column;
   width: 188px;
   @media screen and (max-width: 1360px) {
-    width: calc(50% - 8px); // 2개씩 나열되도록 설정
+    width: calc(50% - 8px);
   }
-  /* @media screen and (max-width: 480px) {
-    width: 100%; // 모바일에서는 full width
-  } */
   border: 1px solid var(--black);
   padding: 10px 20px;
   align-items: flex-end;
@@ -612,8 +608,6 @@ const OnlineStatusStyled = styled.div<{
     position: absolute;
     top: 55px;
     left: 5px;
-    /* right: 0px;
-    bottom: 0; */
     width: 10px;
     height: 10px;
     border-radius: 50%;

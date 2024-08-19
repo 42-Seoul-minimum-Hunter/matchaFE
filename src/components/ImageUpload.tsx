@@ -40,29 +40,10 @@ const ImageUploader = ({
     }
   };
 
-  // const decodeBase64Url = (url: string): string => {
-  //   if (url.startsWith("http") || url.startsWith("data:image")) {
-  //     return url;
-  //   }
-
-  //   try {
-  //     const decoded = atob(url);
-  //     if (decoded.startsWith("http")) {
-  //       return decoded;
-  //     }
-  //     return `data:image/png;base64,${url}`;
-  //   } catch (e) {
-  //     console.error("Invalid base64 string:", e);
-  //     return url;
-  //   }
-  // };
   const decodeBase64Url = (url: string): string => {
-    // If it's already a valid URL or data URL, return as is
     if (url.startsWith("http") || url.startsWith("data:image")) {
       return url;
     }
-
-    // Check if the string is base64 encoded
     const base64Regex =
       /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
     if (!base64Regex.test(url)) {
@@ -81,6 +62,36 @@ const ImageUploader = ({
       return url; // Return the original string if decoding fails
     }
   };
+
+  // const decodeBase64Url = (url: string): string => {
+  //   // If it's already a valid URL (including blob URLs) or data URL, return as is
+  //   if (
+  //     url.startsWith("http") ||
+  //     url.startsWith("data:image") ||
+  //     url.startsWith("blob:")
+  //   ) {
+  //     return url;
+  //   }
+
+  //   // Check if the string is base64 encoded
+  //   const base64Regex =
+  //     /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
+  //   if (!base64Regex.test(url)) {
+  //     console.warn("The string is not a valid base64 encoded string:", url);
+  //     return url; // Return the original string if it's not base64
+  //   }
+
+  //   try {
+  //     const decoded = atob(url);
+  //     if (decoded.startsWith("http")) {
+  //       return decoded;
+  //     }
+  //     return `data:image/png;base64,${url}`;
+  //   } catch (e) {
+  //     console.error("Error decoding base64 string:", e);
+  //     return url; // Return the original string if decoding fails
+  //   }
+  // };
 
   const handleDelete = (index: number) => {
     setImages((prevImages) => prevImages.filter((_, i) => i !== index));

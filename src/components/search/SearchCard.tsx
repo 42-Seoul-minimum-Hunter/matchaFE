@@ -5,7 +5,14 @@ import Stars from "../Stars"; // Stars 컴포넌트를 import 합니다.
 import { ReactComponent as StarIcon } from "@/assets/icons/star-icon.svg";
 import useRouter from "@/hooks/useRouter";
 
-const SearchCard = ({ profileImages, username, age, rate }: ISearchDateDto) => {
+const SearchCard = ({
+  profileImages,
+  username,
+  age,
+  rate,
+  si,
+  gu,
+}: ISearchDateDto) => {
   const { goToProfileUserClick } = useRouter();
   const [isHovered, setIsHovered] = useState(false);
 
@@ -31,7 +38,9 @@ const SearchCard = ({ profileImages, username, age, rate }: ISearchDateDto) => {
                     {rate}
                   </RateContainer>
                 </InfoContainer>
-                <LocationStyled>서울 강남구</LocationStyled>
+                <LocationStyled>
+                  {si} {gu}
+                </LocationStyled>
               </>
             )}
           </OverlayStyled>

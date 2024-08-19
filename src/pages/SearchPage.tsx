@@ -291,29 +291,6 @@ const PageEllipsis = styled.span`
   color: var(--black);
 `;
 
-// const PageButton = styled.button`
-//   margin: 0 5px;
-//   padding: 5px 10px;
-//   border: 1px solid;
-// `;
-
-// const PageNumberButton = styled.button<{ $active: boolean }>`
-//   margin: 0 5px;
-//   padding: 5px 10px;
-//   border: 1px solid
-//     ${(props) => (props.$active ? "var(--brand-main-1)" : "var(--line-gray-3)")};
-//   background-color: ${(props) =>
-//     props.$active ? "var(--brand-main-1)" : "white"};
-//   color: ${(props) => (props.$active ? "white" : "var(--black)")};
-//   cursor: pointer;
-//   border-radius: 5px;
-
-//   &:hover {
-//     background-color: ${(props) =>
-//       props.$active ? "var(--brand-main-1)" : "var(--brand-sub-2)"};
-//   }
-// `;
-
 const Container = styled.div`
   display: flex;
   flex-direction: column;
