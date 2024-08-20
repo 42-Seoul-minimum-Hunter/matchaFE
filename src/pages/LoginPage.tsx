@@ -37,27 +37,28 @@ const LoginPage = () => {
         signUpTextData.password
       );
       console.log("res", res);
-      console.log("res", res.data);
-      if (res.data === false) goToMain();
-      else {
-        tryTwofactorCreate();
-      }
+      goToMain();
+      // console.log("res", res.data);
+      // if (res.data === false)
+      // else {
+      //   tryTwofactorCreate();
+      // }
     } catch (error: any) {
       setLoading(false);
       alert(error.response.data);
     }
   };
 
-  const tryTwofactorCreate = async () => {
-    try {
-      const res = await axiosCreateTwoFactor();
-      goToTwofactor();
-      console.log("res", res);
-    } catch (error) {
-      setLoading(false);
-      console.log("error", error);
-    }
-  };
+  // const tryTwofactorCreate = async () => {
+  //   try {
+  //     const res = await axiosCreateTwoFactor();
+  //     goToTwofactor();
+  //     console.log("res", res);
+  //   } catch (error) {
+  //     setLoading(false);
+  //     console.log("error", error);
+  //   }
+  // };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -78,6 +79,7 @@ const LoginPage = () => {
       import.meta.env.VITE_OAUTH_CALLBACK_URI
     }&response_type=code`;
     window.location.href = url;
+    console.log("url", url);
   };
 
   return (

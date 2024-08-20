@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import Loading from "./Loading";
 import { useState } from "react";
 import { validateMessage } from "@/utils/inputCheckUtils";
 
@@ -25,10 +24,10 @@ const ChatRoom = ({
   username: string;
   sendMessage: (message: string) => void;
 }) => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [inputMessage, setInputMessage] = useState<string>("");
+  // const filter = new Filter({ placeHolder: "x" });
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateMessage(inputMessage) === false) {
       alert("더러운 메세지 보내지 마세요");
@@ -56,19 +55,15 @@ const ChatRoom = ({
               </PartnerMessageWrapper>
             )
           )}
-          {isLoading && <Loading />}
         </MessageContainer>
         <ChatInputWrapper onSubmit={handleSendMessage}>
           <ChatInput
             placeholder="write your message ..."
-            disabled={isLoading}
             value={inputMessage}
             maxLength={255}
             onChange={(e) => setInputMessage(e.target.value)}
           />
-          <SendButton type="submit" disabled={isLoading}>
-            Send
-          </SendButton>
+          <SendButton type="submit">Send</SendButton>
         </ChatInputWrapper>
       </>
     </Container>
@@ -172,13 +167,14 @@ const ContentStyled = styled.div`
   word-break: break-all;
 `;
 
-const ChatInput = styled.textarea`
+const ChatInput = styled.input`
   background-color: var(--brand-sub-2);
   color: var(--black);
-  padding: 10px;
+  /* padding: 10px; */
+  padding: 10px 20px;
   outline: none;
   width: 100%;
-  height: 20px; // 원하는 고정 높이 설정
+  height: 40px; // 원하는 고정 높이 설정
   /* min-height: 40px; // 최소 높이 설정 */
   max-height: 40px; // 최대 높이 설정 (스크롤 생성을 위해)
   border: 1px solid var(--brand-main-1);

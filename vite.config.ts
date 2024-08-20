@@ -4,8 +4,34 @@ import svgr from "@svgr/rollup";
 import * as path from "path";
 
 // https://vitejs.dev/config/
+
+// export default defineConfig({
+//   plugins: [react(), svgr()],
+//   resolve: {
+//     alias: [{ find: "@", replacement: path.resolve(__dirname, "src") }],
+//   },
+//   server: {
+//     proxy: {
+//       "/api": {
+//         target: "http://localhost:3000",
+//         changeOrigin: true,
+//         rewrite: (path) => path.replace(/^\/api/, ""),
+//         configure: (proxy, _options) => {
+//           proxy.on("proxyReq", (proxyReq, req, res) => {
+//             // proxyReq.setHeader("Connection", "keep-alive");
+//             proxyReq.setHeader("Content-Length", "Infinity");
+//           });
+//           proxy.on("proxyRes", (proxyRes, req, res) => {
+//             // proxyRes.headers["connection"] = "keep-alive";
+//             proxyRes.headers["content-length"] = "Infinity";
+//           });
+//         },
+//       },
+//     },
+//   },
+// });
+
 export default defineConfig({
-  // plugins: [react()],
   plugins: [react(), svgr()],
   resolve: {
     alias: [{ find: "@", replacement: path.resolve(__dirname, "src") }],
@@ -20,13 +46,3 @@ export default defineConfig({
     },
   },
 });
-
-// export default defineConfig({
-//   plugins: [react()],
-//   resolve: {
-//     alias: [
-//       // { find: "@components", replacement: "/src/components" },
-//       { find: "@", replacement: "/src" },
-//     ],
-//   },
-// });

@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import TestImage1 from "@/assets/mock/test1.png";
 import TestImage2 from "@/assets/icons/gpt-icon.svg";
 import ChatList, { IChatRoomDto } from "@/components/chat/ChatList";
 import ChatRoom, {
@@ -10,6 +9,7 @@ import { useContext, useEffect, useState } from "react";
 import { SocketContext } from "./LayoutPage";
 import GptChat from "@/components/chat/GptChat";
 import useRouter from "@/hooks/useRouter";
+import { axiosCheckJWT } from "@/api/axios.custom";
 
 // 이미지 경로 어떻게 받을지 생각해두기
 
@@ -23,7 +23,7 @@ const gptChatList: IChatRoomDto = {
 
 const ChatPage = () => {
   const { goToMain } = useRouter();
-  const [selectUser, setSelectUser] = useState<string>("");
+  const [selectUser, setSelectUser] = useState<string>("Chatgpt");
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [chatRoom, setChatRoom] = useState<IChatRoomDto[]>([gptChatList]);
   const [chatHistory, setChatHistory] = useState<IChatReciveContentDto[]>([]);
@@ -31,21 +31,23 @@ const ChatPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const socket = useContext(SocketContext);
 
-  // useEffect(() => {
-  //   // ChatGPT 방으로 시작
-  //   // setSelectUser("Chatgpt");
-  //   onClickChatRoom(0);
-  // }, []);
+  const tryAuthCheck = async () => {
+    try {
+      const res = await axiosCheckJWT();
+    } catch (error: any) {
+      alert("로그인을 해주세요");
+      goToMain();
+    }
+  };
+  useEffect(() => {
+    tryAuthCheck();
+    // onClickChatRoom(0);
+  }, []);
 
   useEffect(() => {
-    if (selectUser === "Chatgpt") {
-      return;
-    }
-
     if (socket) {
       const fetchChatList = () => {
         return new Promise<void>((resolve) => {
-          // socket.emit("leaveRoom", { username: selectUser });
           socket.emit("getChatList");
           socket.on("getChatList", (newChatRooms: IChatRoomDto[]) => {
             console.log("newchatrooms", newChatRooms);
@@ -71,12 +73,16 @@ const ChatPage = () => {
         console.log("alarm", data.alarmType);
 
         if (data.alarmType === "UNMATCHED") {
-          // setIsMatched(false);
           alert("상대방이 너 싫어한대");
           goToMain();
         }
       });
 
+      // if (selectUser === "Chatgpt") {
+      //   onClickChatRoom(0);
+      //   setIsLoading(false);
+      //   return;
+      // }
       return () => {
         socket.off("getChatList");
         socket.off("sendMessage");

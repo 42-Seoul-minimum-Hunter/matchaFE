@@ -1,6 +1,12 @@
-import { axiosVerifyTwoFactor } from "@/api/axios.custom";
+import { axiosCreateTwoFactor, axiosVerifyTwoFactor } from "@/api/axios.custom";
 import useRouter from "@/hooks/useRouter";
-import React, { useState, useRef, KeyboardEvent, ChangeEvent } from "react";
+import React, {
+  useState,
+  useRef,
+  KeyboardEvent,
+  ChangeEvent,
+  useEffect,
+} from "react";
 import styled from "styled-components";
 
 const TwoFactorPage = () => {
@@ -29,6 +35,20 @@ const TwoFactorPage = () => {
       setIsLoading(false);
     }
   };
+
+  const tryTwofactorCreate = async () => {
+    try {
+      const res = await axiosCreateTwoFactor();
+      console.log("res", res);
+      // goToTwofactor();
+    } catch (error) {
+      // setLoading(false);
+      console.log("error", error);
+    }
+  };
+  useEffect(() => {
+    tryTwofactorCreate();
+  }, []);
 
   const handleSubmit = () => {
     if (code.some((digit) => digit === "")) {

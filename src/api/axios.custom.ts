@@ -1,4 +1,4 @@
-import { RegisterDto, SettingDto, SignupDto } from "@/types/tag.dto";
+import { SettingDto, SignupDto } from "@/types/tag.dto";
 import axios, { AxiosRequestConfig } from "axios";
 import { getCookie } from "./cookie";
 
@@ -28,30 +28,23 @@ const instance = axios.create({
   withCredentials: true,
   headers: {
     "Content-type": "application/json",
+    // "Content-Type": "multipart/form-data", // 이미지 업로드를 위해 변경
   },
+  // 이미지 용량
+  maxContentLength: Infinity,
+  maxBodyLength: Infinity,
 });
 
 instance.interceptors.request.use(async (config: any) => {
   const token = getCookie("jwt");
-  // console.log("token : ", token);
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   } else {
     delete config.headers.Authorization;
   }
-
-  // config.headers = {
-  // Authorization : {token ? `Bearer ${token}` : null}
-  // Authorization: `Bearer ${token}`,
-
-  // instance.interceptors.request.use(async (config) => {
-  // const token = getCookie("admin_access_token") ?? getCookie("access_token");
-  // config.headers = {
-  // Authorization: `Bearer ${token}`,
-  // Authorization :
-  // };
   return config;
 });
+instance.defaults.maxRedirects = 5;
 
 /**
  * AI 챗봇
@@ -81,6 +74,7 @@ export const axiosUserLogin = async (
   username: string,
   password: string
 ): Promise<any> => {
+  console.log("username, password", username, password);
   try {
     const response = await instance.post(axiosUserLoginURL, {
       username: username,
@@ -108,7 +102,6 @@ export const axiosCheckJWT = async (): Promise<any> => {
 /**
  * OAUTH 로그인
  */
-
 const axiosLoginOauthURL = "/auth/callback";
 export const axiosLoginOauth = async (code: string): Promise<any> => {
   try {
@@ -349,6 +342,7 @@ const axiosSettingCreateURL = "/user/profile/settings";
 export const axiosSettingCreate = async (): Promise<any> => {
   try {
     const response = await instance.get(axiosSettingCreateURL);
+    // "Content-Type": "multipart/form-data", // 이미지 업로드를 위해 변경
     return response;
   } catch (error) {
     throw error;
@@ -357,6 +351,7 @@ export const axiosSettingCreate = async (): Promise<any> => {
 
 const axiosSettingModifyURL = "/user/profile/update";
 export const axiosSettingModify = async (data: SettingDto): Promise<any> => {
+  console.log("setting data", data);
   try {
     const response = await instance.post(axiosSettingModifyURL, data);
     return response;

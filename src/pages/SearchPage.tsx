@@ -1,6 +1,6 @@
 import { axiosFindUser } from "@/api/axios.custom";
 import { InterestLableMap, sortLableMap } from "@/types/maps";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { tagItem } from "./SignUpPage";
 import { ReactComponent as FilterIcon } from "@/assets/icons/filter-icon.svg";
@@ -69,7 +69,7 @@ const SearchPage = () => {
       console.log("search page error", error);
     }
   };
-  //
+
   const tryFindUserBrowser = async (page: number) => {
     try {
       const res = await axiosFindUser(
@@ -121,11 +121,26 @@ const SearchPage = () => {
     }
   };
 
-  useEffect(() => {
-    // tryFindUser(1);
-    tryFindUserBrowser(1);
-  }, [values]);
+  const isFirstRender = useRef(true);
 
+  useEffect(() => {
+    if (isFirstRender.current) {
+      // 첫 렌더링 시에만 실행
+      tryFindUserBrowser(1);
+      isFirstRender.current = false;
+    } else {
+      // 첫 렌더링이 아닐 때 (즉, values가 변경되었을 때) 실행
+      tryFindUser(1);
+    }
+  }, [values]);
+  // useEffect(() => {
+  //   tryFindUser(1);
+  // }, [values]);
+
+  // useEffect(() => {
+  //   tryFindUserBrowser(1);
+  // }, []);
+  // tryFindUserBrowser(1);
   const totalPages = Math.ceil(totalProfiles / 15);
   const pageGroup = Math.ceil(currentPage / 10);
   const lastPage = pageGroup * 10;

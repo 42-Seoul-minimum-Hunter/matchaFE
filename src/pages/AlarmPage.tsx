@@ -14,6 +14,18 @@ const AlarmPage = () => {
   const socket = useContext(SocketContext);
   const [isLoading, setIsLoading] = useState(true);
 
+  const tryAuthCheck = async () => {
+    try {
+      const res = await axiosCheckJWT();
+    } catch (error: any) {
+      alert("로그인을 해주세요");
+      goToMain();
+    }
+  };
+  useEffect(() => {
+    tryAuthCheck();
+  }, []);
+
   useEffect(() => {
     setHeaderAlarm(false);
 

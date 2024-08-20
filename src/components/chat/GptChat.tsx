@@ -198,13 +198,13 @@ const ContentStyled = styled.div`
   word-break: break-all; */
 `;
 
-const ChatInput = styled.textarea`
+const ChatInput = styled.input`
   background-color: var(--brand-sub-2);
   color: var(--black);
   padding: 10px;
   outline: none;
   width: 100%;
-  height: 20px; // 원하는 고정 높이 설정
+  height: 40px; // 원하는 고정 높이 설정
   /* min-height: 40px; // 최소 높이 설정 */
   max-height: 40px; // 최대 높이 설정 (스크롤 생성을 위해)
   border: 1px solid var(--brand-main-1);

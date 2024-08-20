@@ -36,6 +36,9 @@ const useRouter = () => {
   const goToMain = () => {
     navigate("/main");
   };
+  const goToSignupDetail = () => {
+    navigate("/signup/detail");
+  };
 
   const goToProfileUserClick = (nickname: string) => {
     navigate(`/profile?username=${nickname}`);
