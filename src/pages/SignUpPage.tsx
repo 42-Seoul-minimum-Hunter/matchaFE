@@ -2,6 +2,7 @@ import InputTemplate from "@/components/InputTemplate";
 import styled from "styled-components";
 import { useEffect, useState, useCallback } from "react";
 import { axiosEmailSend, axiosRegister } from "@/api/axios.custom";
+import useRouter from "@/hooks/useRouter";
 
 // const GenderTag: ITagProps[] = [{ title: "male" }];
 //  나중에 꼭 수정 필요 -> useMemo, useCallback 렌더링 최적화 해야함
@@ -11,6 +12,7 @@ export interface tagItem {
 }
 
 const SignUpPage = () => {
+  const { goToMain } = useRouter();
   const [error, setError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isCheckEmail, setIsCheckEmail] = useState<boolean>(false);
@@ -66,7 +68,7 @@ const SignUpPage = () => {
   return (
     <Container>
       <InputContainer>
-        <TitleStyled>
+        <TitleStyled onClick={goToMain}>
           MEET<span>CHA</span>
         </TitleStyled>
         <InputTemplate

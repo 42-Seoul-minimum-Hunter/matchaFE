@@ -9,6 +9,7 @@ import FilterModal from "@/components/search/FilterModal";
 import SearchCard from "@/components/search/SearchCard";
 import useRouter from "@/hooks/useRouter";
 import { HashTagsList } from "@/types/tags";
+import { removeCookie } from "@/api/cookie";
 
 export interface ISearchDateDto {
   profileImages: string;
@@ -20,105 +21,6 @@ export interface ISearchDateDto {
 }
 
 type ModalType = "age" | "rate" | "location" | "hashtag" | "sort";
-
-// const SearchPage = () => {
-//   const { goToMain } = useRouter();
-//   const [searchData, setSearchData] = useState<ISearchDateDto[]>([]);
-//   const [currentPage, setCurrentPage] = useState(1);
-//   const [totalProfiles, setTotalProfiles] = useState(0);
-//   const [modalState, setModalState] = useState<{
-//     isOpen: boolean;
-//     type: ModalType | null;
-//   }>({
-//     isOpen: false,
-//     type: null,
-//   });
-//   const [values, setValues] = useState({
-//     age: { min: 20, max: 100 },
-//     rate: { min: 0, max: 5 },
-//     location: { si: "", gu: "" },
-//     hashtag: [] as string[],
-//     sort: "descRate",
-//   });
-
-//   const openModal = (type: ModalType) => setModalState({ isOpen: true, type });
-//   const closeModal = () => setModalState({ isOpen: false, type: null });
-//   const tryFindUser = async (page: number) => {
-//     try {
-//       const res = await axiosFindUser(
-//         values.location.si || undefined,
-//         values.location.gu || undefined,
-//         values.age.min || undefined,
-//         values.age.max || undefined,
-//         values.rate.min || undefined,
-//         values.rate.max || undefined,
-//         values.hashtag.length > 0 ? values.hashtag : undefined,
-//         page,
-//         values.sort || undefined
-//       );
-//       setSearchData(res.data.users);
-//       setTotalProfiles(res.data.totalCount);
-//       setCurrentPage(res.data.currentPage);
-//     } catch (error: any) {
-//       goToMain();
-//       console.log("search page error", error);
-//     }
-//   };
-
-//   const handleSave = (value: any) => {
-//     if (modalState.type) {
-//       switch (modalState.type) {
-//         case "age":
-//         case "rate":
-//           setValues((prev) => ({
-//             ...prev,
-//             [modalState.type as keyof typeof prev]: {
-//               min: value[0],
-//               max: value[1],
-//             },
-//           }));
-//           break;
-//         case "location":
-//           setValues((prev) => ({ ...prev, location: value }));
-//           break;
-//         case "hashtag":
-//           setValues((prev) => ({ ...prev, hashtag: value }));
-//           break;
-//         case "sort":
-//           setValues((prev) => ({ ...prev, sort: value }));
-//           break;
-//       }
-//       closeModal();
-//     }
-//   };
-
-//   // const isFirstRender = useRef(true);
-
-//   useEffect(() => {
-//     tryFindUser(1);
-//     // if (isFirstRender.current) {
-//     //   tryFindUserBrowser(1);
-//     //   isFirstRender.current = false;
-//     // } else {
-//     //   tryFindUser(1);
-//     // }
-//   }, [values]);
-
-//   const totalPages = Math.ceil(totalProfiles / 15);
-//   const pageGroup = Math.ceil(currentPage / 10);
-//   const lastPage = pageGroup * 10;
-//   const firstPage = lastPage - 9;
-
-//   const handlePageChange = (newPage: number) => {
-//     if (newPage >= 1 && newPage <= totalPages) {
-//       setCurrentPage(newPage);
-//       tryFindUser(newPage);
-//     }
-//   };
-
-//   useEffect(() => {
-//     window.scrollTo(0, 0);
-//   }, [currentPage]);
 
 const SearchPage = () => {
   const { goToMain } = useRouter();
@@ -196,7 +98,9 @@ const SearchPage = () => {
       setTotalProfiles(res.data.totalCount);
       setCurrentPage(res.data.currentPage);
     } catch (error: any) {
+      removeCookie("jwt");
       goToMain();
+      alert("로그인을 해주세요");
       console.log("search page error", error);
     }
   };

@@ -76,8 +76,6 @@ const LoginPage = () => {
     console.log("url", url);
   };
 
-  useEffect(() => {}, []);
-
   return (
     <>
       {resetPassword ? (
@@ -88,7 +86,7 @@ const LoginPage = () => {
         <>
           <Container>
             <InputContainer>
-              <TitleStyled>
+              <TitleStyled onClick={goToMain}>
                 MEET<span>CHA</span>
               </TitleStyled>
               <FormStyled onSubmit={handleSubmit}>

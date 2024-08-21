@@ -7,7 +7,7 @@ export enum PreferenceType {
   HETEROSEXUAL = "HETEROSEXUAL",
   HOMOSEXUAL = "HOMOSEXUAL",
   BISEXUAL = "BISEXUAL",
-  NONE = "NONE",
+  ASEXUAL = "ASEXUAL",
 }
 
 export enum InterestType {

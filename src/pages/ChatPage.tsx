@@ -10,6 +10,7 @@ import { SocketContext } from "./LayoutPage";
 import GptChat from "@/components/chat/GptChat";
 import useRouter from "@/hooks/useRouter";
 import { axiosCheckJWT } from "@/api/axios.custom";
+import { removeCookie } from "@/api/cookie";
 
 // 이미지 경로 어떻게 받을지 생각해두기
 
@@ -36,6 +37,7 @@ const ChatPage = () => {
       const res = await axiosCheckJWT();
     } catch (error: any) {
       alert("로그인을 해주세요");
+      removeCookie("jwt");
       goToMain();
     }
   };

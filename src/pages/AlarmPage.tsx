@@ -6,6 +6,7 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { userAlarm, userAlarmContent } from "@/recoil/atoms";
 import { axiosCheckJWT } from "@/api/axios.custom";
 import useRouter from "@/hooks/useRouter";
+import { removeCookie } from "@/api/cookie";
 
 const AlarmPage = () => {
   const { goToMain } = useRouter();
@@ -19,6 +20,7 @@ const AlarmPage = () => {
       const res = await axiosCheckJWT();
     } catch (error: any) {
       alert("로그인을 해주세요");
+      removeCookie("jwt");
       goToMain();
     }
   };

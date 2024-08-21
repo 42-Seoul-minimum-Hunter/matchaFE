@@ -18,6 +18,7 @@ import useRouter from "@/hooks/useRouter";
 import { formatDate, roundToThirdDecimal } from "@/utils/dataUtils";
 import { ReactComponent as HeartIcon } from "@/assets/icons/like-heart-icon.svg";
 import { HashTagsList } from "@/types/tags";
+import { removeCookie } from "@/api/cookie";
 
 // 웹소켓으로 차단하기, 좋아요 세팅
 const ProfilePage = () => {
@@ -54,6 +55,7 @@ const ProfilePage = () => {
       if (error.response?.status === 404) {
         alert("유저가 없습니다.");
       } else if (error.response?.status === 401) {
+        removeCookie("jwt");
         alert("로그인을 해주세요.");
       } else if (error.response?.status === 400) {
         alert("잘못된 접근입니다.");

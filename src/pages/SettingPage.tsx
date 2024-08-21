@@ -18,6 +18,7 @@ import {
   locationSiTagList,
   preferenceTagList,
 } from "@/types/tags";
+import { removeCookie } from "@/api/cookie";
 
 const SettingPage = () => {
   const [signupError, setSignupError] = useState<string | null>(null);
@@ -192,6 +193,7 @@ const SettingPage = () => {
       console.log("res", res);
     } catch (error) {
       goToMain();
+      removeCookie("jwt");
       alert("로그인을 해주세요");
     }
   };

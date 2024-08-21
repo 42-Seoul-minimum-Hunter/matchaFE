@@ -2,8 +2,10 @@ import styled from "styled-components";
 import InputTemplate from "./InputTemplate";
 import { useState } from "react";
 import { axiosResetCreate } from "@/api/axios.custom";
+import useRouter from "@/hooks/useRouter";
 
 const ResetCheckEmail = () => {
+  const { goToMain } = useRouter();
   const [error, setError] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSuccess, setIsSuccess] = useState<boolean>(false);
@@ -49,7 +51,7 @@ const ResetCheckEmail = () => {
   return (
     <Container>
       <InputContainer>
-        <TitleStyled>
+        <TitleStyled onClick={goToMain}>
           MEET<span>CHA</span>
         </TitleStyled>
         <>
@@ -61,7 +63,7 @@ const ResetCheckEmail = () => {
             label="이메일"
             value={signUpTextData.email}
             onChange={handleInputChange}
-            setErrorr={setError}
+            setError={setError}
           />
           <ButtonStyled
             onClick={handleSubmit}

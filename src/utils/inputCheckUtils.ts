@@ -58,7 +58,7 @@ export function validatePreference(
     preference === PreferenceType.BISEXUAL ||
     preference === PreferenceType.HETEROSEXUAL ||
     preference === PreferenceType.HOMOSEXUAL ||
-    preference === PreferenceType.NONE
+    preference === PreferenceType.ASEXUAL
   );
 }
 

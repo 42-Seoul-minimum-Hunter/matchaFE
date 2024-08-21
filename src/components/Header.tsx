@@ -6,7 +6,6 @@ import useRouter from "@/hooks/useRouter";
 import { getCookie } from "@/api/cookie";
 import { useRecoilState, useSetRecoilState } from "recoil";
 import { userAlarm, userAlarmContent, userSocketLogin } from "@/recoil/atoms";
-import { IAlarmProps } from "./Alarm";
 
 // TODO: Router 테이블 만들어서 해당 라우터에서 색상 표현
 const Header = () => {
@@ -26,11 +25,11 @@ const Header = () => {
 
   const socket = useContext(SocketContext);
 
+  const token = getCookie("jwt");
   useEffect(() => {
-    const token = getCookie("jwt");
     console.log("token", !!token);
     setIsLogin(!!token); // token이 존재하면 true, 없으면 false
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     console.log("alarm test");
@@ -44,7 +43,6 @@ const Header = () => {
       socket.emit("getAlarms");
       return () => {
         socket.off("alarm");
-        // socket.off("getAlarms");
       };
     }
   }, [socket]);
