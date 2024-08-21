@@ -2,33 +2,11 @@ import { SettingDto, SignupDto } from "@/types/tag.dto";
 import axios, { AxiosRequestConfig } from "axios";
 import { getCookie } from "./cookie";
 
-// axios 요청 파라미터 옵션인 withCredentials의 기본값은 fals로 설정되어 CORS 요청을 허용하지 않음
-// instance.interceptors.request.use
-// instance.interceptors.response.use
-// axios의 요청과 응답을 가로채는 인터셉터를 사용하여 요청과 응답을 하기 전 가공할 수 있음
-// ex) 모든 헤더에 Authorization을 추가하거나, 응답에 대한 에러 처리를 추가할 수 있음
-// axios.defaults.withCredentials = true;
-
-// const instance = axios.create({
-//   baseURL: "http://localhost:3000",
-//   withCredentials: true,
-//   headers: {
-//     "Content-type": "application/json",
-//     // "Access-Control-Allow-Origin": "http://localhost:5173", // 허용할 출처 설정
-//     // "Access-Control-Allow-Origin": "*",
-//     "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS", // 허용할 HTTP 메서드 설정
-//     "Access-Control-Allow-Headers": "content-type", // 허용할 헤더 설정
-//     "Access-Control-Allow-Credentials": "true", // 이 부분이 추가되었습니다.
-//     origin: "http://localhost:5173",
-//   },
-// });
-
 const instance = axios.create({
   baseURL: "/api",
   withCredentials: true,
   headers: {
     "Content-type": "application/json",
-    // "Content-Type": "multipart/form-data", // 이미지 업로드를 위해 변경
   },
   // 이미지 용량
   maxContentLength: Infinity,

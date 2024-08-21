@@ -1,6 +1,6 @@
 import { axiosFindUser } from "@/api/axios.custom";
-import { InterestLableMap, sortLableMap } from "@/types/maps";
-import { useContext, useEffect, useRef, useState } from "react";
+import { InterestLableMap } from "@/types/maps";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { tagItem } from "./SignUpPage";
 import { ReactComponent as FilterIcon } from "@/assets/icons/filter-icon.svg";
@@ -8,6 +8,7 @@ import TagList from "@/components/TagTemplate";
 import FilterModal from "@/components/search/FilterModal";
 import SearchCard from "@/components/search/SearchCard";
 import useRouter from "@/hooks/useRouter";
+import { HashTagsList } from "@/types/tags";
 
 export interface ISearchDateDto {
   profileImages: string;
@@ -18,11 +19,106 @@ export interface ISearchDateDto {
   gu?: string;
 }
 
-const HashTagsList: tagItem[] = Object.entries(InterestLableMap).map(
-  ([value, label]) => ({ value, label })
-);
-
 type ModalType = "age" | "rate" | "location" | "hashtag" | "sort";
+
+// const SearchPage = () => {
+//   const { goToMain } = useRouter();
+//   const [searchData, setSearchData] = useState<ISearchDateDto[]>([]);
+//   const [currentPage, setCurrentPage] = useState(1);
+//   const [totalProfiles, setTotalProfiles] = useState(0);
+//   const [modalState, setModalState] = useState<{
+//     isOpen: boolean;
+//     type: ModalType | null;
+//   }>({
+//     isOpen: false,
+//     type: null,
+//   });
+//   const [values, setValues] = useState({
+//     age: { min: 20, max: 100 },
+//     rate: { min: 0, max: 5 },
+//     location: { si: "", gu: "" },
+//     hashtag: [] as string[],
+//     sort: "descRate",
+//   });
+
+//   const openModal = (type: ModalType) => setModalState({ isOpen: true, type });
+//   const closeModal = () => setModalState({ isOpen: false, type: null });
+//   const tryFindUser = async (page: number) => {
+//     try {
+//       const res = await axiosFindUser(
+//         values.location.si || undefined,
+//         values.location.gu || undefined,
+//         values.age.min || undefined,
+//         values.age.max || undefined,
+//         values.rate.min || undefined,
+//         values.rate.max || undefined,
+//         values.hashtag.length > 0 ? values.hashtag : undefined,
+//         page,
+//         values.sort || undefined
+//       );
+//       setSearchData(res.data.users);
+//       setTotalProfiles(res.data.totalCount);
+//       setCurrentPage(res.data.currentPage);
+//     } catch (error: any) {
+//       goToMain();
+//       console.log("search page error", error);
+//     }
+//   };
+
+//   const handleSave = (value: any) => {
+//     if (modalState.type) {
+//       switch (modalState.type) {
+//         case "age":
+//         case "rate":
+//           setValues((prev) => ({
+//             ...prev,
+//             [modalState.type as keyof typeof prev]: {
+//               min: value[0],
+//               max: value[1],
+//             },
+//           }));
+//           break;
+//         case "location":
+//           setValues((prev) => ({ ...prev, location: value }));
+//           break;
+//         case "hashtag":
+//           setValues((prev) => ({ ...prev, hashtag: value }));
+//           break;
+//         case "sort":
+//           setValues((prev) => ({ ...prev, sort: value }));
+//           break;
+//       }
+//       closeModal();
+//     }
+//   };
+
+//   // const isFirstRender = useRef(true);
+
+//   useEffect(() => {
+//     tryFindUser(1);
+//     // if (isFirstRender.current) {
+//     //   tryFindUserBrowser(1);
+//     //   isFirstRender.current = false;
+//     // } else {
+//     //   tryFindUser(1);
+//     // }
+//   }, [values]);
+
+//   const totalPages = Math.ceil(totalProfiles / 15);
+//   const pageGroup = Math.ceil(currentPage / 10);
+//   const lastPage = pageGroup * 10;
+//   const firstPage = lastPage - 9;
+
+//   const handlePageChange = (newPage: number) => {
+//     if (newPage >= 1 && newPage <= totalPages) {
+//       setCurrentPage(newPage);
+//       tryFindUser(newPage);
+//     }
+//   };
+
+//   useEffect(() => {
+//     window.scrollTo(0, 0);
+//   }, [currentPage]);
 
 const SearchPage = () => {
   const { goToMain } = useRouter();
@@ -44,103 +140,96 @@ const SearchPage = () => {
     sort: "descRate",
   });
 
+  const initialValuesRef = useRef(values);
+
   const openModal = (type: ModalType) => setModalState({ isOpen: true, type });
   const closeModal = () => setModalState({ isOpen: false, type: null });
+
   const tryFindUser = async (page: number) => {
     try {
-      const res = await axiosFindUser(
-        values.location.si || undefined,
-        values.location.gu || undefined,
-        values.age.min,
-        values.age.max,
-        values.rate.min,
-        values.rate.max,
-        values.hashtag.length > 0 ? values.hashtag : undefined,
-        page,
-        values.sort || undefined
-      );
-      console.log("res search", res);
-      setSearchData(res.data.users);
-      setTotalProfiles(res.data.totalCount);
-      setCurrentPage(res.data.currentPage);
-    } catch (error: any) {
-      goToMain();
-      // alert("로그인을 해주세요");
-      console.log("search page error", error);
-    }
-  };
+      const isAgeChanged =
+        values.age.min !== initialValuesRef.current.age.min ||
+        values.age.max !== initialValuesRef.current.age.max;
 
-  const tryFindUserBrowser = async (page: number) => {
-    try {
+      const isRateChanged =
+        values.rate.min !== initialValuesRef.current.rate.min ||
+        values.rate.max !== initialValuesRef.current.rate.max;
+
+      const changedValues = {
+        si:
+          values.location.si !== initialValuesRef.current.location.si
+            ? values.location.si
+            : undefined,
+        gu:
+          values.location.gu !== initialValuesRef.current.location.gu
+            ? values.location.gu
+            : undefined,
+        minAge: isAgeChanged ? values.age.min : undefined,
+        maxAge: isAgeChanged ? values.age.max : undefined,
+        minRate: isRateChanged ? values.rate.min : undefined,
+        maxRate: isRateChanged ? values.rate.max : undefined,
+        hashtag:
+          JSON.stringify(values.hashtag) !==
+          JSON.stringify(initialValuesRef.current.hashtag)
+            ? values.hashtag
+            : undefined,
+        sort:
+          values.sort !== initialValuesRef.current.sort
+            ? values.sort
+            : undefined,
+      };
+
       const res = await axiosFindUser(
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
-        undefined,
+        changedValues.si,
+        changedValues.gu,
+        changedValues.minAge,
+        changedValues.maxAge,
+        changedValues.minRate,
+        changedValues.maxRate,
+        changedValues.hashtag && changedValues.hashtag.length > 0
+          ? changedValues.hashtag
+          : undefined,
         page,
-        undefined
+        changedValues.sort
       );
-      console.log("res search", res);
       setSearchData(res.data.users);
       setTotalProfiles(res.data.totalCount);
       setCurrentPage(res.data.currentPage);
     } catch (error: any) {
       goToMain();
-      // alert("로그인을 해주세요");
       console.log("search page error", error);
     }
   };
 
   const handleSave = (value: any) => {
     if (modalState.type) {
-      switch (modalState.type) {
-        case "age":
-        case "rate":
-          setValues((prev) => ({
-            ...prev,
-            [modalState.type as keyof typeof prev]: {
-              min: value[0],
-              max: value[1],
-            },
-          }));
-          break;
-        case "location":
-          setValues((prev) => ({ ...prev, location: value }));
-          break;
-        case "hashtag":
-          setValues((prev) => ({ ...prev, hashtag: value }));
-          break;
-        case "sort":
-          setValues((prev) => ({ ...prev, sort: value }));
-          break;
-      }
+      setValues((prev) => {
+        const newValues = { ...prev };
+        switch (modalState.type) {
+          case "age":
+          case "rate":
+            newValues[modalState.type] = { min: value[0], max: value[1] };
+            break;
+          case "location":
+            newValues.location = value;
+            break;
+          case "hashtag":
+            newValues.hashtag = value;
+            break;
+          case "sort":
+            newValues.sort = value;
+            break;
+        }
+        return newValues;
+      });
       closeModal();
     }
   };
 
-  const isFirstRender = useRef(true);
-
   useEffect(() => {
-    if (isFirstRender.current) {
-      // 첫 렌더링 시에만 실행
-      tryFindUserBrowser(1);
-      isFirstRender.current = false;
-    } else {
-      // 첫 렌더링이 아닐 때 (즉, values가 변경되었을 때) 실행
-      tryFindUser(1);
-    }
+    tryFindUser(1);
   }, [values]);
-  // useEffect(() => {
-  //   tryFindUser(1);
-  // }, [values]);
 
-  // useEffect(() => {
-  //   tryFindUserBrowser(1);
-  // }, []);
-  // tryFindUserBrowser(1);
   const totalPages = Math.ceil(totalProfiles / 15);
   const pageGroup = Math.ceil(currentPage / 10);
   const lastPage = pageGroup * 10;
