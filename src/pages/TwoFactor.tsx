@@ -1,5 +1,6 @@
 import { axiosCreateTwoFactor, axiosVerifyTwoFactor } from "@/api/axios.custom";
 import useRouter from "@/hooks/useRouter";
+import { userSocketLogin } from "@/recoil/atoms";
 import React, {
   useState,
   useRef,
@@ -7,6 +8,7 @@ import React, {
   ChangeEvent,
   useEffect,
 } from "react";
+import { useSetRecoilState } from "recoil";
 import styled from "styled-components";
 
 const TwoFactorPage = () => {
@@ -15,6 +17,10 @@ const TwoFactorPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const inputs = useRef<(HTMLInputElement | null)[]>([]);
+  const [timer, setTimer] = useState(180); // 3분 = 180초
+  const [canResend, setCanResend] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const setSocketRecoil = useSetRecoilState(userSocketLogin);
 
   //   TODO : 1단계 이메일 인증을 통과하면 2단계때 2fa받을수 있게 BE고치기
   const tryVerifyTwoFactor = async () => {
@@ -24,6 +30,7 @@ const TwoFactorPage = () => {
     try {
       const res = await axiosVerifyTwoFactor(codeString);
       console.log("2FA 인증 성공:", res);
+      setSocketRecoil(true);
       goToMain();
       // 성공 처리 로직 (예: 다음 페이지로 이동)
     } catch (err: any) {
@@ -37,19 +44,46 @@ const TwoFactorPage = () => {
   };
 
   const tryTwofactorCreate = async () => {
+    setIsLoading(true);
     try {
       const res = await axiosCreateTwoFactor();
       console.log("res", res);
-      // goToTwofactor();
+      setTimer(180); // 타이머 재설정
+      setCanResend(false); // 재전송 버튼 비활성화
+      setCurrentTime(new Date()); // 현재 시간 업데이트
     } catch (error) {
-      // setLoading(false);
       console.log("error", error);
+      setError("인증 코드 생성에 실패했습니다. 다시 시도해주세요.");
+    } finally {
+      setIsLoading(false);
     }
   };
+
   useEffect(() => {
     tryTwofactorCreate();
   }, []);
 
+  useEffect(() => {
+    const timerInterval = setInterval(() => {
+      setTimer((prevTimer) => {
+        if (prevTimer <= 1) {
+          clearInterval(timerInterval);
+          setCanResend(true);
+          return 0;
+        }
+        return prevTimer - 1;
+      });
+    }, 1000);
+
+    const clockInterval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+
+    return () => {
+      clearInterval(timerInterval);
+      clearInterval(clockInterval);
+    };
+  }, []);
   const handleSubmit = () => {
     if (code.some((digit) => digit === "")) {
       setError("모든 칸을 입력해주세요.");
@@ -92,6 +126,12 @@ const TwoFactorPage = () => {
     inputs.current[Math.min(pastedData.length, 5)]?.focus();
   };
 
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
+  };
+
   return (
     <Container>
       <>
@@ -132,13 +172,26 @@ const TwoFactorPage = () => {
         <ErrorContainer>
           {error && <ErrorStyled>{error}</ErrorStyled>}
         </ErrorContainer>
+        {/* <ButtonStyled onClick={handleSubmit} disabled={isLoading}>
+          {isLoading ? <LoadingSpinner /> : "인증하기"}
+        </ButtonStyled> */}
         <ButtonStyled onClick={handleSubmit} disabled={isLoading}>
           {isLoading ? <LoadingSpinner /> : "인증하기"}
+        </ButtonStyled>
+        {/* <CurrentTimeStyled>{formatCurrentTime(currentTime)}</CurrentTimeStyled> */}
+        <TimerStyled>{formatTime(timer)}</TimerStyled>
+        <ButtonStyled
+          onClick={tryTwofactorCreate}
+          disabled={!canResend || isLoading}
+        >
+          재전송
         </ButtonStyled>
       </>
     </Container>
   );
 };
+
+const TimerStyled = styled.div``;
 
 const LoadingSpinner = styled.div`
   border: 2px solid #f3f3f3;

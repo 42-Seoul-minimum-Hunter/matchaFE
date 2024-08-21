@@ -13,6 +13,7 @@ import ChatPage from "./pages/ChatPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import MainPage from "./pages/MainPage";
 import OauthPage from "./pages/OauthPage";
+import ErrorPage from "./pages/ErrorPage";
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
           <Route path="twofactor" element={<TwoFactorPage />} />
           <Route path="oauth" element={<OauthPage />} />
         </Route>
+        <Route path="/error" element={<ErrorPage />} />
         <Route path="/*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>

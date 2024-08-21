@@ -5,12 +5,17 @@ import Header from "@/components/Header";
 import { io, Socket } from "socket.io-client";
 import useRouter from "@/hooks/useRouter";
 import useSocket from "@/hooks/useSocket";
+import { useRecoilValue, useSetRecoilState } from "recoil";
+import { userSocketLogin } from "@/recoil/atoms";
+import { getCookie } from "@/api/cookie";
 
 export const SocketContext = createContext<Socket | null>(null);
 
 const Layout = () => {
   const { goToMain } = useRouter();
   const location = useLocation();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const setSocketRecoil = useSetRecoilState(userSocketLogin);
 
   const directOutletPaths = [
     "/twoFactor",
@@ -25,7 +30,14 @@ const Layout = () => {
     location.pathname.startsWith(path)
   );
 
+  // useEffect(() => {}, [getSocketRecoil]);
+
   const socket = useSocket();
+
+  useEffect(() => {
+    const token = getCookie("jwt");
+    setSocketRecoil(token ? true : false);
+  }, []);
 
   useEffect(() => {
     if (location.pathname === "/" || location.pathname === "") {

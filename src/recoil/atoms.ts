@@ -16,5 +16,9 @@ export const userAlarm = atom({
 export const userAlarmContent = atom({
   key: "alarmContent",
   default: <IAlarmProps[]>[],
-  //   effects_UNSTABLE: [persistAtom],
+});
+
+export const userSocketLogin = atom({
+  key: "socketLogin",
+  default: <boolean>false,
 });

@@ -5,7 +5,7 @@ import { SocketContext } from "@/pages/LayoutPage";
 import useRouter from "@/hooks/useRouter";
 import { getCookie } from "@/api/cookie";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { userAlarm, userAlarmContent } from "@/recoil/atoms";
+import { userAlarm, userAlarmContent, userSocketLogin } from "@/recoil/atoms";
 import { IAlarmProps } from "./Alarm";
 
 // TODO: Router 테이블 만들어서 해당 라우터에서 색상 표현
@@ -22,6 +22,7 @@ const Header = () => {
   } = useRouter();
   const [isLogin, setIsLogin] = useState<boolean>(false);
   const [isAlarm, setIsAlarm] = useRecoilState(userAlarm);
+  const setSocketRecoil = useSetRecoilState(userSocketLogin);
 
   const socket = useContext(SocketContext);
 
@@ -62,6 +63,7 @@ const Header = () => {
       const res = await axiosLogout();
       console.log("logout ", res);
       setIsLogin(!isLogin);
+      setSocketRecoil(false);
       goToMain();
     } catch (error) {
       console.log("error", error);

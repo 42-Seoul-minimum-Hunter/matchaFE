@@ -78,11 +78,6 @@ const ChatPage = () => {
         }
       });
 
-      // if (selectUser === "Chatgpt") {
-      //   onClickChatRoom(0);
-      //   setIsLoading(false);
-      //   return;
-      // }
       return () => {
         socket.off("getChatList");
         socket.off("sendMessage");
