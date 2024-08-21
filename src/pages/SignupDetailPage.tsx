@@ -66,6 +66,7 @@ const SignupDetailPage = () => {
   });
 
   const handleGpsAllow = () => {
+    setLocationGuTagList([]);
     if (!gpsState.isAllowed) {
       setGpsState((prev) => ({
         ...prev,
@@ -73,11 +74,11 @@ const SignupDetailPage = () => {
         hasAttempted: true,
         error: null,
       }));
-      // setRefreshLocation(true);
     }
   };
 
   const handleGpsDeny = () => {
+    setLocationGuTagList([]);
     if (gpsState.isAllowed) {
       setGpsState((prev) => ({
         ...prev,

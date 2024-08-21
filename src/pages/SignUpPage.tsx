@@ -53,6 +53,16 @@ const SignUpPage = () => {
     trySignUp();
   };
 
+  const onClickOauthButton = () => {
+    const url = `${import.meta.env.VITE_OAUTH_REDIRECT_URI}client_id=${
+      import.meta.env.VITE_OAUTH_CLIENT_ID
+    }&redirect_uri=${
+      import.meta.env.VITE_OAUTH_CALLBACK_URI
+    }&response_type=code`;
+    window.location.href = url;
+    console.log("url", url);
+  };
+
   return (
     <Container>
       <InputContainer>
@@ -64,14 +74,14 @@ const SignUpPage = () => {
           label="이메일"
           value={signUpTextData.email}
           onChange={handleInputChange}
-          setErrorr={setError}
+          setError={setError}
         />
         <InputTemplate
           type="password"
           label="비밀번호"
           value={signUpTextData.password}
           onChange={handleInputChange}
-          setErrorr={setError}
+          setError={setError}
         />
         <InputTemplate
           type="checkPassword"
@@ -79,14 +89,16 @@ const SignUpPage = () => {
           value={signUpTextData.checkPassword}
           checkPW={signUpTextData.password}
           onChange={handleInputChange}
-          setErrorr={setError}
+          setError={setError}
         />
         {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
         <ButtonStyled onClick={handleSubmit}>가입하기</ButtonStyled>
         {isCheckEmail && <div> 이메일을 확인하세요</div>}
         <OauthContainer>
           <OauthLabelStyled>간편 회원가입</OauthLabelStyled>
-          <OauthButtonStyled>42 login</OauthButtonStyled>
+          <OauthButtonStyled onClick={onClickOauthButton}>
+            42 login
+          </OauthButtonStyled>
         </OauthContainer>
       </InputContainer>
     </Container>

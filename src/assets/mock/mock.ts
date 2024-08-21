@@ -1,13 +1,3 @@
-import { IChatRoomDto } from "@/components/chat/ChatList";
-import { IChatContentDto } from "@/components/chat/ChatRoom";
-import { ISearchDateDto } from "@/pages/SearchPage";
-import { ProfileDto } from "@/types/tag.dto";
-import TestImage1 from "@/assets/mock/test1.png";
-import TestImage2 from "@/assets/mock/test2.png";
-import TestImage3 from "@/assets/mock/test3.png";
-import TestImage4 from "@/assets/mock/test4.png";
-import TestImage5 from "@/assets/mock/test5.png";
-
 export const LocationData = [
   {
     name: "서울",
@@ -304,216 +294,287 @@ export const LocationData = [
   },
 ];
 
-export function generateDummyData(count: number): ISearchDateDto[] {
-  const firstNames = [
-    "Emma",
-    "Liam",
-    "Olivia",
-    "Noah",
-    "Ava",
-    "Ethan",
-    "Sophia",
-    "Mason",
-    "Isabella",
-    "William",
-  ];
-  const lastNames = [
-    "Smith",
-    "Johnson",
-    "Brown",
-    "Taylor",
-    "Miller",
-    "Wilson",
-    "Moore",
-    "Anderson",
-    "Jackson",
-    "Martin",
-  ];
+export const LocationDataMapping: { [key: string]: string } = {
+  Seoul: "서울",
+  "Gyeonggi-do": "경기",
+  Incheon: "인천",
+  Daejeon: "대전광역시",
+  Daegu: "대구광역시",
+  Busan: "부산광역시",
+  Ulsan: "울산광역시",
+  Gwangju: "광주광역시",
+  "Gangwon Province": "강원도",
+  "North Chungcheong Province": "충청북도",
+  "South Chungcheong Province": "충청남도",
+  "North Gyeongsang Province": "경상북도",
+  "South Gyeongsang Province": "경상남도",
+  "North Jeolla Province": "전라북도",
+  "South Jeolla Province": "전라남도",
+  "Jeju Island": "제주도",
+};
 
-  function getRandomElement<T>(arr: T[]): T {
-    return arr[Math.floor(Math.random() * arr.length)];
-  }
+export const SubAreaMapping: { [key: string]: string } = {
+  // Seoul
+  "Gangnam-gu": "강남구",
+  "Gangdong-gu": "강동구",
+  "Gangbuk-gu": "강북구",
+  "Gangseo-gu": "강서구",
+  "Gwanak-gu": "관악구",
+  "Gwangjin-gu": "광진구",
+  "Guro-gu": "구로구",
+  "Geumcheon-gu": "금천구",
+  "Nowon-gu": "노원구",
+  "Dobong-gu": "도봉구",
+  "Dongdaemun-gu": "동대문구",
+  "Dongjak-gu": "동작구",
+  "Mapo-gu": "마포구",
+  "Seodaemun-gu": "서대문구",
+  "Seocho-gu": "서초구",
+  "Seongdong-gu": "성동구",
+  "Seongbuk-gu": "성북구",
+  "Songpa-gu": "송파구",
+  "Yangcheon-gu": "양천구",
+  "Yeongdeungpo-gu": "영등포구",
+  "Yongsan-gu": "용산구",
+  "Eunpyeong-gu": "은평구",
+  "Jongno-gu": "종로구",
+  "Jung-gu": "중구",
+  "Jungnang-gu": "중랑구",
 
-  function getRandomNumber(min: number, max: number): number {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
+  // Gyeonggi (adding -si)
+  "Goyang-si": "고양시",
+  "Gwacheon-si": "과천시",
+  "Gwangmyeong-si": "광명시",
+  "Gwangju-si": "광주시",
+  "Guri-si": "구리시",
+  "Gunpo-si": "군포시",
+  "Gimpo-si": "김포시",
+  "Namyangju-si": "남양주시",
+  "Dongducheon-si": "동두천시",
+  "Bucheon-si": "부천시",
+  "Seongnam-si": "성남시",
+  "Suwon-si": "수원시",
+  "Siheung-si": "시흥시",
+  "Ansan-si": "안산시",
+  "Anseong-si": "안성시",
+  "Anyang-si": "안양시",
+  "Yangju-si": "양주시",
+  "Osan-si": "오산시",
+  "Yongin-si": "용인시",
+  "Uiwang-si": "의왕시",
+  "Uijeongbu-si": "의정부시",
+  "Icheon-si": "이천시",
+  "Paju-si": "파주시",
+  "Pyeongtaek-si": "평택시",
+  "Pocheon-si": "포천시",
+  "Hanam-si": "하남시",
+  "Hwaseong-si": "화성시",
+  "Gapyeong County": "가평군",
+  "Yangpyeong County": "양평군",
+  "Yeoju County": "여주군",
+  "Yeoncheon County": "연천군",
 
-  function getRandomFloat(min: number, max: number, decimals: number): number {
-    const str = (Math.random() * (max - min) + min).toFixed(decimals);
-    return parseFloat(str);
-  }
+  // Incheon
+  "Gyeyang-gu": "계양구",
+  "Michuhol-gu": "미추홀구",
+  "Namdong-gu": "남동구",
+  "Dong-gu": "동구",
+  "Bupyeong-gu": "부평구",
+  "Seo-gu": "서구",
+  "Yeonsu-gu": "연수구",
+  // "Jung-gu": "중구",
+  "Ganghwa County": "강화군",
+  "Ongjin County": "옹진군",
 
-  return Array.from({ length: count }, (_, index) => ({
-    profileImages: `https://example.com/avatar${index + 1}.jpg`,
-    username: `${getRandomElement(firstNames)} ${getRandomElement(lastNames)}`,
-    age: getRandomNumber(18, 60),
-    rate: getRandomFloat(1, 5, 1),
-    commonHashtags: getRandomNumber(0, 10),
-  }));
-}
+  // Daejeon
+  "Daedeok-gu": "대덕구",
+  // "Dong-gu": "동구",
+  // "Seo-gu": "서구",
+  "Yuseong-gu": "유성구",
+  // "Jung-gu": "중구",
 
-export const mockIChatProps: IChatRoomDto[] = [
-  {
-    username: "Alice Smith",
-    profileImage: "https://example.com/profiles/alice.jpg",
-    createdAt: "2023-07-15T10:30:00Z",
-    lastContent: "안녕하세요! 오늘 날씨가 정말 좋네요.",
-  },
-  {
-    username: "Bob Johnson",
-    profileImage: "https://example.com/profiles/bob.jpg",
-    createdAt: "2023-07-15T10:35:00Z",
-    lastContent: "네, 정말 그렇네요. 나들이 가기 좋은 날씨예요.",
-  },
-  {
-    username: "Test 1",
-    profileImage: "https://example.com/profiles/bob.jpg",
-    createdAt: "2023-07-15T10:35:00Z",
-    lastContent: "집 가고 싶네요",
-  },
-];
+  // Daegu
+  "Nam-gu": "남구",
+  "Dalseo-gu": "달서구",
+  // "Dong-gu": "동구",
+  "Buk-gu": "북구",
+  // "Seo-gu": "서구",
+  "Suseong-gu": "수성구",
+  // "Jung-gu": "중구",
+  "Dalseong County": "달성군",
 
-// ChatContentDto 목데이터
-export const mockChatContentDto: IChatContentDto[] = [
-  {
-    message: "오늘 저녁에 뭐 먹을까요?",
-    username: "Alice Smith",
-    // userId: 1001,
-    time: "2023-07-15T18:00:00Z",
-  },
-  {
-    message: "피자 어떠세요?",
-    username: "Bob Johnson",
-    // userId: 1002,
-    time: "2023-07-15T18:05:00Z",
-  },
-  {
-    message: "아님 치킨이라도?",
-    username: "Bob Johnson",
-    // userId: 1002,
-    time: "2023-07-15T18:05:00Z",
-  },
-  {
-    message: "둘다 싫은데요..//",
-    username: "Alice Smith",
-    // userId: 1001,
-    time: "2023-07-15T18:00:00Z",
-  },
-  {
-    message: "아 집가고 싶다",
-    username: "Alice Smith",
-    // userId: 1001,
-    time: "2023-07-15T18:00:00Z",
-  },
-  {
-    message: "그럼 밥먹지 마",
-    username: "Bob Johnson",
-    // userId: 1002,
-    time: "2023-07-15T18:05:00Z",
-  },
-  {
-    message: "아니 왜 화면 너무 길잖아",
-    username: "Bob Johnson",
-    // userId: 1002,
-    time: "2023-07-15T18:05:00Z",
-  },
-  {
-    message: "언제까지 써야해",
-    username: "Bob Johnson",
-    // userId: 1002,
-    time: "2023-07-15T18:05:00Z",
-  },
-  {
-    message: "살려줘",
-    username: "Bob Johnson",
-    // userId: 1002,
-    time: "2023-07-15T18:05:00Z",
-  },
-  {
-    message: "아 집가고 싶다",
-    username: "Alice Smith",
-    // userId: 1001,
-    time: "2023-07-15T18:00:00Z",
-  },
-  {
-    message: "아 집가고 싶다",
-    username: "Alice Smith",
-    // userId: 1001,
-    time: "2023-07-15T18:00:00Z",
-  },
-  {
-    message: "아 집가고 싶다",
-    username: "Alice Smith",
-    // userId: 1001,
-    time: "2023-07-15T18:00:00Z",
-  },
-  {
-    message: "아 집가고 싶다",
-    username: "Bob Johnson",
-    // userId: 1001,
-    time: "2023-07-15T18:00:00Z",
-  },
-  {
-    message: "아 집가고 싶다",
-    username: "Bob Johnson",
-    // userId: 1001,
-    time: "2023-07-15T18:00:00Z",
-  },
-  {
-    message: "아 집가고 싶다",
-    username: "Bob Johnson",
-    // userId: 1001,
-    time: "2023-07-15T18:00:00Z",
-  },
-  {
-    message: "아 집가고 싶다",
-    username: "Bob Johnson",
-    // userId: 1001,
-    time: "2023-07-15T18:00:00Z",
-  },
-  {
-    message: "아 집가고 싶다",
-    username: "Bob Johnson",
-    // userId: 1001,
-    time: "2023-07-15T18:00:00Z",
-  },
-  {
-    message: "아 집가고 싶다",
-    username: "Bob Johnson",
-    // userId: 1001,
-    time: "2023-07-15T18:00:00Z",
-  },
-  {
-    message: "아 집가고 싶다",
-    username: "Bob Johnson",
-    // userId: 1001,
-    time: "2023-07-15T18:00:00Z",
-  },
-  {
-    message: "아 집가고 싶다",
-    username: "Bob Johnson",
-    // userId: 1001,
-    time: "2023-07-15T18:00:00Z",
-  },
-];
+  // Busan
+  // "Gangseo-gu": "강서구",
+  "Geumjeong-gu": "금정구",
+  // "Nam-gu": "남구",
+  // "Dong-gu": "동구",
+  "Dongnae-gu": "동래구",
+  "Busanjin-gu": "부산진구",
+  // "Buk-gu": "북구",
+  "Sasang-gu": "사상구",
+  "Saha-gu": "사하구",
+  // "Seo-gu": "서구",
+  "Suyeong-gu": "수영구",
+  "Yeonje-gu": "연제구",
+  "Yeongdo-gu": "영도구",
+  // "Jung-gu": "중구",
+  "Haeundae-gu": "해운대구",
+  "Gijang County": "기장군",
 
-export const mockProfileData: ProfileDto = {
-  username: "johndoe123",
-  firstName: "John",
-  lastName: "Doe",
-  gender: "MALE", // GenderType에 따라 적절한 값을 사용해야 합니다.
-  preference: "BOTH", // PreferenceType에 따라 적절한 값을 사용해야 합니다.
-  age: 28,
-  biography:
-    "Officiis quasi esse deleniti dignissimos qui. Voluptates eos tempora. Earum aperiam tempore totam sequi ab consequatur voluptatem dolorem aliquam. Maxime amet enim beatae aperiam eum placeat.",
-  hashtags: ["MUSIC", "TRAVEL", "FOOD"], // InterestType 배열에 맞는 값들을 사용해야 합니다.
-  si: "서울특별시",
-  gu: "강남구",
-  rate: 4.5,
-  profileImages: [TestImage1, TestImage2, TestImage3],
-  // profileImages: [
-  //   "https://example.com/profile1.jpg",
-  //   "https://example.com/profile2.jpg",
-  //   "https://example.com/profile3.jpg",
-  // ],
+  // Ulsan
+  // "Nam-gu": "남구",
+  // "Dong-gu": "동구",
+  // "Buk-gu": "북구",
+  // "Jung-gu": "중구",
+  "Ulju County": "울주군",
+
+  // Gwangju
+  "Gwangsan-gu": "광산구",
+  // "Nam-gu": "남구",
+  // "Dong-gu": "동구",
+  // "Buk-gu": "북구",
+  // "Seo-gu": "서구",
+
+  // Gangwon Province
+  "Gangneung-si": "강릉시",
+  "Donghae-si": "동해시",
+  "Samcheok-si": "삼척시",
+  "Sokcho-si": "속초시",
+  "Wonju-si": "원주시",
+  "Chuncheon-si": "춘천시",
+  "Taebaek-si": "태백시",
+  "Goseong County": "고성군",
+  "Yanggu County": "양구군",
+  "Yangyang County": "양양군",
+  "Yeongwol County": "영월군",
+  "Inje County": "인제군",
+  "Jeongseon County": "정선군",
+  "Cheorwon County": "철원군",
+  "Pyeongchang County": "평창군",
+  "Hongcheon County": "홍천군",
+  "Hwacheon County": "화천군",
+  "Hoengseong County": "횡성군",
+
+  // North Chungcheong Province
+  "Jecheon-si": "제천시",
+  "Cheongju-si": "청주시",
+  "Chungju-si": "충주시",
+  "Goesan County": "괴산군",
+  "Danyang County": "단양군",
+  "Boeun County": "보은군",
+  "Yeongdong County": "영동군",
+  "Okcheon County": "옥천군",
+  "Eumseong County": "음성군",
+  "Jeungpyeong County": "증평군",
+  "Jincheon County": "진천군",
+  "Cheongwon County": "청원군",
+
+  // South Chungcheong Province
+  "Gyeryong-si": "계룡시",
+  "Gongju-si": "공주시",
+  "Nonsan-si": "논산시",
+  "Boryeong-si": "보령시",
+  "Seosan-si": "서산시",
+  "Asan-si": "아산시",
+  "Cheonan-si": "천안시",
+  "Geumsan County": "금산군",
+  "Dangjin County": "당진군",
+  "Buyeo County": "부여군",
+  "Seocheon County": "서천군",
+  "Yeongi County": "연기군",
+  "Yesan County": "예산군",
+  "Cheongyang County": "청양군",
+  "Taean County": "태안군",
+  "Hongseong County": "홍성군",
+
+  // North Gyeongsang Province
+  "Gyeongsan-si": "경산시",
+  "Gyeongju-si": "경주시",
+  "Gumi-si": "구미시",
+  "Gimcheon-si": "김천시",
+  "Mungyeong-si": "문경시",
+  "Sangju-si": "상주시",
+  "Andong-si": "안동시",
+  "Yeongju-si": "영주시",
+  "Yeongcheon-si": "영천시",
+  "Pohang-si": "포항시",
+  "Goryeong County": "고령군",
+  "Gunwi County": "군위군",
+  "Bonghwa County": "봉화군",
+  "Seongju County": "성주군",
+  "Yeongdeok County": "영덕군",
+  "Yeongyang County": "영양군",
+  "Yecheon County": "예천군",
+  "Ulleung County": "울릉군",
+  "Uljin County": "울진군",
+  "Uiseong County": "의성군",
+  "Cheongdo County": "청도군",
+  "Cheongsong County": "청송군",
+  "Chilgok County": "칠곡군",
+
+  // South Gyeongsang Province
+  "Geoje-si": "거제시",
+  "Gimhae-si": "김해시",
+  "Masan-si": "마산시",
+  "Miryang-si": "밀양시",
+  "Sacheon-si": "사천시",
+  "Yangsan-si": "양산시",
+  "Jinju-si": "진주시",
+  "Jinhae-si": "진해시",
+  "Changwon-si": "창원시",
+  "Tongyeong-si": "통영시",
+  "Geochang County": "거창군",
+  // "Goseong County": "고성군",
+  "Namhae County": "남해군",
+  "Sancheong County": "산청군",
+  "Uiryeong County": "의령군",
+  "Changnyeong County": "창녕군",
+  "Hadong County": "하동군",
+  "Haman County": "함안군",
+  "Hamyang County": "함양군",
+  "Hapcheon County": "합천군",
+
+  // North Jeolla Province
+  "Gunsan-si": "군산시",
+  "Gimje-si": "김제시",
+  "Namwon-si": "남원시",
+  "Iksan-si": "익산시",
+  "Jeonju-si": "전주시",
+  "Jeongeup-si": "정읍시",
+  "Gochang County": "고창군",
+  "Muju County": "무주군",
+  "Buan County": "부안군",
+  "Sunchang County": "순창군",
+  "Wanju County": "완주군",
+  "Imsil County": "임실군",
+  "Jangsu County": "장수군",
+  "Jinan County": "진안군",
+
+  // South Jeolla Province
+  "Gwangyang-si": "광양시",
+  "Naju-si": "나주시",
+  "Mokpo-si": "목포시",
+  "Suncheon-si": "순천시",
+  "Yeosu-si": "여수시",
+  "Gangjin County": "강진군",
+  "Goheung County": "고흥군",
+  "Gokseong County": "곡성군",
+  "Gurye County": "구례군",
+  "Damyang County": "담양군",
+  "Muan County": "무안군",
+  "Boseong County": "보성군",
+  "Sinan County": "신안군",
+  "Yeonggwang County": "영광군",
+  "Yeongam County": "영암군",
+  "Wando County": "완도군",
+  "Jangseong County": "장성군",
+  "Jangheung County": "장흥군",
+  "Jindo County": "진도군",
+  "Hampyeong County": "함평군",
+  "Haenam County": "해남군",
+  "Hwasun County": "화순군",
+
+  // Jeju Island
+  "Seogwipo-si": "서귀포시",
+  "Jeju City": "제주시",
 };

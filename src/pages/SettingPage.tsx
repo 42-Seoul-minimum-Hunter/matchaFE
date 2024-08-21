@@ -4,29 +4,20 @@ import styled from "styled-components";
 import { tagItem } from "./LoginPage";
 import ImageUploader from "@/components/ImageUpload";
 import DropboxTemplate from "@/components/DropboxTemplate";
-import { GenderLableMap, PreferenceLableMap } from "@/types/maps";
 import { LocationData } from "@/assets/mock/mock";
-import { AgeTagItem, GpsState } from "./SignupDetailPage";
+import { GpsState } from "./SignupDetailPage";
 import TagList, { TagProps } from "@/components/TagTemplate";
 import { axiosSettingCreate, axiosSettingModify } from "@/api/axios.custom";
 import { SettingDto } from "@/types/tag.dto";
 import useRouter from "@/hooks/useRouter";
 import GeoLocationHandler from "@/components/location/GeoLocationHandler";
-import { HashTagsList, locationSiTagList } from "@/types/tags";
-
-const ageTagList: AgeTagItem[] = Array.from({ length: 81 }, (_, index) => {
-  const age = index + 20;
-  return {
-    value: age.toString(),
-    label: `${age}세`,
-  };
-});
-const genderTagList: tagItem[] = Object.entries(GenderLableMap).map(
-  ([value, label]) => ({ value, label })
-);
-const preferenceTagList: tagItem[] = Object.entries(PreferenceLableMap).map(
-  ([value, label]) => ({ value, label })
-);
+import {
+  ageTagList,
+  genderTagList,
+  HashTagsList,
+  locationSiTagList,
+  preferenceTagList,
+} from "@/types/tags";
 
 const SettingPage = () => {
   const [signupError, setSignupError] = useState<string | null>(null);
@@ -177,7 +168,6 @@ const SettingPage = () => {
           label: gu,
         }));
         setLocationGuTagList(guList);
-        // 'si'가 변경되면 'gu' 초기화
         setSignUpDropboxData((prev) => ({ ...prev, location_gu: "" }));
       } else {
         setLocationGuTagList([]);
@@ -298,7 +288,6 @@ const SettingPage = () => {
                 type="username"
                 label="유저네임"
                 value={signUpTextData.username}
-                // onChange={savePassword}
                 onChange={handleInputChange}
                 // setErrorr={setError}
               />
@@ -307,8 +296,6 @@ const SettingPage = () => {
           <RowContainer>
             <TitleStyled>User Photo</TitleStyled>
             <ImageUploader images={images} setImages={setImages} />
-            {/* {signupError ||
-              (images.length < 5 && <ErrorStyled>{signupError}</ErrorStyled>)} */}
             {signupError && <ErrorStyled>{signupError}</ErrorStyled>}
           </RowContainer>
 
