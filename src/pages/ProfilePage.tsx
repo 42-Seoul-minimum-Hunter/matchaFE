@@ -40,33 +40,25 @@ const ProfilePage = () => {
         : await axiosProfileMe();
       console.log(`profile page ${username ? username : "me"}`, res);
 
-      // if (res.data.username === username) {
-      // console.log("res.data.username", res.data.username);
-      // console.log("username", username);
-      // console.log("vs ", username === res.data.username);
-      // console.log("잘못된 접근");
-      // goToProfileMe();
-      // tryToGetProfile();
-      //   return;
-      // }
       const { isOnline, profileImages, isBlocked, isMatched } = res.data;
 
       setProfileData(res.data);
       setIsOnline(isOnline);
       setImages(profileImages);
       username && setIsMatched(isMatched);
-
       if (isBlocked) {
         alert("접근이 불가능한 사용자입니다.");
         goToMain();
       }
     } catch (error: any) {
-      goToMain();
       if (error.response?.status === 404) {
         alert("유저가 없습니다.");
       } else if (error.response?.status === 401) {
         alert("로그인을 해주세요.");
+      } else if (error.response?.status === 400) {
+        alert("잘못된 접근입니다.");
       }
+      goToMain();
     }
   };
 
