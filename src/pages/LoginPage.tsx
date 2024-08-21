@@ -37,12 +37,11 @@ const LoginPage = () => {
         signUpTextData.password
       );
       console.log("res", res);
-      goToMain();
-      // console.log("res", res.data);
-      // if (res.data === false)
-      // else {
-      //   tryTwofactorCreate();
-      // }
+      if (res.data === false) {
+        goToMain();
+      } else {
+        goToTwofactor();
+      }
     } catch (error: any) {
       setLoading(false);
       alert(error.response.data);

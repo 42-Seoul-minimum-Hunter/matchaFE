@@ -269,12 +269,6 @@ const SettingPage = () => {
     checkModification,
   ]);
 
-  // useEffect(() => {
-  //   if (isChangeGps === true) {
-  //     setIsChangeGps(true);
-  //   }
-  // }, [toggleData.location]);
-
   return (
     <Container>
       <InputDataContainer>
