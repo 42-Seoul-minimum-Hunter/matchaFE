@@ -212,6 +212,7 @@ export const axiosFindUser = async (
   page?: number,
   sort?: string
 ): Promise<any> => {
+  console.log("data", sort);
   try {
     const params: Record<string, string> = {};
     if (minAge !== undefined) params.minAge = minAge.toString();
@@ -232,7 +233,7 @@ export const axiosFindUser = async (
     const url = queryString
       ? `${axiosFindUserURL}?${queryString}`
       : axiosFindUserURL;
-
+    console.log("url", url);
     const response = await instance.get(url);
     return response;
   } catch (error) {

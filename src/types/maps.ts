@@ -89,6 +89,16 @@ export const sortLableMap = {
   [SortType.descRate]: "평점 내림차순",
 };
 
+export function mapSort(sort: string): SortType {
+  if (sort === "나이 오름차순") {
+    return SortType.ascAge;
+  } else if (sort === "나이 내림차순") {
+    return SortType.descAge;
+  } else if (sort === "평점 오름차순") {
+    return SortType.ascRate;
+  } else return SortType.descRate;
+}
+
 export function mapGender(gender: string): GenderType {
   if (gender === "남성") {
     return GenderType.MALE;

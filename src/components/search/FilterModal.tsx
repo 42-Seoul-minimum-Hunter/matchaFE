@@ -6,12 +6,18 @@ import RangeSlider from "./Slider";
 
 import { HashTagsList, SortTagList } from "@/types/tags";
 import { LocationData } from "../location/LocationData";
+import { sortLableMap } from "@/types/maps";
+import { SortType } from "@/types/tag.enum";
 
 interface ModalProps {
   title: "나이" | "평점" | "지역" | "태그" | "정렬";
   onClose: () => void;
   onSave: (value: any) => void;
   values?: any;
+}
+
+export function getSortLabel(sortType: SortType): string {
+  return sortLableMap[sortType];
 }
 
 const FilterModal: React.FC<ModalProps> = ({
@@ -115,7 +121,7 @@ const FilterModal: React.FC<ModalProps> = ({
             options={SortTagList}
             type="정렬방식"
             onSelect={(option) => setValue(option.value)}
-            selectedValue={value.sort}
+            selectedValue={getSortLabel(value as SortType)}
           />
         );
       default:

@@ -73,6 +73,7 @@ const ProfilePage = () => {
       socket.emit("visitUserProfile", username);
 
       socket.on("alarm", (data: any) => {
+        console.log("alarm", data);
         if (data.alarmType === "MATCHED") {
           setIsMatched(true);
         }
@@ -80,6 +81,7 @@ const ProfilePage = () => {
           setIsMatched(false);
         }
         if (data.alarmType === "DISLIKED") {
+          setIsMatched(false);
           setProfileData((prevData) => ({
             ...prevData!,
             isReceivedLiked: false,

@@ -8,9 +8,8 @@ import SearchCard from "@/components/search/SearchCard";
 import useRouter from "@/hooks/useRouter";
 import { HashTagsList } from "@/types/tags";
 import { removeCookie } from "@/api/cookie";
-import { sortLableMap } from "@/types/maps";
+import { mapSort, sortLableMap } from "@/types/maps";
 import { SortType } from "@/types/tag.enum";
-import { c } from "vite/dist/node/types.d-aGj9QkWt";
 
 export interface ISearchDateDto {
   profileImages: string;
@@ -95,7 +94,6 @@ const SearchPage = () => {
             ? values.sort
             : undefined,
       };
-
       const res = await axiosFindUser(
         changedValues.si,
         changedValues.gu,
@@ -107,7 +105,7 @@ const SearchPage = () => {
           ? changedValues.hashtag
           : undefined,
         page,
-        changedValues.sort
+        changedValues.sort && mapSort(changedValues.sort)
       );
       setSearchData(res.data.users);
       setTotalProfiles(res.data.totalCount);
