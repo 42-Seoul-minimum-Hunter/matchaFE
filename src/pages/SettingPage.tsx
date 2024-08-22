@@ -1,12 +1,11 @@
-import InputTemplate from "@/components/InputTemplate";
+import InputTemplate from "@/components/template/InputTemplate";
 import { useCallback, useEffect, useState } from "react";
 import styled from "styled-components";
 import { tagItem } from "./LoginPage";
 import ImageUploader from "@/components/ImageUpload";
-import DropboxTemplate from "@/components/DropboxTemplate";
-import { LocationData } from "@/assets/mock/mock";
+import DropboxTemplate from "@/components/template/DropboxTemplate";
 import { GpsState } from "./SignupDetailPage";
-import TagList, { TagProps } from "@/components/TagTemplate";
+import TagList, { TagProps } from "@/components/template/TagTemplate";
 import { axiosSettingCreate, axiosSettingModify } from "@/api/axios.custom";
 import { SettingDto } from "@/types/tag.dto";
 import useRouter from "@/hooks/useRouter";
@@ -19,6 +18,9 @@ import {
   preferenceTagList,
 } from "@/types/tags";
 import { removeCookie } from "@/api/cookie";
+import { GenderLableMap, PreferenceLableMap } from "@/types/maps";
+import { GenderType, PreferenceType } from "@/types/tag.enum";
+import { LocationData } from "@/components/location/LocationData";
 
 const SettingPage = () => {
   const [signupError, setSignupError] = useState<string | null>(null);
@@ -73,8 +75,9 @@ const SettingPage = () => {
       setSignUpDropboxData({
         location_si: settingData.si || "",
         location_gu: settingData.gu || "",
-        gender: settingData.gender || "",
-        preference: settingData.preference || "",
+        gender: GenderLableMap[settingData.gender as GenderType] || "",
+        preference:
+          PreferenceLableMap[settingData.preference as PreferenceType] || "",
         age: settingData.age?.toString() || "",
       });
       setToggleData({
@@ -153,12 +156,11 @@ const SettingPage = () => {
 
   const handleInputChange = (e: any) => {
     const { name, value } = e.target;
-    console.log("e.target.name", e.target.name);
     setSignUpTextData({ ...signUpTextData, [name]: value });
   };
 
   const handleDropboxChange = (name: string, option: tagItem) => {
-    setSignUpDropboxData((prev) => ({ ...prev, [name]: option.value }));
+    setSignUpDropboxData((prev) => ({ ...prev, [name]: option.label }));
     if (name === "location_si") {
       const selectedArea = LocationData.find(
         (area) => area.name === option.value
@@ -190,7 +192,6 @@ const SettingPage = () => {
     try {
       const res = await axiosSettingCreate();
       setSettingData(res.data);
-      console.log("res", res);
     } catch (error) {
       goToMain();
       removeCookie("jwt");
@@ -204,7 +205,6 @@ const SettingPage = () => {
       return;
     }
     if (!isModified) {
-      console.log("변경사항이 없습니다.");
       return;
     }
 
@@ -226,14 +226,11 @@ const SettingPage = () => {
         profileImages: images,
       };
 
-      const response = await axiosSettingModify(updatedData);
-      console.log("프로필 업데이트 성공:", response);
+      const res = await axiosSettingModify(updatedData);
       alert("프로필이 업데이트 되었습니다.");
       setIsModified(false);
-      // 성공 메시지 표시
     } catch (error) {
       console.error("프로필 업데이트 실패:", error);
-      // 에러 메시지 표시
     }
   };
 
@@ -242,7 +239,6 @@ const SettingPage = () => {
   };
 
   const handleAddressFound = (si: string, gu: string) => {
-    console.log("si, gu", si, gu);
     setSignUpDropboxData((prev) => ({
       ...prev,
       location_si: si,
@@ -270,13 +266,13 @@ const SettingPage = () => {
             <InputContainer>
               <InputTemplate
                 type="firstname"
-                label="First Name"
+                label="이름"
                 value={signUpTextData.firstname}
                 onChange={handleInputChange}
               />
               <InputTemplate
                 type="lastname"
-                label="last Name"
+                label="성"
                 value={signUpTextData.lastname}
                 onChange={handleInputChange}
               />
@@ -288,11 +284,10 @@ const SettingPage = () => {
               />
               <InputTemplate
                 type="username"
-                label="유저네임"
+                label="닉네임"
                 value={signUpTextData.username}
                 onChange={handleInputChange}
                 disabled={true}
-                // setErrorr={setError}
               />
             </InputContainer>
           </RowContainer>
@@ -307,7 +302,7 @@ const SettingPage = () => {
             <InputContainer>
               <DropboxTemplate
                 options={locationSiTagList}
-                type="location_si"
+                type="도/시"
                 onSelect={(option) =>
                   handleDropboxChange("location_si", option)
                 }
@@ -315,7 +310,7 @@ const SettingPage = () => {
               />
               <DropboxTemplate
                 options={locationGuTagList}
-                type="location_gu"
+                type="시/군/구"
                 onSelect={(option) =>
                   handleDropboxChange("location_gu", option)
                 }
@@ -324,24 +319,24 @@ const SettingPage = () => {
               />
               <DropboxTemplate
                 options={genderTagList}
-                type="gender"
+                type="성별"
                 onSelect={(option) => handleDropboxChange("gender", option)}
                 selectedValue={signUpDropboxData.gender}
               />
               <DropboxTemplate
                 options={preferenceTagList}
-                type="preference"
+                type="취향"
                 onSelect={(option) => handleDropboxChange("preference", option)}
                 selectedValue={signUpDropboxData.preference}
               />
               <DropboxTemplate
                 options={ageTagList}
-                type="age"
+                type="나이"
                 onSelect={(option) => handleDropboxChange("age", option)}
                 selectedValue={signUpDropboxData.age}
               />
               <InputTemplate
-                type="bio"
+                type="약력"
                 label="약력"
                 value={signUpTextData.bio}
                 onChange={handleInputChange}

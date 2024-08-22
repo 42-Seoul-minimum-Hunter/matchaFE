@@ -1,5 +1,5 @@
-import { LocationData } from "@/assets/mock/mock";
 import styled from "styled-components";
+import { LocationData } from "./location/LocationData";
 
 const LocationDropdown = ({
   selectedArea,

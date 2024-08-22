@@ -1,11 +1,9 @@
-import InputTemplate from "@/components/InputTemplate";
+import InputTemplate from "@/components/template/InputTemplate";
 import styled from "styled-components";
-import { useEffect, useState, useCallback } from "react";
+import { useState } from "react";
 import { axiosEmailSend, axiosRegister } from "@/api/axios.custom";
 import useRouter from "@/hooks/useRouter";
 
-// const GenderTag: ITagProps[] = [{ title: "male" }];
-//  나중에 꼭 수정 필요 -> useMemo, useCallback 렌더링 최적화 해야함
 export interface tagItem {
   value: string;
   label: string;
@@ -29,12 +27,10 @@ const SignUpPage = () => {
         signUpTextData.password,
         signUpTextData.checkPassword
       );
-      console.log("res", res);
       axiosEmailSend();
       setIsCheckEmail(true);
       setErrorMessage(""); // 성공 시 에러 메시지 초기화
     } catch (error: any) {
-      console.log("error", error);
       setErrorMessage(
         error.response?.data || "회원가입 중 오류가 발생했습니다."
       );
@@ -43,9 +39,8 @@ const SignUpPage = () => {
   };
   const handleInputChange = (e: any) => {
     const { name, value } = e.target;
-    console.log("name, value", name, value);
     setSignUpTextData({ ...signUpTextData, [name]: value });
-    setErrorMessage(""); // 입력 시 에러 메시지 초기화
+    setErrorMessage("");
   };
 
   const handleSubmit = () => {
@@ -62,7 +57,6 @@ const SignUpPage = () => {
       import.meta.env.VITE_OAUTH_CALLBACK_URI
     }&response_type=code`;
     window.location.href = url;
-    console.log("url", url);
   };
 
   return (

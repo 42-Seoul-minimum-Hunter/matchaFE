@@ -16,10 +16,6 @@ export interface IChatRoomDto {
   lastContent: string; // last chat
 }
 
-// lastTime: string;
-// Unread: number;
-// handler?: (index: number) => void;
-
 interface ChatListProps extends IChatRoomDto {
   isSelected: boolean;
   index: number;

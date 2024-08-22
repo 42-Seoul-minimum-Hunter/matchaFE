@@ -1,16 +1,14 @@
-import InputTemplate from "@/components/InputTemplate";
+import InputTemplate from "@/components/template/InputTemplate";
 import styled from "styled-components";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import useRouter from "@/hooks/useRouter";
-import { axiosCreateTwoFactor, axiosUserLogin } from "@/api/axios.custom";
+import { axiosUserLogin } from "@/api/axios.custom";
 import ResetCheckEmail from "@/components/ResetCheckEmail";
 import Loading from "@/components/chat/Loading";
 import { FormEvent } from "react";
 import { userSocketLogin } from "@/recoil/atoms";
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 
-// const GenderTag: ITagProps[] = [{ title: "male" }];
-//  나중에 꼭 수정 필요 -> useMemo, useCallback 렌더링 최적화 해야함
 export interface tagItem {
   value: string;
   label: string;
@@ -28,7 +26,6 @@ const LoginPage = () => {
   });
   const handleInputChange = (e: any) => {
     const { name, value } = e.target;
-    console.log("name, value", name, value);
     setSignUpTextData({ ...signUpTextData, [name]: value });
   };
 
@@ -39,8 +36,7 @@ const LoginPage = () => {
         signUpTextData.username,
         signUpTextData.password
       );
-      console.log("res", res);
-      // 401 ->
+
       if (res.data === false) {
         setSocketRecoil(true);
         goToMain();
@@ -48,7 +44,6 @@ const LoginPage = () => {
         goToTwofactor();
       }
     } catch (error: any) {
-      console.log("error");
       setLoading(false);
       alert(error.response.data);
     }
@@ -73,7 +68,6 @@ const LoginPage = () => {
       import.meta.env.VITE_OAUTH_CALLBACK_URI
     }&response_type=code`;
     window.location.href = url;
-    console.log("url", url);
   };
 
   return (
@@ -237,7 +231,7 @@ const ButtonStyled = styled.button`
 const TitleStyled = styled.div`
   font-size: 3rem;
   font-family: var(--main-font);
-  /* margin-bottom: 20px; */
+
   & > span {
     color: var(--brand-main-1);
   }

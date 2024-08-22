@@ -32,7 +32,6 @@ interface ClaudeResponse {
 }
 const axiosClaudeURL = "/claude";
 export const sendMessageToClaude = async (message: string): Promise<string> => {
-  console.log("sendMessageToClaude", message);
   try {
     const response = await instance.post<ClaudeResponse>(axiosClaudeURL, {
       message,
@@ -52,7 +51,6 @@ export const axiosUserLogin = async (
   username: string,
   password: string
 ): Promise<any> => {
-  console.log("username, password", username, password);
   try {
     const response = await instance.post(axiosUserLoginURL, {
       username: username,
@@ -83,7 +81,6 @@ export const axiosCheckJWT = async (): Promise<any> => {
 const axiosLoginOauthURL = "/auth/callback";
 export const axiosLoginOauth = async (code: string): Promise<any> => {
   try {
-    console.log("code : ", code);
     const response = await instance.post(axiosLoginOauthURL, { code: code });
     return response;
   } catch (error) {
@@ -128,9 +125,7 @@ export const axiosRegister = async (
 const axiosUserCreateURL = "/user/create/";
 export const axiosUserCreate = async (data: SignupDto): Promise<any> => {
   try {
-    console.log("data : ", data);
     const response = await instance.post(axiosUserCreateURL, data);
-    console.log("data : 2", response);
     return response;
   } catch (error) {
     throw error;
@@ -183,7 +178,6 @@ export const axiosChangePassword = async (
 const axiosVerifyTwoFactorURL = "/auth/twofactor/verify";
 export const axiosVerifyTwoFactor = async (code: string): Promise<any> => {
   try {
-    console.log("code : ", code);
     const response = await instance.post(axiosVerifyTwoFactorURL, {
       code: code,
     });
@@ -238,7 +232,7 @@ export const axiosFindUser = async (
     const url = queryString
       ? `${axiosFindUserURL}?${queryString}`
       : axiosFindUserURL;
-    console.log("search user url", url);
+
     const response = await instance.get(url);
     return response;
   } catch (error) {
@@ -329,7 +323,6 @@ export const axiosSettingCreate = async (): Promise<any> => {
 
 const axiosSettingModifyURL = "/user/profile/update";
 export const axiosSettingModify = async (data: SettingDto): Promise<any> => {
-  console.log("setting data", data);
   try {
     const response = await instance.post(axiosSettingModifyURL, data);
     return response;

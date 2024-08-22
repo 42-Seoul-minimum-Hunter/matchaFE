@@ -1,30 +1,20 @@
 import React, { useCallback, useState } from "react";
 import styled from "styled-components";
-import DropboxTemplate from "../DropboxTemplate";
-import TagList from "../TagTemplate";
+import DropboxTemplate from "../template/DropboxTemplate";
+import TagList from "../template/TagTemplate";
 import RangeSlider from "./Slider";
-import { LocationData } from "@/assets/mock/mock";
-import { tagItem } from "@/pages/LoginPage";
-import { InterestLableMap, sortLableMap } from "@/types/maps";
+
+import { HashTagsList, SortTagList } from "@/types/tags";
+import { SortType } from "@/types/tag.enum";
+import { sortLableMap } from "@/types/maps";
+import { LocationData } from "../location/LocationData";
 
 interface ModalProps {
-  title: "age" | "rate" | "location" | "hashtag" | "sort";
+  title: "나이" | "평점" | "지역" | "태그" | "정렬";
   onClose: () => void;
   onSave: (value: any) => void;
-
-  // TODO : type 정의하기
   values?: any;
 }
-
-const SortTagList: tagItem[] = Object.entries(sortLableMap).map(
-  ([value, label]) => ({ value, label })
-);
-
-const HashTagsList: tagItem[] = Object.entries(InterestLableMap).map(
-  ([value, label]) => ({ value, label })
-);
-
-console.log("HashTagsList", HashTagsList);
 
 const FilterModal: React.FC<ModalProps> = ({
   title,
@@ -34,15 +24,15 @@ const FilterModal: React.FC<ModalProps> = ({
 }) => {
   const [value, setValue] = useState<any>(() => {
     switch (title) {
-      case "age":
+      case "나이":
         return [values.age.min, values.age.max];
-      case "rate":
+      case "평점":
         return [values.rate.min, values.rate.max];
-      case "location":
+      case "지역":
         return { si: values.location.si, gu: values.location.gu };
-      case "hashtag":
+      case "태그":
         return values.hashtag || [];
-      case "sort":
+      case "정렬":
         return values.sort || "dscRate";
       default:
         return null;
@@ -56,7 +46,7 @@ const FilterModal: React.FC<ModalProps> = ({
 
   const renderContent = () => {
     switch (title) {
-      case "age":
+      case "나이":
         return (
           <RangeSlider
             min={20}
@@ -66,7 +56,7 @@ const FilterModal: React.FC<ModalProps> = ({
             onChange={(values) => setValue(values)}
           />
         );
-      case "rate":
+      case "평점":
         return (
           <RangeSlider
             min={0}
@@ -76,7 +66,7 @@ const FilterModal: React.FC<ModalProps> = ({
             onChange={(values) => setValue(values)}
           />
         );
-      case "location":
+      case "지역":
         return (
           <>
             <DropboxTemplate
@@ -84,7 +74,7 @@ const FilterModal: React.FC<ModalProps> = ({
                 value: loc.name,
                 label: loc.name,
               }))}
-              type="Si"
+              type="시"
               onSelect={(option) => {
                 setValue({ si: option.value, gu: "" }); // gu를 초기화
               }}
@@ -97,7 +87,7 @@ const FilterModal: React.FC<ModalProps> = ({
                     (loc) => loc.name === value.si
                   )?.subArea.map((sub) => ({ value: sub, label: sub })) || []
                 }
-                type="Gu"
+                type="구"
                 onSelect={(option) => {
                   setValue((prev: any) => ({ ...prev, gu: option.value }));
                 }}
@@ -106,7 +96,7 @@ const FilterModal: React.FC<ModalProps> = ({
             )}
           </>
         );
-      case "hashtag":
+      case "태그":
         return (
           <TagList
             tags={HashTagsList}
@@ -121,11 +111,11 @@ const FilterModal: React.FC<ModalProps> = ({
             selectable
           />
         );
-      case "sort":
+      case "정렬":
         return (
           <DropboxTemplate
             options={SortTagList}
-            type="sort"
+            type="정렬방식"
             onSelect={(option) => setValue(option.value)}
             selectedValue={value.sort}
           />

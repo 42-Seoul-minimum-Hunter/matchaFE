@@ -7,8 +7,6 @@ export const setCookie = (name: string, value: string, option?: any): void => {
 };
 
 export const getCookie = (name: string): string => {
-  // console.log("name", name);
-  // console.log("cookies", cookies.get(name));
   return cookies.get(name);
 };
 

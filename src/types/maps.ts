@@ -83,8 +83,8 @@ export const rateLableMap = {
 };
 
 export const sortLableMap = {
-  [SortType.ascAge]: "나이 낮은순서",
-  [SortType.descAge]: "나이 높은순서",
-  [SortType.ascRate]: "평점 낮은순서",
-  [SortType.descRate]: "평점 낮은순서",
+  [SortType.ascAge]: "나이 오름차순",
+  [SortType.descAge]: "나이 내림차순",
+  [SortType.ascRate]: "평점 오름차순",
+  [SortType.descRate]: "평점 내림차순",
 };

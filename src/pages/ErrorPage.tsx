@@ -5,11 +5,9 @@ const ErrorPage = () => {
   return (
     <NotFoundContainer>
       <NotFoundContent>
-        <NotFoundTitle>잘못된 접근입니다</NotFoundTitle>
-        <NotFoundText>죄송합니다. 페이지를 찾을 수 없습니다.</NotFoundText>
+        <NotFoundTitle>잘못된 접근</NotFoundTitle>
         <NotFoundDescription>
-          요청하신 페이지가 삭제되었거나, 이름이 변경되었거나, 일시적으로 사용할
-          수 없습니다.
+          이미 회원가입한 이메일로 oauth로그인은 불가능합니다
         </NotFoundDescription>
         <HomeLink to="/main">홈으로 돌아가기</HomeLink>
       </NotFoundContent>

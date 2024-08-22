@@ -26,7 +26,6 @@ const ChatRoom = ({
 }) => {
   const [inputMessage, setInputMessage] = useState<string>("");
   const messageContainerRef = useRef<HTMLDivElement>(null);
-  // const filter = new Filter({ placeHolder: "x" });
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,8 +33,7 @@ const ChatRoom = ({
       alert("더러운 메세지 보내지 마세요");
       return;
     }
-    console.log(inputMessage);
-    console.log("tes ", inputMessage.trim());
+
     if (inputMessage.trim() !== "") {
       sendMessage(inputMessage);
       setInputMessage("");

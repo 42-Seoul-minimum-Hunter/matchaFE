@@ -11,16 +11,17 @@ import {
 import { useSearchParams } from "react-router-dom";
 import { SocketContext } from "./LayoutPage";
 import ImageUploader from "@/components/ImageUpload";
-import TagList from "@/components/TagTemplate";
-import Stars from "@/components/Stars";
-import StarsSubmit from "@/components/StarsSubmit";
+import TagList from "@/components/template/TagTemplate";
+import Stars from "@/components/stars/Stars";
 import useRouter from "@/hooks/useRouter";
 import { formatDate, roundToThirdDecimal } from "@/utils/dataUtils";
 import { ReactComponent as HeartIcon } from "@/assets/icons/like-heart-icon.svg";
 import { HashTagsList } from "@/types/tags";
 import { removeCookie } from "@/api/cookie";
+import { GenderType, PreferenceType } from "@/types/tag.enum";
+import { GenderLableMap, PreferenceLableMap } from "@/types/maps";
+import StarsSubmit from "@/components/stars/StarsSubmit";
 
-// 웹소켓으로 차단하기, 좋아요 세팅
 const ProfilePage = () => {
   const { goToMain, goToChat } = useRouter();
   const [isOnline, setIsOnline] = useState(false);
@@ -39,7 +40,6 @@ const ProfilePage = () => {
       const res = username
         ? await axiosProfile(username)
         : await axiosProfileMe();
-      console.log(`profile page ${username ? username : "me"}`, res);
 
       const { isOnline, profileImages, isBlocked, isMatched } = res.data;
 
@@ -68,15 +68,11 @@ const ProfilePage = () => {
     tryToGetProfile(username || undefined);
   }, [username]);
 
-  // 여기서 보내는 username은 상대방의 이름
   useEffect(() => {
     if (socket && username) {
-      console.log("profileData?.username", username);
       socket.emit("visitUserProfile", username);
 
-      // matched깨지는 알람 오면 바꾸기
       socket.on("alarm", (data: any) => {
-        console.log("alarm", data.alarmType);
         if (data.alarmType === "MATCHED") {
           setIsMatched(true);
         }
@@ -113,7 +109,6 @@ const ProfilePage = () => {
           ...prevData!,
           isSendedLiked: true,
         }));
-        console.log(`Liked user: ${username}`);
       }
     } else if (profileData?.isSendedLiked === true) {
       alert("좋아요를 취소했습니다.");
@@ -123,7 +118,6 @@ const ProfilePage = () => {
           ...prevData!,
           isSendedLiked: false,
         }));
-        console.log(`dislikeUser : ${username}`);
       }
     }
   };
@@ -132,7 +126,6 @@ const ProfilePage = () => {
     if (username) {
       try {
         const res = await axiosUserBlock(username);
-        console.log("block user", res);
         goToMain();
         alert(username + "을 차단했습니다.");
       } catch (error) {
@@ -145,7 +138,7 @@ const ProfilePage = () => {
     if (username) {
       try {
         const res = await axiosUserReport(username);
-        console.log("report user", res);
+
         goToMain();
         alert("유저가 신고되었습니다.");
       } catch (error) {
@@ -162,8 +155,6 @@ const ProfilePage = () => {
     if (username) {
       try {
         const res = await axiosUserRate(userRating, username);
-        console.log("rate user data", res.data);
-        console.log("rate user Avg", res.data.rateAvg);
         alert(userRating + " 점을 주었습니다.");
         setProfileData((prevData) => ({
           ...prevData!,
@@ -171,12 +162,9 @@ const ProfilePage = () => {
         }));
       } catch (error) {
         alert("평점 주기에 실패했습니다.");
-        console.log("rate user error", error);
       }
     }
   };
-  console.log("!username && isMatched", !(!username && isMatched));
-  console.log("!username ", !!username);
 
   return (
     <Container>
@@ -219,7 +207,7 @@ const ProfilePage = () => {
           </UserCardContainer>
 
           <RowContainer>
-            <TitleStyled>User Photo</TitleStyled>
+            <TitleStyled>유저 사진</TitleStyled>
             <ImageUploader
               images={images}
               setImages={setImages}
@@ -251,7 +239,7 @@ const ProfilePage = () => {
           </RowContainer>
 
           <FilterContainer>
-            {["age", "rate", "location", "preference"].map((type) => (
+            {["나이", "평점", "지역", "취향"].map((type) => (
               <FilterItemStyled key={type}>
                 <FilterTitleStyled>
                   {/* charAt -> 문자열 쿼리 함수 */}
@@ -260,10 +248,16 @@ const ProfilePage = () => {
 
                 <FilterValueContainer>
                   <FilterValueStyled>
-                    {type === "age" && `${profileData?.age}`}
-                    {type === "rate" && `${profileData?.gender}`}
-                    {type === "preference" && `${profileData?.preference}`}
-                    {type === "location" &&
+                    {type === "나이" && `${profileData?.age}`}
+                    {type === "평점" &&
+                      `${GenderLableMap[profileData?.gender as GenderType]}`}
+                    {type === "취향" &&
+                      `${
+                        PreferenceLableMap[
+                          profileData?.preference as PreferenceType
+                        ]
+                      }`}
+                    {type === "지역" &&
                       (profileData?.si
                         ? `${profileData?.si}${
                             profileData?.gu ? `, ${profileData?.gu}` : ""

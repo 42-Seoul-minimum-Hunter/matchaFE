@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import styled from "styled-components";
 
 export interface TagProps {
@@ -25,23 +25,9 @@ const TagList: React.FC<TagListProps> = ({
   selectable = true,
   showSelectedOnly = false,
 }) => {
-  // const [selectedTags, setSelectedTags] = useState<string[]>([]);
-
   const handleTagClick = (tag: TagProps) => {
     if (!selectable) return;
     onTagSelect(tag);
-
-    // setSelectedTags((prev) => {
-    //   const newSelected = prev.includes(tag.id)
-    //     ? prev.filter((id) => id !== tag.id)
-    //     : [...prev, tag.id];
-
-    //   if (onTagSelect) {
-    //     onTagSelect(tag);
-    //   }
-
-    //   return newSelected;
-    // });
   };
 
   const handleRemoveClick = (e: React.MouseEvent, tag: TagProps) => {
@@ -54,8 +40,6 @@ const TagList: React.FC<TagListProps> = ({
   const displayTags = showSelectedOnly
     ? tags.filter((tag) => selectedTags.includes(tag.value))
     : tags;
-
-  // console.log("selectedTags", selectedTags);
 
   return (
     <TagContainer>
@@ -105,10 +89,6 @@ export const TagStyled = styled.div<{
   height: 36px;
 
   &:hover {
-    /* background-color: ${(props) =>
-      props.$selectable ? "var(--brand-sub-1)" : "#f0f0f0"}; */
-    /* color: ${(props) =>
-      props.$selectable ? "var(--white)" : "var(--black)"}; */
     background-color: var(--brand-sub-1);
     color: #f0f0f0;
   }

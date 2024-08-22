@@ -38,6 +38,4 @@ const TitleStyled = styled.div`
   font-weight: 500;
 `;
 
-const IconStyled = styled.div``;
-
 export default Tag;

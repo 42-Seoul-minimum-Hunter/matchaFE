@@ -5,7 +5,7 @@ import { SocketContext } from "@/pages/LayoutPage";
 import useRouter from "@/hooks/useRouter";
 import { getCookie } from "@/api/cookie";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { userAlarm, userAlarmContent, userSocketLogin } from "@/recoil/atoms";
+import { userAlarm, userSocketLogin } from "@/recoil/atoms";
 
 // TODO: Router 테이블 만들어서 해당 라우터에서 색상 표현
 const Header = () => {
@@ -27,15 +27,12 @@ const Header = () => {
 
   const token = getCookie("jwt");
   useEffect(() => {
-    console.log("token", !!token);
     setIsLogin(!!token); // token이 존재하면 true, 없으면 false
   }, [token]);
 
   useEffect(() => {
-    console.log("alarm test");
     if (socket) {
       socket.on("alarm", (data: { username: string }) => {
-        console.log("alarm", data);
         setIsAlarm(true);
       });
 
@@ -59,7 +56,7 @@ const Header = () => {
   const onClickLogout = async () => {
     try {
       const res = await axiosLogout();
-      console.log("logout ", res);
+      alert("로그아웃 되었습니다");
       setIsLogin(!isLogin);
       setSocketRecoil(false);
       goToMain();

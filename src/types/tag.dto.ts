@@ -1,33 +1,4 @@
-import { b } from "vite/dist/node/types.d-aGj9QkWt";
 import { GenderType, InterestType, PreferenceType } from "./tag.enum";
-
-export interface RegisterDto {
-  email: string; //
-  username: string; // 4 ~15, 영어, 숫자
-  password: string; // 4 ~ 15, 영어, 숫자, 특수문자
-  lastName: string; // 4 ~ 15 영어
-  firstName: string; // 4 ~ 15 영어
-  gender: GenderType;
-  preference: PreferenceType;
-  biography: string; // 1 ~ 100 영어 숫자만
-  age: number; // 1 ~ 100
-  isGpsAllowed: boolean;
-  hashtags: InterestType[];
-
-  // region: string;
-  si: string;
-  gu: string;
-  rate: number; // 0 ~ 5
-  profileImages: string[];
-}
-
-export interface SearchUserDto {
-  age: number;
-  gender: GenderType;
-  preference: PreferenceType;
-  hashtags: InterestType[];
-  region: string;
-}
 
 export interface ProfileDto {
   username: string;
@@ -46,8 +17,8 @@ export interface ProfileDto {
   // 내 프로필이 아닌 상대방 프로필일 경우
   connectedAt?: Date;
   isBlocked: boolean;
-  isSendedLiked: boolean; // 내가 좋아요 보냄
-  isReceivedLiked: boolean; // 내가 좋아요 받음
+  isSendedLiked: boolean;
+  isReceivedLiked: boolean;
   isOnline: boolean;
 }
 

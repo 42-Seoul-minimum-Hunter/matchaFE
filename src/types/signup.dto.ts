@@ -1,23 +1,17 @@
 import { GenderType, InterestType, PreferenceType } from "./tag.enum";
 
 export interface SignupDto {
-  email: string; //
-  username: string; // 4 ~15, 영어, 숫자
-  password: string; // 4 ~ 15, 영어, 숫자, 특수문자
-  lastName: string; // 4 ~ 15 영어
-  firstName: string; // 4 ~ 15 영어
+  email: string;
+  username: string;
+  password: string;
+  lastName: string;
+  firstName: string;
   gender: GenderType;
   preference: PreferenceType;
-  biography: string; // 1 ~ 100 영어 숫자만
-  age: number; // 1 ~ 100
-  //   ////
-
+  biography: string;
+  age: number;
   isGpsAllowed: boolean;
-
-  //   ///
   hashtags: InterestType[];
-
-  // region: string;
   si: string;
   gu: string;
   profileImages: string[];
@@ -25,10 +19,9 @@ export interface SignupDto {
 
 export interface settingUserDto {
   // User Profile
-  firstName: string; // 4 ~ 15 영어
-  lastName: string; // 4 ~ 15 영어
-
-  password: string; // 4 ~ 15, 영어, 숫자, 특수문자
+  firstName: string;
+  lastName: string;
+  password: string;
 
   //   User Photos
   profileImages: string[];
@@ -38,11 +31,11 @@ export interface settingUserDto {
   isTwoFactor: boolean;
 
   //   UserDetail
-  username: string; // 4 ~15, 영어, 숫자
+  username: string;
   gender: GenderType;
   preference: PreferenceType;
-  biography: string; // 1 ~ 100 영어 숫자만
-  age: number; // 1 ~ 100
+  biography: string;
+  age: number;
   hashtags: InterestType[];
   si: string;
   gu: string;

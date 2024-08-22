@@ -52,7 +52,6 @@ const ChatPage = () => {
         return new Promise<void>((resolve) => {
           socket.emit("getChatList");
           socket.on("getChatList", (newChatRooms: IChatRoomDto[]) => {
-            console.log("newchatrooms", newChatRooms);
             updateChatRoom(newChatRooms);
             resolve();
           });
@@ -67,13 +66,10 @@ const ChatPage = () => {
 
       // 내가 메세지 보내는 경우 -> sendMessage , username, message
       socket.on("sendMessage", (newMessage: IChatReciveContentDto) => {
-        console.log("BE Message on", newMessage);
         setChatHistory((prev) => [...prev, newMessage]);
       });
 
       socket.on("alarm", (data: any) => {
-        console.log("alarm", data.alarmType);
-
         if (data.alarmType === "UNMATCHED") {
           alert("상대방이 너 싫어한대");
           goToMain();
@@ -93,19 +89,12 @@ const ChatPage = () => {
     const selectedUser = chatRoom[index].username;
     setSelectUser(selectedUser);
     setShowChatRoom(true);
-    if (selectedUser === "Chatgpt") {
-      console.log("selectUser ", selectedUser);
-      console.log("Chatgpt index", index);
-      return;
-    }
-    console.log("selectUser ", selectedUser);
 
     if (socket) {
       setIsLoading(true);
       socket.emit("joinChatRoom", selectedUser);
       await new Promise<void>((resolve) => {
         socket.once("getMessages", (messages: IChatReciveContentDto[]) => {
-          console.log("getMessages", messages);
           setChatHistory(messages);
           setIsLoading(false);
           resolve();

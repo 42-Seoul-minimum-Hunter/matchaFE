@@ -1,12 +1,9 @@
-import InputTemplate from "@/components/InputTemplate";
+import InputTemplate from "@/components/template/InputTemplate";
 import styled from "styled-components";
-import { useEffect, useState, useCallback } from "react";
+import { useState } from "react";
 import useRouter from "@/hooks/useRouter";
 import { axiosChangePassword } from "@/api/axios.custom";
 
-// TODO
-// const GenderTag: ITagProps[] = [{ title: "male" }];
-//  나중에 꼭 수정 필요 -> useMemo, useCallback 렌더링 최적화 해야함
 export interface tagItem {
   value: string;
   label: string;
@@ -21,7 +18,6 @@ const ResetPasswordPage = () => {
   });
   const handleInputChange = (e: any) => {
     const { name, value } = e.target;
-    console.log("name, value", name, value);
     setSignUpTextData({ ...signUpTextData, [name]: value });
   };
 
@@ -38,12 +34,9 @@ const ResetPasswordPage = () => {
         signUpTextData.password,
         signUpTextData.checkPassword
       );
-      console.log("reset pw verify res", res);
       goTologin();
       alert("비밀번호가 변경되었습니다.");
     } catch (error) {
-      console.log("error", error);
-      // TEST -> 이미 존재하는 비밀번호인 경우
       alert(error);
       throw error;
     }
@@ -69,7 +62,7 @@ const ResetPasswordPage = () => {
             label="비밀번호"
             value={signUpTextData.password}
             onChange={handleInputChange}
-            setErrorr={setError}
+            setError={setError}
           />
           <InputTemplate
             type="checkPassword"
@@ -77,7 +70,7 @@ const ResetPasswordPage = () => {
             value={signUpTextData.checkPassword}
             checkPW={signUpTextData.password}
             onChange={handleInputChange}
-            setErrorr={setError}
+            setError={setError}
           />
           <ButtonStyled onClick={handleSubmit}>인증하기</ButtonStyled>
         </>

@@ -1,15 +1,16 @@
 import { axiosFindUser } from "@/api/axios.custom";
-import { InterestLableMap } from "@/types/maps";
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
-import { tagItem } from "./SignUpPage";
 import { ReactComponent as FilterIcon } from "@/assets/icons/filter-icon.svg";
-import TagList from "@/components/TagTemplate";
+import TagList from "@/components/template/TagTemplate";
 import FilterModal from "@/components/search/FilterModal";
 import SearchCard from "@/components/search/SearchCard";
 import useRouter from "@/hooks/useRouter";
 import { HashTagsList } from "@/types/tags";
 import { removeCookie } from "@/api/cookie";
+import { sortLableMap } from "@/types/maps";
+import { SortType } from "@/types/tag.enum";
+import { c } from "vite/dist/node/types.d-aGj9QkWt";
 
 export interface ISearchDateDto {
   profileImages: string;
@@ -19,8 +20,22 @@ export interface ISearchDateDto {
   si?: string;
   gu?: string;
 }
+interface Values {
+  age: { min: number; max: number };
+  rate: { min: number; max: number };
+  location: { si: string; gu: string };
+  hashtag: string[];
+  sort: string;
+}
+type ModalType = "나이" | "평점" | "지역" | "태그" | "정렬";
 
-type ModalType = "age" | "rate" | "location" | "hashtag" | "sort";
+export const ModalLableMap: Record<ModalType, keyof Values> = {
+  나이: "age",
+  평점: "rate",
+  지역: "location",
+  태그: "hashtag",
+  정렬: "sort",
+};
 
 const SearchPage = () => {
   const { goToMain } = useRouter();
@@ -39,7 +54,7 @@ const SearchPage = () => {
     rate: { min: 0, max: 5 },
     location: { si: "", gu: "" },
     hashtag: [] as string[],
-    sort: "descRate",
+    sort: "",
   });
 
   const initialValuesRef = useRef(values);
@@ -101,27 +116,31 @@ const SearchPage = () => {
       removeCookie("jwt");
       goToMain();
       alert("로그인을 해주세요");
-      console.log("search page error", error);
     }
   };
 
   const handleSave = (value: any) => {
-    if (modalState.type) {
+    if (modalState.type && modalState.type in ModalLableMap) {
       setValues((prev) => {
         const newValues = { ...prev };
+        const key = ModalLableMap[modalState.type as ModalType];
         switch (modalState.type) {
-          case "age":
-          case "rate":
-            newValues[modalState.type] = { min: value[0], max: value[1] };
+          case "나이":
+          case "평점":
+            (newValues[key] as { min: number; max: number }) = {
+              min: Number(value[0]),
+              max: Number(value[1]),
+            };
             break;
-          case "location":
-            newValues.location = value;
+          case "지역":
+            (newValues[key] as { si: string; gu: string }) = value;
             break;
-          case "hashtag":
-            newValues.hashtag = value;
+          case "태그":
+            (newValues[key] as string[]) = value;
             break;
-          case "sort":
-            newValues.sort = value;
+          case "정렬":
+            (newValues[key] as string) = sortLableMap[value as SortType];
+            // (newValues[key] as string) = value;
             break;
         }
         return newValues;
@@ -153,7 +172,7 @@ const SearchPage = () => {
   return (
     <Container>
       <FilterContainer>
-        {["age", "rate", "location", "hashtag", "sort"].map((type) => (
+        {["나이", "평점", "지역", "태그", "정렬"].map((type) => (
           <FilterItemStyled
             key={type}
             onClick={() => openModal(type as ModalType)}
@@ -165,15 +184,15 @@ const SearchPage = () => {
 
             <FilterValueContainer>
               <FilterValueStyled>
-                {type === "age" && `${values.age.min} ~ ${values.age.max}`}
-                {type === "rate" && `${values.rate.min} ~ ${values.rate.max}`}
-                {type === "location" &&
+                {type === "나이" && `${values.age.min} ~ ${values.age.max}`}
+                {type === "평점" && `${values.rate.min} ~ ${values.rate.max}`}
+                {type === "지역" &&
                   (values.location.si
                     ? `${values.location.si}${
                         values.location.gu ? `, ${values.location.gu}` : ""
                       }`
                     : "Not set")}
-                {type === "sort" && `${values.sort}`}
+                {type === "정렬" && `${values.sort}`}
               </FilterValueStyled>
             </FilterValueContainer>
           </FilterItemStyled>
@@ -192,7 +211,7 @@ const SearchPage = () => {
           }}
           selectedTags={values.hashtag || []}
           showRemoveIcon={true}
-          selectable={false} // 선택 기능 비활성화
+          selectable={false}
           showSelectedOnly={true}
         />
       </SelectTagStyled>

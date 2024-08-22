@@ -4,7 +4,7 @@ import {
   LocationData,
   LocationDataMapping,
   SubAreaMapping,
-} from "@/assets/mock/mock";
+} from "./LocationData";
 
 interface GeoLocationHandlerProps {
   isGpsAllowed: boolean;
@@ -73,11 +73,6 @@ const GeoLocationHandler: React.FC<GeoLocationHandlerProps> = ({
       }
 
       onAddressFound(
-        getKoreanLocation(locationData.region),
-        getKoreanLocation(locationData.city)
-      );
-      console.log(
-        "region, city",
         getKoreanLocation(locationData.region),
         getKoreanLocation(locationData.city)
       );

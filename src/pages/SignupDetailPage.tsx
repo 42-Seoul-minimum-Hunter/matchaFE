@@ -1,11 +1,10 @@
 import styled from "styled-components";
 import { useState } from "react";
 import { tagItem } from "@/pages/SignUpPage";
-import { LocationData } from "@/assets/mock/mock";
-import TagList, { TagProps } from "@/components/TagTemplate";
-import InputTemplate from "@/components/InputTemplate";
+import TagList, { TagProps } from "@/components/template/TagTemplate";
+import InputTemplate from "@/components/template/InputTemplate";
 import ImageUpload from "@/components/ImageUpload";
-import DropboxTemplate from "@/components/DropboxTemplate";
+import DropboxTemplate from "@/components/template/DropboxTemplate";
 import GeoLocationHandler from "@/components/location/GeoLocationHandler";
 import { axiosUserCreate } from "@/api/axios.custom";
 import { SignupDto } from "@/types/tag.dto";
@@ -16,6 +15,7 @@ import {
   locationSiTagList,
   preferenceTagList,
 } from "@/types/tags";
+import { LocationData } from "@/components/location/LocationData";
 
 // TODO : 다른 곳으로 정리
 export interface AgeTagItem {
@@ -109,7 +109,6 @@ const SignupDetailPage = () => {
   };
 
   const handleAddressFound = (si: string, gu: string) => {
-    console.log("si, gu", si, gu);
     setSignUpDropboxData((prev) => ({
       ...prev,
       location_si: si,
@@ -123,7 +122,7 @@ const SignupDetailPage = () => {
   };
 
   const handleDropboxChange = (name: string, option: tagItem) => {
-    setSignUpDropboxData((prev) => ({ ...prev, [name]: option.value }));
+    setSignUpDropboxData((prev) => ({ ...prev, [name]: option.label }));
 
     if (name === "location_si") {
       const selectedArea = LocationData.find(
@@ -179,14 +178,10 @@ const SignupDetailPage = () => {
         profileImages: images, // 업로드된 이미지 URL 배열
       };
 
-      const response = await axiosUserCreate(signupData);
-      console.log("회원가입 성공", response);
+      const res = await axiosUserCreate(signupData);
       goToMain();
-      // 성공 후 처리 (예: 로그인 페이지로 리다이렉트)
     } catch (err) {
       alert("빈 공란을 모두 채워주세요");
-      // console.error("회원가입 실패", err);
-      // 에러 처리 (예: 사용자에게 에러 메시지 표시)
     }
   };
 
@@ -200,21 +195,21 @@ const SignupDetailPage = () => {
         <InputContainer>
           <InputTemplate
             type="firstname"
-            label="First Name"
+            label="이름"
             value={signUpTextData.firstname}
             onChange={handleInputChange}
             setError={setInputError}
           />
           <InputTemplate
             type="lastname"
-            label="last Name"
+            label="성"
             value={signUpTextData.lastname}
             onChange={handleInputChange}
             setError={setInputError}
           />
           <InputTemplate
             type="username"
-            label="유저네임"
+            label="닉네임"
             value={signUpTextData.username}
             onChange={handleInputChange}
             setError={setInputError}
@@ -268,32 +263,32 @@ const SignupDetailPage = () => {
         <InputContainer>
           <DropboxTemplate
             options={locationSiTagList}
-            type="location_si"
+            type="도/시"
             onSelect={(option) => handleDropboxChange("location_si", option)}
             selectedValue={signUpDropboxData.location_si}
           />
           <DropboxTemplate
             options={locationGuTagList}
-            type="location_gu"
+            type="시/군/구"
             onSelect={(option) => handleDropboxChange("location_gu", option)}
             selectedValue={signUpDropboxData.location_gu}
             disabled={!signUpDropboxData.location_si}
           />
           <DropboxTemplate
             options={genderTagList}
-            type="gender"
+            type="성별"
             onSelect={(option) => handleDropboxChange("gender", option)}
             selectedValue={signUpDropboxData.gender}
           />
           <DropboxTemplate
             options={preferenceTagList}
-            type="preference"
+            type="취향"
             onSelect={(option) => handleDropboxChange("preference", option)}
             selectedValue={signUpDropboxData.preference}
           />
           <DropboxTemplate
             options={ageTagList}
-            type="age"
+            type="나이"
             onSelect={(option) => handleDropboxChange("age", option)}
             selectedValue={signUpDropboxData.age}
           />
