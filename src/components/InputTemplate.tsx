@@ -11,6 +11,7 @@ interface InputTemplateProps {
   label: string;
   checkPW?: string;
   setError?: (error: boolean) => void;
+  disabled?: boolean;
 }
 
 const InputTemplate = (props: InputTemplateProps) => {
@@ -43,6 +44,7 @@ const InputTemplate = (props: InputTemplateProps) => {
             : "text"
         }
         name={props.type}
+        disabled={props.disabled}
       />
       <LabelStyled htmlFor={props.type}>{props.label}</LabelStyled>
       {error && <ErrorStyled>{error}</ErrorStyled>}

@@ -291,6 +291,7 @@ const SettingPage = () => {
                 label="유저네임"
                 value={signUpTextData.username}
                 onChange={handleInputChange}
+                disabled={true}
                 // setErrorr={setError}
               />
             </InputContainer>

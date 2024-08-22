@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { tagItem } from "@/pages/SignUpPage";
 import { LocationData } from "@/assets/mock/mock";
 import TagList, { TagProps } from "@/components/TagTemplate";
