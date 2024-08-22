@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { validateMessage } from "@/utils/inputCheckUtils";
 
 export interface IChatSendContentDto {
@@ -25,24 +25,33 @@ const ChatRoom = ({
   sendMessage: (message: string) => void;
 }) => {
   const [inputMessage, setInputMessage] = useState<string>("");
+  const messageContainerRef = useRef<HTMLDivElement>(null);
   // const filter = new Filter({ placeHolder: "x" });
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateMessage(inputMessage) === false) {
       alert("더러운 메세지 보내지 마세요");
+      return;
     }
+    console.log(inputMessage);
+    console.log("tes ", inputMessage.trim());
     if (inputMessage.trim() !== "") {
       sendMessage(inputMessage);
       setInputMessage("");
     }
   };
-  console.log("chatHistory", chatHistory);
+  useEffect(() => {
+    if (messageContainerRef.current) {
+      messageContainerRef.current.scrollTop =
+        messageContainerRef.current.scrollHeight;
+    }
+  }, [chatHistory]);
 
   return (
     <Container>
       <>
-        <MessageContainer>
+        <MessageContainer ref={messageContainerRef}>
           {chatHistory.map((message, index) =>
             message.sender !== username ? (
               <MyMessageWrapper key={index}>
@@ -185,6 +194,7 @@ const ChatInput = styled.input`
 `;
 
 const ChatInputWrapper = styled.form`
+  margin-top: 20px;
   width: 100%;
   border-radius: 4px;
   position: relative;

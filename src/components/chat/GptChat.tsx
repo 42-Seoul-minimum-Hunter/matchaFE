@@ -15,10 +15,8 @@ const GptChat: React.FC = () => {
   const [messages, setMessages] = useState<IChatContentDto[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  console.log("open chat gpt");
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim()) return;
 
     if (validateMessage(input) === false) {
       alert("더러운 메세지 보내지 마세요");

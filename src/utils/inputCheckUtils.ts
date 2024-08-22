@@ -467,11 +467,17 @@ export function convertToLowerCase(arr: any) {
   return arr.map((item: string) => item.toLowerCase());
 }
 
-export const validateMessage = (message: string) => {
+// export const validateMessage = (message: string) => {
+//   const messageRegex =
+//     /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{}:"\\|,.\/?|ㄱ-ㅎ|ㅏ-ㅣ|가-힣]{1,255}$/;
+//   return messageRegex.test(message);
+// };
+
+export function validateMessage(message: string) {
   const messageRegex =
-    /^[a-zA-Z0-9!@#$%^&*()_+\-=\[\]{}:"\\|,.\/?|ㄱ-ㅎ|ㅏ-ㅣ|가-힣]{1,255}$/;
+    /^[a-zA-Z0-9!@\s#$%^&*()_+\-=\[\]{}:"\\|,.\/?|ㄱ-ㅎ|ㅏ-ㅣ|가-힣]{1,255}$/;
   return messageRegex.test(message);
-};
+}
 
 export const useInputValidation = (
   type: string,
