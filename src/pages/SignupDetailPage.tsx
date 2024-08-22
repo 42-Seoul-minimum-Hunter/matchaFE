@@ -231,7 +231,6 @@ const SignupDetailPage = () => {
 
       <RowContainer>
         <TitleStyled>User Photo</TitleStyled>
-        {/* <ImageUpload /> */}
         <ImageUpload images={images} setImages={setImages} />
         {imageError && <ErrorStyled>{imageError}</ErrorStyled>}
       </RowContainer>
@@ -309,7 +308,7 @@ const SignupDetailPage = () => {
         />
         {hashTags && <ErrorStyled>{hashTags}</ErrorStyled>}
       </HashTagContainer>
-      <ButtonStyled onClick={trySignup} disabled={!isFormValid()}>
+      <ButtonStyled onClick={trySignup} disabled={!isFormValid() || loading}>
         {loading ? <LoadingSpinner /> : "가입하기"}
       </ButtonStyled>
     </Container>
