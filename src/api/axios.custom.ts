@@ -212,16 +212,6 @@ export const axiosFindUser = async (
   page?: number,
   sort?: string
 ): Promise<any> => {
-  console.log(
-    "axiosFindUser",
-    si,
-    gu,
-    minAge,
-    maxAge,
-    minRate,
-    maxRate,
-    hashtags
-  );
   try {
     const params: Record<string, string> = {};
     if (minAge !== undefined) params.minAge = minAge.toString();
@@ -333,6 +323,7 @@ export const axiosSettingCreate = async (): Promise<any> => {
 
 const axiosSettingModifyURL = "/user/profile/update";
 export const axiosSettingModify = async (data: SettingDto): Promise<any> => {
+  console.log("data", data);
   try {
     const response = await instance.post(axiosSettingModifyURL, data);
     return response;

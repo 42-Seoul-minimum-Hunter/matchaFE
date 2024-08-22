@@ -18,7 +18,12 @@ import {
   preferenceTagList,
 } from "@/types/tags";
 import { removeCookie } from "@/api/cookie";
-import { GenderLableMap, PreferenceLableMap } from "@/types/maps";
+import {
+  GenderLableMap,
+  mapGender,
+  mapPreference,
+  PreferenceLableMap,
+} from "@/types/maps";
 import { GenderType, PreferenceType } from "@/types/tag.enum";
 import { LocationData } from "@/components/location/LocationData";
 
@@ -218,8 +223,8 @@ const SettingPage = () => {
         biography: signUpTextData.bio,
         si: signUpDropboxData.location_si,
         gu: signUpDropboxData.location_gu,
-        gender: signUpDropboxData.gender,
-        preference: signUpDropboxData.preference,
+        gender: mapGender(signUpDropboxData.gender),
+        preference: mapPreference(signUpDropboxData.preference),
         age: parseInt(signUpDropboxData.age),
         isTwofa: toggleData.twoFactor,
         isGpsAllowed: toggleData.location,
