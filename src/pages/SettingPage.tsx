@@ -1,6 +1,6 @@
 import InputTemplate from "@/components/template/InputTemplate";
 import { useCallback, useEffect, useState } from "react";
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { tagItem } from "./LoginPage";
 import ImageUploader from "@/components/ImageUpload";
 import DropboxTemplate from "@/components/template/DropboxTemplate";
@@ -33,6 +33,7 @@ const SettingPage = () => {
   const [images, setImages] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [locationGuTagList, setLocationGuTagList] = useState<tagItem[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [signUpTextData, setSignUpTextData] = useState({
     firstname: "",
     lastname: "",
@@ -207,7 +208,7 @@ const SettingPage = () => {
     if (!isModified) {
       return;
     }
-
+    setIsLoading(true);
     try {
       const updatedData: SettingDto = {
         firstName: signUpTextData.firstname,
@@ -231,6 +232,8 @@ const SettingPage = () => {
       setIsModified(false);
     } catch (error) {
       console.error("프로필 업데이트 실패:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -409,12 +412,40 @@ const SettingPage = () => {
           </RowContainer>
         </RightContainer>
       </InputDataContainer>
-      <ButtonStyled onClick={updateProfile} disabled={!isModified}>
-        {isModified ? "수정하기" : "변경사항 없음"}
+      <ButtonStyled onClick={updateProfile} disabled={!isModified || isLoading}>
+        {isLoading ? (
+          <LoadingSpinner />
+        ) : isModified ? (
+          "수정하기"
+        ) : (
+          "변경사항 없음"
+        )}
       </ButtonStyled>
+      {/* <ButtonStyled onClick={updateProfile} disabled={!isModified}>
+        {isModified ? "수정하기" : "변경사항 없음"}
+      </ButtonStyled> */}
     </Container>
   );
 };
+
+const rotate = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+`;
+
+const LoadingSpinner = styled.div`
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #3498db;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: ${rotate} 1s linear infinite;
+  margin: 0 auto;
+`;
 
 const Container = styled.div`
   display: flex;

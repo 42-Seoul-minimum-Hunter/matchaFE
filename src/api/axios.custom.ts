@@ -212,6 +212,16 @@ export const axiosFindUser = async (
   page?: number,
   sort?: string
 ): Promise<any> => {
+  console.log(
+    "axiosFindUser",
+    si,
+    gu,
+    minAge,
+    maxAge,
+    minRate,
+    maxRate,
+    hashtags
+  );
   try {
     const params: Record<string, string> = {};
     if (minAge !== undefined) params.minAge = minAge.toString();

@@ -86,7 +86,7 @@ const LoginPage = () => {
               <FormStyled onSubmit={handleSubmit}>
                 <InputTemplate
                   type="username"
-                  label="유저네임"
+                  label="닉네임"
                   value={signUpTextData.username}
                   onChange={handleInputChange}
                   setError={setError}

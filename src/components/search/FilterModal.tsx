@@ -1,12 +1,10 @@
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import DropboxTemplate from "../template/DropboxTemplate";
 import TagList from "../template/TagTemplate";
 import RangeSlider from "./Slider";
 
 import { HashTagsList, SortTagList } from "@/types/tags";
-import { SortType } from "@/types/tag.enum";
-import { sortLableMap } from "@/types/maps";
 import { LocationData } from "../location/LocationData";
 
 interface ModalProps {

@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { useState } from "react";
 import { tagItem } from "@/pages/SignUpPage";
 import TagList, { TagProps } from "@/components/template/TagTemplate";
@@ -16,6 +16,8 @@ import {
   preferenceTagList,
 } from "@/types/tags";
 import { LocationData } from "@/components/location/LocationData";
+import Loading from "@/components/chat/Loading";
+import { GenderReverseMap, mapGender, mapPreference } from "@/types/maps";
 
 // TODO : 다른 곳으로 정리
 export interface AgeTagItem {
@@ -39,6 +41,7 @@ const ageTagList: AgeTagItem[] = Array.from({ length: 81 }, (_, index) => {
 
 const SignupDetailPage = () => {
   const { goToMain } = useRouter();
+  const [loading, setLoading] = useState<boolean>(false);
   const [images, setImages] = useState<string[]>([]);
   const [imageError, setImageError] = useState<string | null>(null);
   const [hashTags, setHashTagsError] = useState<string | null>(null);
@@ -161,14 +164,14 @@ const SignupDetailPage = () => {
       setHashTagsError("최소 3개의 해시태그를 선택해야 합니다.");
       return;
     }
-
+    setLoading(true);
     try {
       const signupData: SignupDto = {
         username: signUpTextData.username,
         lastName: signUpTextData.lastname,
         firstName: signUpTextData.firstname,
-        gender: signUpDropboxData.gender,
-        preference: signUpDropboxData.preference,
+        gender: mapGender(signUpDropboxData.gender),
+        preference: mapPreference(signUpDropboxData.preference),
         biography: signUpTextData.bio, // 필요한 경우 추가
         age: parseInt(signUpDropboxData.age), // 문자열을 숫자로 변환
         isGpsAllowed: gpsState.isAllowed,
@@ -182,6 +185,8 @@ const SignupDetailPage = () => {
       goToMain();
     } catch (err) {
       alert("빈 공란을 모두 채워주세요");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -304,15 +309,33 @@ const SignupDetailPage = () => {
         />
         {hashTags && <ErrorStyled>{hashTags}</ErrorStyled>}
       </HashTagContainer>
-      {/* <ButtonStyled onClick={trySignup}>가입하기</ButtonStyled> */}
       <ButtonStyled onClick={trySignup} disabled={!isFormValid()}>
-        가입하기
+        {loading ? <LoadingSpinner /> : "가입하기"}
       </ButtonStyled>
     </Container>
   );
 };
 
 export default SignupDetailPage;
+
+const rotate = keyframes`
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+`;
+
+const LoadingSpinner = styled.div`
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #3498db;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: ${rotate} 1s linear infinite;
+  margin: 0 auto;
+`;
 
 const InputContainer = styled.div`
   display: flex;

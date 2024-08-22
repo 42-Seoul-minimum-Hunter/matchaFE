@@ -140,7 +140,6 @@ const SearchPage = () => {
             break;
           case "정렬":
             (newValues[key] as string) = sortLableMap[value as SortType];
-            // (newValues[key] as string) = value;
             break;
         }
         return newValues;

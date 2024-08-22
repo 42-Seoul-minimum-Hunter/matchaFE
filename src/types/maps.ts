@@ -88,3 +88,23 @@ export const sortLableMap = {
   [SortType.ascRate]: "평점 오름차순",
   [SortType.descRate]: "평점 내림차순",
 };
+
+export function mapGender(gender: string): GenderType {
+  if (gender === "남성") {
+    return GenderType.MALE;
+  } else {
+    return GenderType.FEMALE;
+  }
+}
+
+export function mapPreference(preference: string): PreferenceType {
+  if (preference === "양성애자") {
+    return PreferenceType.BISEXUAL;
+  } else if (preference === "이성애자") {
+    return PreferenceType.HETEROSEXUAL;
+  } else if (preference === "동성애자") {
+    return PreferenceType.HOMOSEXUAL;
+  } else {
+    return PreferenceType.ASEXUAL;
+  }
+}

@@ -17,9 +17,6 @@ const TwoFactorPage = () => {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const inputs = useRef<(HTMLInputElement | null)[]>([]);
-  const [timer, setTimer] = useState(180); // 3분 = 180초
-  const [canResend, setCanResend] = useState(false);
-  const [currentTime, setCurrentTime] = useState(new Date());
   const setSocketRecoil = useSetRecoilState(userSocketLogin);
 
   //   TODO : 1단계 이메일 인증을 통과하면 2단계때 2fa받을수 있게 BE고치기
@@ -46,10 +43,6 @@ const TwoFactorPage = () => {
     setIsLoading(true);
     try {
       const res = await axiosCreateTwoFactor();
-
-      setTimer(180); // 타이머 재설정
-      setCanResend(false); // 재전송 버튼 비활성화
-      setCurrentTime(new Date()); // 현재 시간 업데이트
     } catch (error) {
       setError("인증 코드 생성에 실패했습니다. 다시 시도해주세요.");
     } finally {
@@ -61,27 +54,6 @@ const TwoFactorPage = () => {
     tryTwofactorCreate();
   }, []);
 
-  useEffect(() => {
-    const timerInterval = setInterval(() => {
-      setTimer((prevTimer) => {
-        if (prevTimer <= 1) {
-          clearInterval(timerInterval);
-          setCanResend(true);
-          return 0;
-        }
-        return prevTimer - 1;
-      });
-    }, 1000);
-
-    const clockInterval = setInterval(() => {
-      setCurrentTime(new Date());
-    }, 1000);
-
-    return () => {
-      clearInterval(timerInterval);
-      clearInterval(clockInterval);
-    };
-  }, []);
   const handleSubmit = () => {
     if (code.some((digit) => digit === "")) {
       setError("모든 칸을 입력해주세요.");
@@ -97,11 +69,6 @@ const TwoFactorPage = () => {
     setCode(newCode);
     if (value !== "" && index < 6) {
       inputs.current[index + 1]?.focus();
-    }
-    // 여기서 바로 값이 들어오자마자 onClick을 해버릴수 있음
-    if (newCode.every((digit) => digit !== "")) {
-      //   onComplete(newCode.join(""));
-      //   alert("로그인");
     }
   };
 
@@ -122,12 +89,6 @@ const TwoFactorPage = () => {
     });
     setCode(newCode);
     inputs.current[Math.min(pastedData.length, 5)]?.focus();
-  };
-
-  const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds < 10 ? "0" : ""}${remainingSeconds}`;
   };
 
   return (
@@ -170,25 +131,13 @@ const TwoFactorPage = () => {
         <ErrorContainer>
           {error && <ErrorStyled>{error}</ErrorStyled>}
         </ErrorContainer>
-        {/* <ButtonStyled onClick={handleSubmit} disabled={isLoading}>
-          {isLoading ? <LoadingSpinner /> : "인증하기"}
-        </ButtonStyled> */}
         <ButtonStyled onClick={handleSubmit} disabled={isLoading}>
           {isLoading ? <LoadingSpinner /> : "인증하기"}
-        </ButtonStyled>
-        <TimerStyled>{formatTime(timer)}</TimerStyled>
-        <ButtonStyled
-          onClick={tryTwofactorCreate}
-          disabled={!canResend || isLoading}
-        >
-          재전송
         </ButtonStyled>
       </>
     </Container>
   );
 };
-
-const TimerStyled = styled.div``;
 
 const LoadingSpinner = styled.div`
   border: 2px solid #f3f3f3;

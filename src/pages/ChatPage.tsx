@@ -18,6 +18,7 @@ const gptChatList: IChatRoomDto = {
   username: "Chatgpt",
   profileImage: TestImage2,
   lastContent: "Hello, I'm Chatgpt",
+  createdAt: "",
 };
 
 // const ChatPage: FC = () => { ... }
@@ -89,7 +90,9 @@ const ChatPage = () => {
     const selectedUser = chatRoom[index].username;
     setSelectUser(selectedUser);
     setShowChatRoom(true);
-
+    if (selectedUser === "Chatgpt") {
+      return;
+    }
     if (socket) {
       setIsLoading(true);
       socket.emit("joinChatRoom", selectedUser);

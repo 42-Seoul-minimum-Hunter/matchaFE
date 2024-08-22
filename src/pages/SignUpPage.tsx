@@ -11,6 +11,7 @@ export interface tagItem {
 
 const SignUpPage = () => {
   const { goToMain } = useRouter();
+
   const [error, setError] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const [isCheckEmail, setIsCheckEmail] = useState<boolean>(false);
